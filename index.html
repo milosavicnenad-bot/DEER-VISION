@@ -1,0 +1,2085 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#141712">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<title>Deer Eyes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+html { color-scheme: light; }
+[hidden] { display: none !important; }
+body { margin: 0; }
+img { max-width: 100%; }
+/* Layout: a hunter's field kit. Home is a grid of illustrated tool tiles; each tool opens as its own page with a back button. */
+:root {
+  --bg: #eef0ea;
+  --surface: #f8f9f5;
+  --fg: #1d221b;
+  --muted: #5c6457;
+  --line: #cfd4c8;
+  --accent: #d9530f;
+  --accent-fg: #ffffff;
+  --moss: #4b6a3a;
+  --h-blaze: #d9530f;
+  --h-moss: #4f7a34;
+  --h-sky: #2f6fae;
+  --h-gold: #b7860b;
+  --h-bark: #7a5230;
+  --h-slate: #4d5d6c;
+  --h-blood: #b3122a;
+  --font-display: "Barlow Condensed", "Arial Narrow", system-ui, sans-serif;
+  --font-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #141712; --surface: #1c2019; --fg: #e6e9e0; --muted: #9aa392; --line: #31372d;
+    --accent: #f06a26; --accent-fg: #1a0d05; --moss: #8db070;
+    --h-blaze: #f07a3c; --h-moss: #8cbf5f; --h-sky: #6fa8de; --h-gold: #e0b23a; --h-bark: #c79563; --h-slate: #97a9ba; --h-blood: #ef5a6f;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #141712; --surface: #1c2019; --fg: #e6e9e0; --muted: #9aa392; --line: #31372d;
+  --accent: #f06a26; --accent-fg: #1a0d05; --moss: #8db070;
+  --h-blaze: #f07a3c; --h-moss: #8cbf5f; --h-sky: #6fa8de; --h-gold: #e0b23a; --h-bark: #c79563; --h-slate: #97a9ba; --h-blood: #ef5a6f;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--fg); font-family: var(--font-body); font-size: 15px; line-height: 1.5;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 14px 40px;
+}
+.wrap { max-width: 880px; margin: 0 auto; display: grid; gap: 18px; position: relative; z-index: 1; }
+/* faded live compass behind the home screen */
+.bgc { position: fixed; inset: 0; z-index: 0; pointer-events: none; display: grid; place-items: center; overflow: hidden; }
+.bgc svg { width: min(140vmin, 100vmax); height: min(140vmin, 100vmax); max-width: none; opacity: .2; color: var(--fg); }
+.hchip { justify-self: start; display: inline-flex; align-items: center; gap: 8px; font: 500 .85rem var(--font-mono); font-variant-numeric: tabular-nums;
+  color: var(--fg); background: color-mix(in srgb, var(--surface) 85%, transparent); border: 1px solid var(--line); border-radius: 99px; padding: 5px 12px 5px 8px; cursor: pointer; }
+.hchip svg { width: 18px; height: 18px; color: var(--h-slate); }
+.hchip b { color: var(--accent); font-weight: 600; }
+h1 { font-family: var(--font-display); font-weight: 700; font-size: 2.3rem; letter-spacing: .02em; margin: 0; text-transform: uppercase; line-height: 1; }
+h1 span { color: var(--accent); }
+h2 { font-family: var(--font-display); font-weight: 600; font-size: 1.25rem; letter-spacing: .06em; text-transform: uppercase; margin: 0 0 8px; text-wrap: balance; }
+.tag { font-family: var(--font-mono); font-size: .75rem; color: var(--muted); }
+.caption { font-size: .8rem; color: var(--muted); line-height: 1.4; }
+.lead { margin: 0; max-width: 62ch; }
+.view { display: grid; gap: 16px; }
+
+/* ---- home ---- */
+.home-head { display: grid; gap: 6px; padding-top: 6px; }
+.tiles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+@media (min-width: 640px) { .tiles { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.tile {
+  --h: var(--h-moss);
+  display: grid; grid-template-columns: minmax(0, 1fr); align-content: start; row-gap: 4px;
+  text-align: left; padding: 14px; border-radius: 12px; border: 1px solid var(--line); background: color-mix(in srgb, var(--surface) 72%, transparent); color: var(--fg);
+  font: inherit; cursor: pointer; text-decoration: none; min-width: 0;
+  transition: border-color .15s, transform .15s;
+}
+.tile:hover { border-color: var(--h); }
+.tile:active { transform: scale(.98); }
+.tile:focus-visible { outline: 2px solid var(--h); outline-offset: 2px; }
+.tile .ic { width: 48px; height: 48px; margin-bottom: 6px; border-radius: 12px; display: grid; place-items: center;
+  color: var(--h); background: color-mix(in srgb, var(--h) 15%, transparent); }
+.tile .ic svg { width: 28px; height: 28px; }
+.tile .tt { font-family: var(--font-display); font-weight: 600; font-size: 1.15rem; overflow-wrap: anywhere; letter-spacing: .04em; text-transform: uppercase; line-height: 1.1; }
+.tile .td { font-size: .76rem; color: var(--muted); line-height: 1.3; }
+.tile.hero { grid-column: 1 / -1; padding: 18px; grid-template-columns: auto minmax(0, 1fr); column-gap: 14px; align-items: center; }
+.tile.hero .ic { grid-row: 1 / span 2; margin-bottom: 0; }
+.tile.hero .ic { width: 58px; height: 58px; }
+.tile.hero .ic svg { width: 36px; height: 36px; }
+.tile.hero .tt { font-size: 1.45rem; }
+.tile.hero .td { font-size: .85rem; }
+.badge { font-family: var(--font-mono); font-size: .62rem; letter-spacing: .04em; color: var(--muted); border: 1px solid var(--line); border-radius: 99px; padding: 0 6px; margin-left: 6px; vertical-align: middle; white-space: nowrap; }
+
+/* ---- tool page header ---- */
+.vhead { display: flex; align-items: center; gap: 10px; }
+.back { display: inline-flex; align-items: center; gap: 4px; font: 600 .9rem var(--font-body); color: var(--fg); background: var(--surface); border: 1px solid var(--line); border-radius: 99px; padding: 6px 12px 6px 8px; cursor: pointer; }
+.back svg { width: 18px; height: 18px; }
+.vhead .vic { width: 34px; height: 34px; border-radius: 9px; display: grid; place-items: center; color: var(--h); background: color-mix(in srgb, var(--h) 15%, transparent); }
+.vhead .vic svg { width: 22px; height: 22px; }
+.vhead h2 { margin: 0; font-size: 1.45rem; }
+
+/* ---- shared controls ---- */
+.scroller { overflow: auto; border-radius: 6px; background: #000; max-height: 75vh; }
+.stage { position: relative; width: 100%; line-height: 0; }
+.stage.zoom { width: 300%; }
+.stage canvas { width: 100%; height: auto; display: block; }
+#human { position: absolute; inset: 0; }
+.divider { position: absolute; top: 0; bottom: 0; width: 2px; background: #fff; box-shadow: 0 0 0 1px rgba(0,0,0,.35); pointer-events: none; }
+.lbl { position: absolute; top: 8px; font-family: var(--font-display); font-weight: 600; font-size: .85rem; letter-spacing: .08em; text-transform: uppercase; line-height: 1.2; padding: 3px 7px; border-radius: 3px; background: rgba(0,0,0,.55); color: #fff; pointer-events: none; }
+.lbl.l { left: 8px; } .lbl.r { right: 8px; }
+.horizon { position: absolute; left: 0; right: 0; border-top: 1px dashed rgba(255,255,255,.8); pointer-events: none; opacity: 0; transition: opacity .3s; }
+.horizon.show { opacity: 1; }
+.pic { width: 100%; height: auto; display: block; border-radius: 6px; background: #000; touch-action: manipulation; }
+.actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.btn { font: 600 .95rem var(--font-body); padding: 10px 14px; border-radius: 6px; border: 1px solid var(--line); background: var(--surface); color: var(--fg); cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-fg); }
+.btn.on { border-color: var(--accent); color: var(--accent); }
+.btn:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.btn[disabled] { opacity: .5; cursor: default; }
+input[type=file] { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 14px; display: grid; gap: 14px; }
+.row { display: grid; grid-template-columns: 9.5rem 1fr auto; align-items: center; gap: 10px; }
+.row label, .k { font-family: var(--font-display); font-weight: 600; font-size: .95rem; letter-spacing: .06em; text-transform: uppercase; }
+.v { font-family: var(--font-mono); font-size: .8rem; color: var(--muted); font-variant-numeric: tabular-nums; min-width: 4.5rem; text-align: right; }
+input[type=range] { width: 100%; accent-color: var(--accent); }
+select, input[type=number], input[type=date], input[type=text] { font: .95rem var(--font-body); padding: 7px 8px; border-radius: 5px; border: 1px solid var(--line); background: var(--bg); color: var(--fg); min-width: 0; }
+@media (max-width: 480px) { .row { grid-template-columns: 1fr auto; } .row > input[type=range], .row > select, .row > .full { grid-column: 1 / -1; grid-row: 2; } }
+.note { border: 1px dashed var(--line); border-radius: 8px; padding: 12px; font-size: .9rem; color: var(--muted); }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 99px; overflow: hidden; }
+.seg button { font: 600 .85rem var(--font-body); border: 0; background: transparent; color: var(--fg); padding: 7px 14px; cursor: pointer; }
+.seg button[aria-pressed="true"] { background: var(--accent); color: var(--accent-fg); }
+.stat { display: grid; gap: 2px; }
+.stat .big { font-family: var(--font-display); font-weight: 700; font-size: 2rem; line-height: 1; font-variant-numeric: tabular-nums; }
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; }
+.pill { display: inline-block; font: 600 .78rem var(--font-body); padding: 2px 9px; border-radius: 99px; }
+.pill.good { background: color-mix(in srgb, var(--h-moss) 20%, transparent); color: var(--h-moss); }
+.pill.mid { background: color-mix(in srgb, var(--h-gold) 22%, transparent); color: var(--h-gold); }
+.pill.bad { background: color-mix(in srgb, var(--h-blaze) 20%, transparent); color: var(--h-blaze); }
+svg.dial { width: 100%; max-width: 340px; height: auto; display: block; margin: 0 auto; touch-action: none; }
+
+/* ---- color check ---- */
+.swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+.sw { border: 1px solid var(--line); border-radius: 6px; overflow: hidden; background: var(--bg); }
+.sw .pair { display: grid; grid-template-columns: 1fr 1fr; height: 54px; }
+.sw .pair div { position: relative; }
+.sw .pair small { position: absolute; bottom: 3px; left: 5px; font: 500 .65rem var(--font-mono); color: #fff; text-shadow: 0 0 3px #000; }
+.sw .meta { padding: 7px 9px; display: grid; gap: 2px; }
+.sw .name { font-weight: 600; font-size: .85rem; }
+.sw .de { font: .72rem var(--font-mono); color: var(--muted); font-variant-numeric: tabular-nums; }
+.de b { color: var(--fg); font-weight: 500; }
+
+/* ---- camo ---- */
+.camo-res { display: grid; gap: 10px; }
+.cr { display: grid; grid-template-columns: 4.5rem 64px 1fr; gap: 10px; align-items: center; }
+.cr .k { font-size: .9rem; }
+.cr .chips { display: grid; grid-template-columns: 1fr 1fr; height: 32px; border-radius: 5px; overflow: hidden; border: 1px solid var(--line); }
+
+/* ---- checklist ---- */
+.check { display: grid; gap: 4px; }
+.check label { display: grid; grid-template-columns: 24px 1fr auto; gap: 10px; align-items: center; padding: 9px 10px; border-radius: 6px; background: var(--surface); border: 1px solid var(--line); cursor: pointer; }
+.check input[type=checkbox] { width: 20px; height: 20px; accent-color: var(--h-moss); }
+.check .done { text-decoration: line-through; color: var(--muted); }
+.check .rm { border: 0; background: none; color: var(--muted); font-size: 1.1rem; cursor: pointer; padding: 0 4px; }
+.progress { height: 8px; border-radius: 99px; background: var(--line); overflow: hidden; }
+.progress div { height: 100%; background: var(--h-moss); width: 0; transition: width .2s; }
+.addrow { display: flex; gap: 8px; }
+.addrow input { flex: 1; }
+
+/* ---- sun & moon / wind lists ---- */
+.times { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
+.time { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; display: grid; gap: 2px; }
+.time .t { font-family: var(--font-display); font-weight: 700; font-size: 1.6rem; line-height: 1.05; font-variant-numeric: tabular-nums; }
+.time .n { font-size: .78rem; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; font-weight: 600; }
+.hours { display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 8px; }
+.hr { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 8px; text-align: center; font-size: .8rem; display: grid; gap: 2px; justify-items: center; }
+.hr svg { width: 22px; height: 22px; color: var(--h-sky); }
+.hr b { font-variant-numeric: tabular-nums; }
+
+/* ---- guide ---- */
+.laundry { display: grid; gap: 10px; }
+details.drop { border: 1px solid var(--line); border-radius: 8px; background: var(--surface); }
+details.drop > summary { list-style: none; cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 12px 14px; font-weight: 600; font-size: .95rem; }
+details.drop > summary::-webkit-details-marker { display: none; }
+details.drop > summary::after { content: "▾"; color: var(--accent); font-size: 1.1rem; transition: transform .2s; }
+details.drop[open] > summary::after { transform: rotate(180deg); }
+details.drop > summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 8px; }
+details.drop > .dropbody { padding: 0 14px 14px; }
+.dropbody.notes { display: grid; gap: 10px; }
+.dropbody.notes ul { margin: 0; padding-left: 1.1rem; display: grid; gap: 6px; }
+.det { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 8px; }
+.d { border: 1px solid var(--line); border-radius: 6px; padding: 9px 11px; background: var(--bg); min-width: 0; }
+.dn { font-weight: 600; font-size: .9rem; }
+.db { font-size: .78rem; color: var(--muted); }
+.db a { color: var(--moss); }
+.tips { margin: 12px 0 0; padding-left: 1.1rem; display: grid; gap: 6px; max-width: 68ch; font-size: .9rem; }
+.uvcheck { display: grid; gap: 10px; max-width: 68ch; }
+.uvcheck ol { margin: 0; padding-left: 1.3rem; display: grid; gap: 6px; font-size: .9rem; }
+.warn { border: 1px solid var(--accent); border-left-width: 4px; border-radius: 6px; padding: 10px 12px; font-size: .9rem; background: var(--bg); }
+.warn b { color: var(--accent); }
+
+.toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(16px + env(safe-area-inset-bottom, 0px)); background: var(--fg); color: var(--bg); padding: 9px 14px; border-radius: 6px; font-size: .9rem; opacity: 0; transition: opacity .25s; pointer-events: none; max-width: calc(100% - 32px); z-index: 20; }
+.toast.show { opacity: 1; }
+@media (prefers-reduced-motion: reduce) { .horizon, .toast, .tile, details.drop > summary::after, .progress div { transition: none; } }
+</style>
+</head>
+<body>
+
+
+<!-- Icon set: 24px grid, 1.7 stroke, round joins -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-deer" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M8 3v3.4L5.8 8.4M8 6.4l1.7 1.7M16 3v3.4l2.2 2M16 6.4l-1.7 1.7"/>
+      <path d="M9 10.2c.8-.9 1.8-1.3 3-1.3s2.2.4 3 1.3l-.8 6.4c-.3 2.2-1.1 3.9-2.2 3.9s-1.9-1.7-2.2-3.9z"/>
+      <path d="M9 10.2 5.6 9.4M15 10.2l3.4-.8"/>
+      <circle cx="10.6" cy="12.6" r=".6" fill="currentColor" stroke="none"/><circle cx="13.4" cy="12.6" r=".6" fill="currentColor" stroke="none"/>
+    </symbol>
+    <symbol id="i-camo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M8.5 3.5 4 5.6l1.6 4.2 2.1-.8V20.5h8.6V9l2.1.8L20 5.6l-4.5-2.1c-.6 1.4-1.9 2.2-3.5 2.2s-2.9-.8-3.5-2.2z"/>
+      <path d="M9.6 11.6c.9-.9 2.6-.6 2.8.5.2 1-.9 1.9-2 1.7-1.1-.2-1.6-1.4-.8-2.2z" fill="currentColor" stroke="none" opacity=".55"/>
+      <path d="M13.2 15.4c.8-.6 2.3-.3 2.4.7.1.9-1 1.5-1.9 1.3-.9-.2-1.3-1.3-.5-2z" fill="currentColor" stroke="none" opacity=".55"/>
+      <path d="M8.5 16.8c.6-.3 1.6 0 1.6.7s-.9 1-1.5.8c-.5-.2-.7-1.2-.1-1.5z" fill="currentColor" stroke="none" opacity=".55"/>
+    </symbol>
+    <symbol id="i-move" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="15.5" cy="12" r="4"/><path d="M3 8.5h6M2 12h7.5M3 15.5h6"/><path d="M19.5 5.5l1 -1M19.5 18.5l1 1" opacity=".6"/>
+    </symbol>
+    <symbol id="i-wind" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 8.5h10.5A2.5 2.5 0 1 0 11 6"/><path d="M3 12.5h15a2.5 2.5 0 1 1-2.5 2.5"/><path d="M3 16.5h7"/>
+    </symbol>
+    <symbol id="i-compass" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="9"/><path d="M12 5.8 14.3 12 12 18.2 9.7 12z"/><path d="M12 5.8 14.3 12H9.7z" fill="currentColor"/><path d="M12 2.2v1.3M21.8 12h-1.3M12 21.8v-1.3M2.2 12h1.3"/>
+    </symbol>
+    <symbol id="i-sunmoon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="9" cy="13.5" r="3.4"/><path d="M9 7.3v1.2M9 18.5v1.2M2.8 13.5H4M14 13.5h1.2M4.6 9.1l.9.9M12.5 17l.9.9M4.6 17.9l.9-.9"/>
+      <path d="M20 8.6a3.8 3.8 0 1 1-4.4-4.4 3 3 0 0 0 4.4 4.4z"/>
+    </symbol>
+    <symbol id="i-shine" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M10.5 3 12.2 8.3 17.5 10l-5.3 1.7-1.7 5.3-1.7-5.3L3.5 10l5.3-1.7z"/>
+      <path d="M18 14.5l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8z"/>
+    </symbol>
+    <symbol id="i-sky" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="17.5" cy="6" r="2.2"/><path d="M2.5 19.5h19"/><path d="M3 19.5l4.5-6.3 3 3.6 3.6-5.2 4.2 4.8 2.7 3.1"/>
+      <circle cx="12" cy="7.6" r="1.1"/><path d="M12 8.7v2.6M10.6 10h2.8"/>
+    </symbol>
+    <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M9 3.5h6v2.5H9z"/><path d="M9 4.8H6.5a1.5 1.5 0 0 0-1.5 1.5v13.2a1.5 1.5 0 0 0 1.5 1.5h11a1.5 1.5 0 0 0 1.5-1.5V6.3a1.5 1.5 0 0 0-1.5-1.5H15"/>
+      <path d="M8.3 11.2l1.6 1.6 3-3M8.3 16.7l1.6 1.6 3-3M15 11.6h1.5M15 17.1h1.5"/>
+    </symbol>
+    <symbol id="i-fov" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 12.5 5.6 18.9A9 9 0 1 1 18.4 18.9z"/><path d="M12 12.5 8.4 4.4M12 12.5l3.6-8.1" opacity=".6"/><circle cx="12" cy="12.5" r="1.3" fill="currentColor" stroke="none"/>
+    </symbol>
+    <symbol id="i-guide" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 6.5C10 5 7 4.5 3.5 5v13.5c3.5-.5 6.5 0 8.5 1.5 2-1.5 5-2 8.5-1.5V5C17 4.5 14 5 12 6.5z"/><path d="M12 6.5V20"/>
+    </symbol>
+    <symbol id="i-blood" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M11 3c3.2 4.2 5.2 7 5.2 9.8a5.2 5.2 0 0 1-10.4 0C5.8 10 7.8 7.2 11 3z"/>
+      <path d="M8.6 13.4a2.6 2.6 0 0 0 2.4 2.6" opacity=".6"/>
+      <path d="M18.6 14.5c.8 1 1.3 1.8 1.3 2.5a1.3 1.3 0 0 1-2.6 0c0-.7.5-1.5 1.3-2.5z" fill="currentColor" stroke="none"/>
+      <path d="M15.2 19.4c.5.6.8 1.1.8 1.5a.8.8 0 0 1-1.6 0c0-.4.3-.9.8-1.5z" fill="currentColor" stroke="none"/>
+    </symbol>
+    <symbol id="i-track" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M10.6 3.5C8.5 6 7 10.2 7.2 13.8c.2 3 1.6 4.9 3.4 4.9.4-3.6.4-10.6 0-15.2z"/>
+      <path d="M13.4 3.5c2.1 2.5 3.6 6.7 3.4 10.3-.2 3-1.6 4.9-3.4 4.9-.4-3.6-.4-10.6 0-15.2z"/>
+      <path d="M7.6 20.6h1.6M14.8 20.6h1.6" opacity=".6"/>
+    </symbol>
+    <symbol id="i-back" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 5.5 8 12l6.5 6.5"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V5M6.5 10.5 12 5l5.5 5.5"/></symbol>
+  </defs>
+</svg>
+
+<div class="bgc" id="bgWrap" aria-hidden="true"><svg id="bgCompass" viewBox="0 0 1000 1000"></svg></div>
+<div class="wrap">
+
+  <!-- ============ HOME ============ -->
+  <section class="view" id="v-home" aria-label="Menu">
+    <div class="home-head">
+      <h1>Deer <span>Eyes</span></h1>
+      <div class="tag">whitetail field kit</div>
+      <button class="hchip" id="homeHeading" type="button"><svg><use href="#i-compass"/></svg><span id="homeHeadingT">Compass</span></button>
+    </div>
+    <nav class="tiles" aria-label="Tools">
+      <a class="tile hero" href="#vision" style="--h: var(--h-blaze)"><span class="ic"><svg><use href="#i-deer"/></svg></span><span class="tt">Deer vision</span><span class="td">See any scene the way a whitetail does: colors, sharpness, light and headlamps.</span></a>
+      <a class="tile hero" href="#blood" style="--h: var(--h-blood)"><span class="ic"><svg><use href="#i-blood"/></svg></span><span class="tt">Blood trail</span><span class="td">Make blood stand out on leaves and ground when tracking a hit deer.</span></a>
+      <a class="tile hero" href="#track" style="--h: var(--h-bark)"><span class="ic"><svg><use href="#i-track"/></svg></span><span class="tt">Track finder</span><span class="td">Bring out faint hoofprints in mud, dirt and snow, and measure their size.</span></a>
+      <a class="tile" href="#camo" style="--h: var(--h-moss)"><span class="ic"><svg><use href="#i-camo"/></svg></span><span class="tt">Camo check</span><span class="td">Score how well you blend in</span></a>
+      <a class="tile" href="#movement" style="--h: var(--h-gold)"><span class="ic"><svg><use href="#i-move"/></svg></span><span class="tt">Movement</span><span class="td">See what motion gives away</span></a>
+      <a class="tile" href="#wind" style="--h: var(--h-sky)"><span class="ic"><svg><use href="#i-wind"/></svg></span><span class="tt">Wind &amp; scent</span><span class="td">Where your scent drifts</span></a>
+      <a class="tile" href="#compass" style="--h: var(--h-slate)"><span class="ic"><svg><use href="#i-compass"/></svg></span><span class="tt">Compass</span><span class="td">Heading and scent direction</span></a>
+      <a class="tile" href="#sun" style="--h: var(--h-gold)"><span class="ic"><svg><use href="#i-sunmoon"/></svg></span><span class="tt">Sun &amp; moon</span><span class="td">Sunrise, sunset, moon phase</span></a>
+      <a class="tile" href="#shine" style="--h: var(--h-sky)"><span class="ic"><svg><use href="#i-shine"/></svg></span><span class="tt">Shine finder</span><span class="td">Spot glare on your gear</span></a>
+      <a class="tile" href="#skyline" style="--h: var(--h-bark)"><span class="ic"><svg><use href="#i-sky"/></svg></span><span class="tt">Skyline check</span><span class="td">Outlines against the sky</span></a>
+      <a class="tile" href="#checklist" style="--h: var(--h-moss)"><span class="ic"><svg><use href="#i-check"/></svg></span><span class="tt">Gear checklist</span><span class="td">Ready before you head out</span></a>
+      <a class="tile" href="#fov" style="--h: var(--h-blaze)"><span class="ic"><svg><use href="#i-fov"/></svg></span><span class="tt">Field of view</span><span class="td">Where a deer can see you</span></a>
+      <a class="tile" href="#guide" style="--h: var(--h-bark)"><span class="ic"><svg><use href="#i-guide"/></svg></span><span class="tt">Hunter's guide</span><span class="td">Detergents, UV check, science</span></a>
+    </nav>
+  </section>
+
+  <!-- ============ DEER VISION ============ -->
+  <section class="view" id="v-vision" hidden aria-label="Deer vision">
+    <div class="vhead" style="--h: var(--h-blaze)"><button class="back" type="button"><svg><use href="#i-back"/></svg>Menu</button><span class="vic"><svg><use href="#i-deer"/></svg></span><h2>Deer vision</h2></div>
+    <div class="scroller">
+      <div class="stage" id="stage">
+        <canvas id="deer" aria-label="Scene as a whitetail deer sees it"></canvas>
+        <canvas id="human" aria-label="Scene as you see it"></canvas>
+        <div class="divider" id="divider"></div>
+        <div class="horizon" id="horizonLine"></div>
+        <div class="lbl l">You</div>
+        <div class="lbl r">Deer</div>
+      </div>
+    </div>
+    <div class="caption" id="caption">Sample scene (drawn, not a photo). Take a photo in the woods to try your own.</div>
+    <div class="actions">
+      <button class="btn primary live-only" id="liveBtn" type="button" aria-pressed="false" hidden>Live camera</button>
+      <button class="btn primary" id="captureBtn" type="button" hidden>Capture</button>
+      <label class="btn" for="camInput">Take photo</label>
+      <label class="btn" for="fileInput">Choose from gallery</label>
+      <button class="btn" id="zoomBtn" type="button" aria-pressed="false">Zoom 3×</button>
+      <button class="btn" id="saveBtn" type="button" hidden>Save deer view</button>
+    </div>
+    <div class="panel" aria-label="Controls">
+      <div class="row">
+        <label for="split">Compare</label>
+        <input type="range" id="split" min="0" max="100" value="50">
+        <span class="v" id="splitV">50 / 50</span>
+      </div>
+      <div class="row">
+        <label for="acuity">Deer sharpness</label>
+        <select id="acuity">
+          <option value="40">20/40 (generous)</option>
+          <option value="100" selected>20/100 (best estimate)</option>
+          <option value="200">20/200 (conservative)</option>
+        </select>
+        <span class="v" id="acuityV"></span>
+      </div>
+      <div class="row">
+        <label for="horizon">Horizon line</label>
+        <input type="range" id="horizon" min="10" max="90" value="50">
+        <span class="v" id="horizonV">50%</span>
+      </div>
+      <div class="row">
+        <label for="light">Light</label>
+        <select id="light">
+          <option value="photo" selected>As photographed</option>
+          <option value="sunny">Sunny day</option>
+          <option value="cloudy">Cloudy day</option>
+          <option value="fog">Fog</option>
+          <option value="dusk">Dawn / dusk</option>
+          <option value="moon">Full moon night</option>
+          <option value="dark">Dark night (no moon)</option>
+        </select>
+        <span class="v"></span>
+      </div>
+      <div class="row">
+        <label for="lamp">Headlamp</label>
+        <select id="lamp">
+          <option value="off" selected>Off</option>
+          <option value="white">White light</option>
+          <option value="red">Red light</option>
+          <option value="green">Green light</option>
+          <option value="uv">UV light (365 nm)</option>
+        </select>
+        <span class="v"></span>
+      </div>
+    </div>
+  <section aria-label="Hunting color check">
+    <h2>Color check</h2>
+    <p class="caption" style="margin:0 0 10px">Left half: what you see. Right half: what a deer sees. ΔE is how far each color sits from leafy green (bigger means it stands out more; under about 10 it blends in).</p>
+    <div class="swatches" id="swatches"></div>
+  </section>
+  </section>
+
+  <!-- ============ BLOOD TRAIL ============ -->
+  <section class="view" id="v-blood" hidden aria-label="Blood trail">
+    <div class="vhead" style="--h: var(--h-blood)"><button class="back" type="button"><svg><use href="#i-back"/></svg>Menu</button><span class="vic"><svg><use href="#i-blood"/></svg></span><h2>Blood trail</h2></div>
+    <p class="lead">Point the camera at the ground along the trail. Possible blood is shown bright red and ringed; everything else turns gray, so drops on brown leaves are easier to spot.</p>
+    <div class="actions">
+      <button class="btn primary live-only" id="bdLive" type="button" aria-pressed="false" hidden>Live camera</button>
+      <button class="btn primary" id="bdCapture" type="button" hidden>Capture</button>
+      <label class="btn" for="camInput">Take photo</label>
+      <label class="btn" for="fileInput">Choose from gallery</label>
+    </div>
+    <canvas class="pic" id="bloodCanvas" aria-label="Blood trail view"></canvas>
+    <div class="panel">
+      <div class="row">
+        <label for="bdView">View</label>
+        <select id="bdView">
+          <option value="hl" selected>Highlight blood</option>
+          <option value="boost">Boost red, keep color</option>
+          <option value="off">Normal photo</option>
+        </select>
+        <span class="v"></span>
+      </div>
+      <div class="row">
+        <label for="bdType">Blood</label>
+        <select id="bdType">
+          <option value="both" selected>Fresh and dried</option>
+          <option value="fresh">Fresh (bright red)</option>
+          <option value="dried">Dried (dark red-brown)</option>
+        </select>
+        <span class="v"></span>
+      </div>
+      <div class="row">
+        <label for="bdSens">Sensitivity</label>
+        <input type="range" id="bdSens" min="1" max="10" value="5">
+        <span class="v" id="bdSensV">5</span>
+      </div>
+      <div class="stats"><div class="stat"><span class="caption">Possible blood spots</span><span class="big" id="bdCount">0</span></div></div>
+    </div>
+    <details class="drop">
+      <summary>Tracking tips</summary>
+      <div class="dropbody notes"><ul>
+        <li>Red leaves, berries and some mushrooms look like blood to the camera too. Check every ring with your own eyes before you follow it.</li>
+        <li>At night use a bright white light. A red headlamp makes blood look dark and almost disappear.</li>
+        <li>Unsure if a spot is blood? A drop of hydrogen peroxide fizzes on blood.</li>
+        <li>Mark the last blood you found with flagging tape before searching ahead, so you can always go back to it.</li>
+        <li>Look on both sides of the trail and on brush and grass at the height of the deer's body, not only on the ground.</li>
+        <li>In low light hold the phone steady, or tap Capture, because a blurry frame hides small drops.</li>
+      </ul></div>
+    </details>
+  </section>
+
+  <!-- ============ TRACK FINDER ============ -->
+  <section class="view" id="v-track" hidden aria-label="Track finder">
+    <div class="vhead" style="--h: var(--h-bark)"><button class="back" type="button"><svg><use href="#i-back"/></svg>Menu</button><span class="vic"><svg><use href="#i-track"/></svg></span><h2>Track finder</h2></div>
+    <p class="lead">Tracks are shallow dents, so what you see is their shadows. Hold a flashlight low to the ground, almost flat, shining across the track, and point the camera straight down. The views below make those shadows stronger.</p>
+    <div class="actions">
+      <button class="btn primary live-only" id="tkLive" type="button" aria-pressed="false" hidden>Live camera</button>
+      <button class="btn primary" id="tkCapture" type="button" hidden>Capture</button>
+      <label class="btn" for="camInput">Take photo</label>
+      <label class="btn" for="fileInput">Choose from gallery</label>
+    </div>
+    <canvas class="pic" id="trackCanvas" aria-label="Track finder view, tap to measure"></canvas>
+    <div class="caption" id="tkCaption"></div>
+    <div class="panel">
+      <div class="row">
+        <label for="tkView">View</label>
+        <select id="tkView">
+          <option value="relief" selected>Relief (raised look)</option>
+          <option value="contrast">Contrast boost</option>
+          <option value="shadow">Shadows only</option>
+          <option value="trail">Trail scan (wide view)</option>
+          <option value="off">Normal photo</option>
+        </select>
+        <span class="v"></span>
+      </div>
+      <div class="row">
+        <label for="tkStrength">Strength</label>
+        <input type="range" id="tkStrength" min="1" max="10" value="6">
+        <span class="v" id="tkStrengthV">6</span>
+      </div>
+      <div class="row">
+        <label for="tkAngle">Light from</label>
+        <input type="range" id="tkAngle" min="0" max="345" step="15" value="315">
+        <span class="v" id="tkAngleV">315°</span>
+      </div>
+      <div class="caption">Turn "Light from" until the track pops out. It only changes the Relief view.</div>
+      <div class="caption" id="tkTrailNote" hidden>Trail scan: hold the phone at chest height and pan slowly across the ground. Brighter and darker bands are boosted, and smooth, packed ground (fewer leaves and twigs than around it) is tinted yellow. Tree trunks, rocks and logs are smooth too and can be tinted. Works best with low sun, frost, wet ground or light snow. It helps your eyes; it does not detect trails by itself.</div>
+    </div>
+    <div class="panel">
+      <h2 style="margin:0">Measure the track</h2>
+      <div class="caption">Lay a coin or other object of known size beside the track, in the same photo, and hold the phone straight above. Tap both ends of the object, then the tip and heel of the track.</div>
+      <div class="actions">
+        <div class="seg" role="group" aria-label="Next taps mark">
+          <button type="button" id="tkTapRef" aria-pressed="true">Tap = object ends</button>
+          <button type="button" id="tkTapTrk" aria-pressed="false">Tap = track ends</button>
+        </div>
+        <button class="btn" id="tkClear" type="button">Clear marks</button>
+      </div>
+      <div class="row">
+        <label for="tkRef">Object</label>
+        <select id="tkRef">
+          <option value="0.955" selected>Quarter (0.955 in)</option>
+          <option value="0.75">Penny (0.75 in)</option>
+          <option value="0.835">Nickel (0.835 in)</option>
+          <option value="2.75">12-gauge shell, 2¾ in long</option>
+          <option value="custom">Other (type the size)</option>
+        </select>
+        <span class="v"></span>
+      </div>
+      <div class="row" id="tkCustomRow" hidden>
+        <label for="tkCustom">Object size</label>
+        <input type="number" id="tkCustom" min="0.1" step="0.05" value="1" class="full">
+        <span class="v">inches</span>
+      </div>
+      <div id="tkResult"></div>
+    </div>
+  </section>
+
+  <!-- ============ CAMO CHECK ============ -->
+  <section class="view" id="v-camo" hidden aria-label="Camo check">
+    <div class="vhead" style="--h: var(--h-moss)"><button class="back" type="button"><svg><use href="#i-back"/></svg>Menu</button><span class="vic"><svg><use href="#i-camo"/></svg></span><h2>Camo check</h2></div>
+    <p class="lead">Take a photo of yourself (or your camo) in the woods. Tap on the camo, then tap on the background right next to it. The score shows how far apart the two look to you and to a deer.</p>
+    <div class="actions">
+      <label class="btn primary" for="camInput">Take photo</label>
+      <label class="btn" for="fileInput">Choose from gallery</label>
+      <div class="seg" role="group" aria-label="Show picture as">
+        <button type="button" id="camoShowYou" aria-pressed="true">You see</button>
+        <button type="button" id="camoShowDeer" aria-pressed="false">Deer sees</button>
+      </div>
+    </div>
+    <canvas class="pic" id="camoCanvas" aria-label="Photo for camo check, tap to place markers"></canvas>
+    <div class="actions">
+      <div class="seg" role="group" aria-label="Next tap marks">
+        <button type="button" id="tapYou" aria-pressed="true">Tap = my camo</button>
+        <button type="button" id="tapBg" aria-pressed="false">Tap = background</button>
+      </div>
+    </div>
+    <div class="panel camo-res" id="camoRes"></div>
+    <p class="caption">ΔE is the color difference between the two spots. Under about 10 they blend together, 10–25 is noticeable, over 25 stands out. Fine camo patterns also blur together for a deer, so they matter less than overall color and brightness.</p>
+  </section>
+
+  <!-- ============ MOVEMENT ============ -->
+  <section class="view" id="v-movement" hidden aria-label="Movement">
+    <div class="vhead" style="--h: var(--h-gold)"><button class="back" type="button"><svg><use href="#i-back"/></svg>Menu</button><span class="vic"><svg><use href="#i-move"/></svg></span><h2>Movement</h2></div>
+    <p class="lead">Deer notice motion long before they make out color or shape. Point the camera at a scene and move: everything that moves glows orange, everything still fades to a dim deer-like gray.</p>
+    <div class="note claude-only" hidden>Movement mode needs the live camera, which works on the website version of this app (the Netlify copy), not inside Claude.</div>
+    <div class="live-only" hidden>
+      <div class="actions">
+        <button class="btn primary" id="mvBtn" type="button" aria-pressed="false">Start camera</button>
+      </div>
+    </div>
+    <canvas class="pic" id="mvCanvas" aria-label="Movement view"></canvas>
+    <div class="panel">
+      <div class="row">
+        <label for="mvSens">Sensitivity</label>
+        <input type="range" id="mvSens" min="1" max="10" value="6">
+        <span class="v" id="mvSensV">6</span>
+      </div>
+      <div class="row">
+        <span class="k">Motion now</span>
+        <div class="progress full" aria-hidden="true"><div id="mvBar"></div></div>
+        <span class="v" id="mvPct">0%</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ WIND ============ -->
+  <section class="view" id="v-wind" hidden aria-label="Wind and scent">
+    <div class="vhead" style="--h: var(--h-sky)"><button class="back" type="button"><svg><use href="#i-back"/></svg>Menu</button><span class="vic"><svg><use href="#i-wind"/></svg></span><h2>Wind &amp; scent</h2></div>
+    <p class="lead">A deer's nose is its best defense. Your scent drifts downwind in a cone, wider in light, shifting wind. Set up so the deer you expect are upwind of you.</p>
+    <svg class="dial" id="windDial" viewBox="0 0 300 300" role="img" aria-label="Scent cone diagram"></svg>
+    <div class="caption" id="windText" style="text-align:center"></div>
+    <div class="panel">
+      <div class="row">
+        <label for="windFrom">Wind from</label>
+        <select id="windFrom"></select>
+        <span class="v" id="windFromV"></span>
+      </div>
+      <div class="row">
+        <label for="windSpeed">Wind speed</label>
+        <input type="range" id="windSpeed" min="0" max="30" value="7">
+        <span class="v" id="windSpeedV">7 mph</span>
+      </div>
+    </div>
+    <div class="live-only" hidden>
+      <div class="panel">
+        <div class="row">
+          <span class="k">Location</span>
+          <div class="full" style="display:flex;gap:6px;min-width:0"><input type="number" id="wLat" step="0.01" aria-label="Latitude" style="width:50%"><input type="number" id="wLon" step="0.01" aria-label="Longitude" style="width:50%"></div>
+          <span class="v"></span>
+        </div>
+        <div class="actions">
+          <button class="btn" id="wLocBtn" type="button">Use my location</button>
+          <button class="btn primary" id="wFetchBtn" type="button">Get wind forecast</button>
+        </div>
+        <div class="hours" id="windHours"></div>
+        <div class="caption" id="windSrc"></div>
+      </div>
+    </div>
+    <div class="note claude-only" hidden>The live wind forecast works on the website version of this app. Here, set the wind by hand from your weather app.</div>
+  </section>
+
+  <!-- ============ COMPASS ============ -->
+  <section class="view" id="v-compass" hidden aria-label="Compass">
+    <div class="vhead" style="--h: var(--h-slate)"><button class="back" type="button"><svg><use href="#i-back"/></svg>Menu</button><span class="vic"><svg><use href="#i-compass"/></svg></span><h2>Compass</h2></div>
+    <div class="note claude-only" hidden>The compass reads your phone's compass sensor, which works on the website version of this app, not inside Claude. The dial below shows the layout.</div>
+    <svg class="dial" id="compassDial" viewBox="0 0 300 300" role="img" aria-label="Compass dial"></svg>
+    <div class="stats">
+      <div class="stat"><span class="caption">Heading</span><span class="big" id="cmpDeg">—</span></div>
+      <div class="stat"><span class="caption">Direction</span><span class="big" id="cmpCard">—</span></div>
+      <div class="stat"><span class="caption">Saved bearing</span><span class="big" id="cmpMark">—</span></div>
+    </div>
+    <div class="actions">
+      <button class="btn primary live-only" id="cmpStart" type="button" hidden>Start compass</button>
+      <button class="btn" id="cmpMarkBtn" type="button">Save this bearing</button>
+      <button class="btn" id="cmpClear" type="button">Clear bearing</button>
+    </div>
+    <p class="caption">The top of the phone is your heading. Orange marker: the saved bearing (for example, toward your stand). Blue cone: where your scent drifts, using the wind set in Wind &amp; scent. The phone points to magnetic north, which in the NY/NJ area is about 13° west of true north. If it seems off, move the phone in a figure-8 to calibrate, and keep it away from metal and magnets.</p>
+  </section>
+
+  <!-- ============ SUN & MOON ============ -->
+  <section class="view" id="v-sun" hidden aria-label="Sun and moon">
+    <div class="vhead" style="--h: var(--h-gold)"><button class="back" type="button"><svg><use href="#i-back"/></svg>Menu</button><span class="vic"><svg><use href="#i-sunmoon"/></svg></span><h2>Sun &amp; moon</h2></div>
+    <div class="panel">
+      <div class="row">
+        <label for="sDate">Date</label>
+        <input type="date" id="sDate" class="full">
+        <span class="v"></span>
+      </div>
+      <div class="row">
+        <span class="k">Location</span>
+        <div class="full" style="display:flex;gap:6px;min-width:0"><input type="number" id="sLat" step="0.01" aria-label="Latitude" style="width:50%"><input type="number" id="sLon" step="0.01" aria-label="Longitude" style="width:50%"></div>
+        <span class="v"></span>
+      </div>
+      <div class="actions live-only" hidden><button class="btn" id="sLocBtn" type="button">Use my location</button></div>
+      <div class="caption">Latitude and longitude in degrees (west is negative). Times are shown in this phone's time zone.</div>
+    </div>
+    <div class="times" id="sunTimes"></div>
+    <div class="panel" style="grid-template-columns:auto 1fr;align-items:center">
+      <svg id="moonPic" viewBox="0 0 100 100" width="92" height="92" role="img" aria-label="Moon phase"></svg>
+      <div id="moonText"></div>
+    </div>
+    <p class="caption">Deer movement usually peaks around dawn and dusk. Legal hunting hours are set by each state and differ between NY and NJ, so check your current hunting guide before you go.</p>
+  </section>
+
+  <!-- ============ SHINE ============ -->
+  <section class="view" id="v-shine" hidden aria-label="Shine finder">
+    <div class="vhead" style="--h: var(--h-sky)"><button class="back" type="button"><svg><use href="#i-back"/></svg>Menu</button><span class="vic"><svg><use href="#i-shine"/></svg></span><h2>Shine finder</h2></div>
+    <p class="lead">Reflections from a watch, glasses, a scope lens, a phone screen or a shiny gun barrel flash bright to a deer even when your colors blend in. Photograph yourself in your gear, ideally with a flash or in sun, and the app rings the shiny spots.</p>
+    <div class="actions">
+      <label class="btn primary" for="camInput">Take photo</label>
+      <label class="btn" for="fileInput">Choose from gallery</label>
+    </div>
+    <canvas class="pic" id="shineCanvas" aria-label="Shiny spots"></canvas>
+    <div class="panel">
+      <div class="row">
+        <label for="shineSens">Sensitivity</label>
+        <input type="range" id="shineSens" min="1" max="10" value="5">
+        <span class="v" id="shineSensV">5</span>
+      </div>
+      <div class="stats"><div class="stat"><span class="caption">Shiny spots found</span><span class="big" id="shineCount">0</span></div></div>
+    </div>
+    <p class="caption">The finder looks for very bright, colorless spots. Plain white objects such as paper or a white cooler also show up, so judge each ring yourself.</p>
+  </section>
+
+  <!-- ============ SKYLINE ============ -->
+  <section class="view" id="v-skyline" hidden aria-label="Skyline check">
+    <div class="vhead" style="--h: var(--h-bark)"><button class="back" type="button"><svg><use href="#i-back"/></svg>Menu</button><span class="vic"><svg><use href="#i-sky"/></svg></span><h2>Skyline check</h2></div>
+    <p class="lead">A dark shape against bright sky stands out to a deer no matter what camo you wear. Take a photo from where a deer would stand, looking toward your spot. Orange lines mark outlines against the sky.</p>
+    <div class="actions">
+      <label class="btn primary" for="camInput">Take photo</label>
+      <label class="btn" for="fileInput">Choose from gallery</label>
+    </div>
+    <canvas class="pic" id="skyCanvas" aria-label="Skyline outlines"></canvas>
+    <div class="panel">
+      <div class="row">
+        <label for="skySens">Sky detection</label>
+        <input type="range" id="skySens" min="1" max="10" value="5">
+        <span class="v" id="skySensV">5</span>
+      </div>
+      <div class="stats">
+        <div class="stat"><span class="caption">Sky in photo</span><span class="big" id="skyPct">0%</span></div>
+        <div class="stat"><span class="caption">Outline against sky</span><span class="big" id="skyEdge">—</span></div>
+      </div>
+    </div>
+    <p class="caption">If the sky isn't picked up correctly, move the Sky detection slider. Fix a skylined spot by sitting lower, in front of a tree trunk, or with a hill or brush behind you.</p>
+  </section>
+
+  <!-- ============ CHECKLIST ============ -->
+  <section class="view" id="v-checklist" hidden aria-label="Gear checklist">
+    <div class="vhead" style="--h: var(--h-moss)"><button class="back" type="button"><svg><use href="#i-back"/></svg>Menu</button><span class="vic"><svg><use href="#i-check"/></svg></span><h2>Gear checklist</h2></div>
+    <div class="stats"><div class="stat"><span class="caption">Ready</span><span class="big" id="ckCount">0 / 0</span></div></div>
+    <div class="progress" aria-hidden="true"><div id="ckBar"></div></div>
+    <div class="check" id="ckList"></div>
+    <div class="addrow"><input type="text" id="ckNew" placeholder="Add your own item" aria-label="New checklist item"><button class="btn" id="ckAdd" type="button">Add</button></div>
+    <div class="actions"><button class="btn" id="ckReset" type="button">Untick all for next hunt</button></div>
+    <p class="caption">Your ticks are kept on this phone.</p>
+  </section>
+
+  <!-- ============ FIELD OF VIEW ============ -->
+  <section class="view" id="v-fov" hidden aria-label="Field of view">
+    <div class="vhead" style="--h: var(--h-blaze)"><button class="back" type="button"><svg><use href="#i-back"/></svg>Menu</button><span class="vic"><svg><use href="#i-fov"/></svg></span><h2>Field of view</h2></div>
+    <p class="lead">Seen from above. Drag the orange hunter dot around the deer to see whether it can see you from there.</p>
+    <div class="actions">
+      <div class="seg" role="group" aria-label="Whose view">
+        <button type="button" id="fovDeer" aria-pressed="true">Deer</button>
+        <button type="button" id="fovYou" aria-pressed="false">You</button>
+      </div>
+    </div>
+    <svg class="dial" id="fovDial" viewBox="0 0 300 300" role="img" aria-label="Field of view diagram"></svg>
+    <div class="caption" id="fovText" style="text-align:center;font-size:.95rem"></div>
+    <div class="panel">
+      <div class="row">
+        <label for="fovHead">Facing</label>
+        <input type="range" id="fovHead" min="0" max="359" value="0">
+        <span class="v" id="fovHeadV">0°</span>
+      </div>
+    </div>
+    <p class="caption">Approximate values. A deer's eyes sit on the sides of its head, giving it about 310° of view with only about 50–60° seen by both eyes and a blind spot of about 50° straight behind. A person sees about 200°, with about 120° seen by both eyes.</p>
+  </section>
+
+  <!-- ============ GUIDE ============ -->
+  <section class="view" id="v-guide" hidden aria-label="Hunter's guide">
+    <div class="vhead" style="--h: var(--h-bark)"><button class="back" type="button"><svg><use href="#i-back"/></svg>Menu</button><span class="vic"><svg><use href="#i-guide"/></svg></span><h2>Hunter's guide</h2></div>
+  <section class="laundry" aria-label="Hunter's guide">
+    <p class="caption" style="margin:0 0 10px">Regular detergents often contain UV (optical) brighteners. They make fabric glow in ultraviolet light, which deer can likely see. The guides below list detergents labeled free of them and show how to check your own gear.</p>
+    <details class="drop" id="detergents">
+      <summary>Good detergents (no UV brighteners)</summary>
+      <div class="dropbody">
+    <div class="det">
+      <div class="d"><div class="dn">Scent Killer Gold Laundry Detergent</div><div class="db">Wildlife Research Center · hunting · <a href="https://www.farmandfleet.com/products/855716-scent-killer-gold-laundry-detergent.html" target="_blank" rel="noopener">label claim</a></div></div>
+      <div class="d"><div class="dn">Dead Down Wind Laundry Detergent</div><div class="db">Dead Down Wind · hunting · <a href="https://copsplus.com/scents-eliminators/dead-down-wind-114018-laundry-detergent-40-ounce-orange/" target="_blank" rel="noopener">label claim</a></div></div>
+      <div class="d"><div class="dn">Sport-Wash</div><div class="db">Atsko · hunting and outdoor · <a href="https://copsplus.com/hygiene-gear/atsko-1338-sport-wash-laundry-detergent-18-ounce-white/" target="_blank" rel="noopener">label claim</a></div></div>
+      <div class="d"><div class="dn">Scent-A-Way Laundry Detergent</div><div class="db">Hunter's Specialties · hunting · <a href="https://www.farmandfleet.com/products/1140613-hunters-specialties-18-oz-scent-a-way-detergent.html" target="_blank" rel="noopener">label claim</a></div></div>
+      <div class="d"><div class="dn">ElimiShield HUNT Laundry Detergent</div><div class="db">ElimiShield · hunting · <a href="https://www.lancasterarchery.com/products/elimishield-hunt-laundry-detergent-24oz" target="_blank" rel="noopener">label claim</a></div></div>
+      <div class="d"><div class="dn">Phaze Laundry Detergent</div><div class="db">Illusion Hunting Systems · hunting · <a href="https://kygunco.com/product/illusion-hunting-systems-604-phaze-laundry-detergent" target="_blank" rel="noopener">label claim</a></div></div>
+      <div class="d"><div class="dn">Free &amp; Clear Liquid Laundry Detergent</div><div class="db">Seventh Generation · grocery store, unscented · <a href="https://www.webstaurantstore.com/seventh-generation-10732913450654-135-oz-free-clear-liquid-laundry-detergent/99945065.html" target="_blank" rel="noopener">label claim</a></div></div>
+    </div>
+    <ul class="tips">
+      <li>Pick the unscented (odorless) version where there is a choice. Some hunting detergents also come in earth or pine scents.</li>
+      <li>Skip fabric softener and dryer sheets; they add scent.</li>
+      <li>Run the washer empty once first, because leftover regular detergent can put brighteners back on your gear.</li>
+      <li>Clothes already washed with brighteners can stay bright for a long time. Check them with a UV flashlight in a dark room; a UV-blocking spray such as Atsko U-V Killer is sold for treating them.</li>
+      <li>Formulas change, so check the bottle says "no UV brighteners" when you buy it.</li>
+    </ul>
+      </div>
+    </details>
+      <details class="drop" id="uvcheck">
+      <summary>How to check your clothes for UV brighteners</summary>
+      <div class="dropbody uvcheck">
+      <div class="warn" role="note">
+        <b>Safety warning.</b> UV light can damage your eyes and skin. Never look into the beam and never shine it at anyone's eyes, including your own, children's or pets'. Watch for reflections off mirrors, glass and shiny surfaces. Don't shine it on your skin, and keep your hands out of the beam while you check. Wear UV-blocking glasses (labeled UV400) if you use the light often, and keep it away from children.
+      </div>
+      <ol>
+        <li>Use a flashlight sold as <b>365 nm</b>. Cheaper 395 nm lights also give off a lot of visible violet light, which makes the glow hard to judge.</li>
+        <li>Go into a fully dark room and give your eyes a minute or two to adjust.</li>
+        <li>Test the light first on a sheet of white printer paper. Most printer paper contains brighteners and glows bright blue-white, so you know what a "positive" looks like.</li>
+        <li>Hold the light about 30–50 cm (1–1.5 ft) from the fabric and sweep slowly over every piece: jacket, pants, base layers, hat, gloves, face mask, backpack and boots.</li>
+        <li>Look closely at seams, stitching, labels, logos and zipper tapes. Thread and tags often glow even when the fabric doesn't.</li>
+        <li>Anything that glows blue-white has brighteners. Rewash it a few times in one of the Good detergents, or treat it with a UV-blocking spray, then check again.</li>
+        <li>Check before each season, and again after anything is washed in a regular machine or with someone else's laundry.</li>
+      </ol>
+      </div>
+    </details>
+    <details class="drop" id="science">
+      <summary>How deer see: what this app simulates</summary>
+      <div class="dropbody notes">
+    <ul>
+      <li><b>Two color cones instead of three.</b> Deer cones peak near 455 nm (blue) and 537 nm (green). With no red-sensitive cone, reds and oranges lose their color and fall toward dull olive or gray. Blaze orange is bright to you and to other hunters, but not to deer.</li>
+      <li><b>Lower sharpness.</b> Acuity is estimated at roughly 20/100, sharpest along a horizontal band at eye level (the visual streak) and blurrier above and below it. Set the horizon slider to where the skyline or the deer's eye level falls in your photo.</li>
+      <li><b>Light conditions.</b> The Light menu puts the same light on both halves so you can compare. In dim light both you and the deer lose color and sharpness, but the deer side stays much brighter: deer eyes are packed with rods and have a reflective layer (tapetum) behind the retina. Fog adds a haze that is thickest near the horizon line. Start from a daytime photo; the brightness levels are an illustration of the trend, not measurements.</li>
+      <li><b>Headlamp.</b> The beam lights a spot in the middle of the frame. Try it with Dark night or Full moon night. White and green light look bright to a deer, because green is close to the peak of its color cone and its night vision. Red light looks much dimmer to a deer than to you, because deer have no red-sensitive cone. UV light is nearly invisible to you, but a deer's eye lets UV through, so it likely sees the glow. Brighteners in your clothes would also light up under UV, which a camera photo can't show.</li>
+    </ul>
+    <p class="caption"><b>Limits.</b> Phone cameras filter out ultraviolet, so the app can't show UV brighteners in washed clothing, which can glow to deer. It also can't show a deer's nearly 300° field of view or how strongly deer react to movement. The blur is calculated for a typical phone lens; use Zoom 3× to judge it, since a small screen hides fine detail anyway.</p>
+      </div>
+    </details>
+  </section>
+  </section>
+</div>
+
+<input type="file" id="camInput" accept="image/*" capture="environment">
+<input type="file" id="fileInput" accept="image/*">
+<video id="video" playsinline muted style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none"></video>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const mk = () => document.createElement('canvas');
+  const IN_CLAUDE = !!(window.claude && typeof window.claude.use === 'function');
+  const CAN_LIVE = !IN_CLAUDE && !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
+  const MAXW = 1600, LIVEW = 640, HFOV = 65; // HFOV: assumed horizontal field of view of a phone main camera, degrees
+  const DEFAULT_LOC = { lat: 41.20, lon: -74.25 };
+
+  document.querySelectorAll('.live-only').forEach(el => { el.hidden = !CAN_LIVE; });
+  document.querySelectorAll('.claude-only').forEach(el => { el.hidden = CAN_LIVE; });
+
+  let toastTimer;
+  function toast(msg) { const t = $('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), 3200); }
+  const store = {
+    get(k, d) { try { const v = localStorage.getItem('deereyes.' + k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
+    set(k, v) { try { localStorage.setItem('deereyes.' + k, JSON.stringify(v)); } catch (e) {} }
+  };
+
+  // ================= color science =================
+  const toLin = new Float32Array(256);
+  for (let i = 0; i < 256; i++) { const c = i / 255; toLin[i] = c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4); }
+  const N = 4096, toSRGB = new Uint8ClampedArray(N + 1);
+  for (let i = 0; i <= N; i++) { const c = i / N; toSRGB[i] = Math.round(255 * (c <= 0.0031308 ? 12.92 * c : 1.055 * Math.pow(c, 1 / 2.4) - 0.055)); }
+  const enc = v => toSRGB[v <= 0 ? 0 : v >= 1 ? N : (v * N) | 0];
+  // Dichromat without a long-wavelength cone (Viénot, Brettel & Mollon 1999, protan, linear RGB)
+  const M = [0.11238, 0.88762, 0.0, 0.11238, 0.88762, 0.0, 0.00401, -0.00401, 1.0];
+  const deerLin = (r, g, b) => [M[0]*r + M[1]*g + M[2]*b, M[3]*r + M[4]*g + M[5]*b, M[6]*r + M[7]*g + M[8]*b];
+  function labLin(R, G, B) {
+    let X = (0.4124*R + 0.3576*G + 0.1805*B) / 0.95047, Y = 0.2126*R + 0.7152*G + 0.0722*B, Z = (0.0193*R + 0.1192*G + 0.9505*B) / 1.08883;
+    const f = t => t > 0.008856 ? Math.cbrt(t) : 7.787 * t + 16 / 116;
+    X = f(X); Y = f(Y); Z = f(Z); return [116 * Y - 16, 500 * (X - Y), 200 * (Y - Z)];
+  }
+  const lab = ([r, g, b]) => labLin(toLin[r], toLin[g], toLin[b]);
+  const dE = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1], a[2] - b[2]);
+  const hexOf = rgb => '#' + rgb.map(v => Math.max(0, Math.min(255, v | 0)).toString(16).padStart(2, '0')).join('');
+
+  // ================= shared photo =================
+  const PHOTO = { c: mk(), w: 0, h: 0, sample: true, ver: 0 };
+  function setPhoto(drawFn, w, h, sample) {
+    const scale = Math.min(1, MAXW / Math.max(w, h));
+    PHOTO.w = Math.round(w * scale); PHOTO.h = Math.round(h * scale);
+    PHOTO.c.width = PHOTO.w; PHOTO.c.height = PHOTO.h;
+    drawFn(PHOTO.c.getContext('2d'), PHOTO.w, PHOTO.h);
+    PHOTO.sample = !!sample; PHOTO.ver++;
+    if (TOOLS[current] && TOOLS[current].photo) TOOLS[current].photo();
+  }
+  function loadFile(file) {
+    if (!file) return;
+    const url = URL.createObjectURL(file), img = new Image();
+    img.onload = () => { setPhoto((x, w, h) => x.drawImage(img, 0, 0, w, h), img.naturalWidth, img.naturalHeight, false); URL.revokeObjectURL(url); };
+    img.onerror = () => { URL.revokeObjectURL(url); toast('That file could not be opened as an image. Try a JPG or PNG.'); };
+    img.src = url;
+  }
+  $('camInput').addEventListener('change', e => { loadFile(e.target.files[0]); e.target.value = ''; });
+  $('fileInput').addEventListener('change', e => { loadFile(e.target.files[0]); e.target.value = ''; });
+
+  function drawSample(x, w, h) {
+    let seed = 7; const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+    const sky = x.createLinearGradient(0, 0, 0, h * .55); sky.addColorStop(0, '#8fb7de'); sky.addColorStop(1, '#d6e2e6');
+    x.fillStyle = sky; x.fillRect(0, 0, w, h);
+    x.fillStyle = '#5f6f4c'; x.beginPath(); x.moveTo(0, h * .5);
+    for (let i = 0; i <= 40; i++) x.lineTo(i * w / 40, h * (.44 + rnd() * .06)); x.lineTo(w, h); x.lineTo(0, h); x.fill();
+    const fall = ['#c0392b', '#d35400', '#e67e22', '#f1c40f', '#d4a017', '#6b8e23', '#3f6b2a', '#8b2e16', '#a3b236'];
+    for (let i = 0; i < 260; i++) { x.fillStyle = fall[(rnd() * fall.length) | 0]; x.globalAlpha = .85; x.beginPath(); x.arc(rnd() * w, h * (.12 + rnd() * .36), 18 + rnd() * 46, 0, 7); x.fill(); }
+    x.globalAlpha = 1;
+    for (let i = 0; i < 9; i++) { const tx = rnd() * w, tw = 14 + rnd() * 26; x.fillStyle = rnd() > .5 ? '#5b4129' : '#6e6a62'; x.fillRect(tx, h * .1, tw, h * .62); }
+    const gr = x.createLinearGradient(0, h * .55, 0, h); gr.addColorStop(0, '#7a5a34'); gr.addColorStop(1, '#4e3a22');
+    x.fillStyle = gr; x.fillRect(0, h * .62, w, h * .38);
+    for (let i = 0; i < 900; i++) { x.fillStyle = ['#a0522d', '#c68a3c', '#8b5a2b', '#b5651d', '#d9a441'][(rnd() * 5) | 0]; x.fillRect(rnd() * w, h * (.62 + rnd() * .38), 6 + rnd() * 8, 3 + rnd() * 4); }
+    for (let i = 0; i < 14; i++) { x.fillStyle = '#2f5a24'; x.beginPath(); x.arc(w * .08 + rnd() * w * .22, h * (.62 + rnd() * .1), 20 + rnd() * 26, 0, 7); x.fill(); }
+    for (let i = 0; i < 40; i++) { x.fillStyle = '#d0112b'; x.beginPath(); x.arc(w * .1 + rnd() * w * .18, h * (.6 + rnd() * .1), 4 + rnd() * 3, 0, 7); x.fill(); }
+    { let sd = 99; const r2 = () => ((sd = (sd * 16807) % 2147483647) / 2147483647);
+      for (let i = 0; i < 22; i++) { const t = i / 21; x.fillStyle = ['#8a0a14', '#a00d1c', '#6e0b10', '#b3121f'][(r2() * 4) | 0];
+        x.beginPath(); x.ellipse(w * (.14 + .3 * t) + (r2() - .5) * w * .05, h * (.97 - .3 * t) + (r2() - .5) * h * .03, (3 + r2() * 5) * h / 1067, (2 + r2() * 3) * h / 1067, r2() * 3, 0, 7); x.fill(); } }
+    const hx = w * .64, hy = h * .44, s = h / 1067;
+    x.fillStyle = '#1f6fd9'; x.fillRect(hx - 52 * s, hy + 70 * s, 40 * s, 110 * s);
+    x.fillStyle = '#3b5b8c'; x.fillRect(hx - 30 * s, hy + 230 * s, 26 * s, 170 * s); x.fillRect(hx + 6 * s, hy + 230 * s, 26 * s, 170 * s);
+    x.fillStyle = '#ff5f15'; x.fillRect(hx - 38 * s, hy + 60 * s, 76 * s, 180 * s);
+    x.fillStyle = '#d9a37a'; x.beginPath(); x.arc(hx, hy + 30 * s, 26 * s, 0, 7); x.fill();
+    x.fillStyle = '#ff5f15'; x.fillRect(hx - 28 * s, hy - 4 * s, 56 * s, 20 * s);
+    x.fillStyle = '#ff5f15'; x.fillRect(hx - 60 * s, hy + 66 * s, 22 * s, 120 * s); x.fillRect(hx + 38 * s, hy + 66 * s, 22 * s, 120 * s);
+    // a glint on a scope or watch for the shine finder
+    x.fillStyle = '#ffffff'; x.beginPath(); x.arc(hx + 49 * s, hy + 128 * s, 5 * s, 0, 7); x.fill();
+    x.fillStyle = '#f4f4f0'; x.fillRect(w * .82, h * .78, w * .09, h * .08);
+    x.fillStyle = '#f2c500'; x.beginPath(); x.moveTo(w * .36, h * .86); x.lineTo(w * .52, h * .8); x.lineTo(w * .56, h * .92); x.lineTo(w * .38, h * .95); x.fill();
+  }
+
+  // ================= camera =================
+  const video = $('video');
+  let camStream = null;
+  async function openCamera() {
+    if (camStream) return true;
+    if (!CAN_LIVE) { toast('The live camera works on the website version of this app.'); return false; }
+    try {
+      camStream = await navigator.mediaDevices.getUserMedia({ audio: false, video: { facingMode: { ideal: 'environment' }, width: { ideal: 1920 }, height: { ideal: 1080 } } });
+    } catch (e) {
+      toast(e && e.name === 'NotAllowedError' ? 'Camera access was blocked. Allow it in Chrome site settings, then try again.' : 'Could not open the camera. The page must be on an https:// address.');
+      return false;
+    }
+    video.srcObject = camStream;
+    try { await video.play(); } catch (e) {}
+    if (!video.videoWidth) await new Promise(r => video.addEventListener('loadedmetadata', r, { once: true }));
+    return true;
+  }
+  function closeCamera() {
+    if (!camStream) return;
+    camStream.getTracks().forEach(t => t.stop());
+    camStream = null; video.srcObject = null;
+  }
+
+  // ================= blur helper =================
+  const filterOK = (() => { const c = mk().getContext('2d'); c.filter = 'blur(2px)'; return c.filter === 'blur(2px)'; })();
+  const smallC = mk();
+  function blurInto(dst, src, sigma, W, H) {
+    const x = dst.getContext('2d');
+    x.globalCompositeOperation = 'source-over'; x.clearRect(0, 0, W, H);
+    if (sigma < 0.3) { x.drawImage(src, 0, 0); return; }
+    if (filterOK) { x.filter = `blur(${sigma.toFixed(2)}px)`; x.drawImage(src, 0, 0); x.filter = 'none'; return; }
+    const f = Math.max(1, sigma * 1.6);
+    smallC.width = Math.max(1, Math.round(W / f)); smallC.height = Math.max(1, Math.round(H / f));
+    const sx = smallC.getContext('2d'); sx.imageSmoothingQuality = 'high'; sx.drawImage(src, 0, 0, smallC.width, smallC.height);
+    x.imageSmoothingQuality = 'high'; x.drawImage(smallC, 0, 0, W, H);
+  }
+
+  // =================================================================
+  // DEER VISION
+  // =================================================================
+  const vision = (() => {
+    const deerC = $('deer'), humanC = $('human');
+    const dctx = deerC.getContext('2d'), hctx = humanC.getContext('2d');
+    const srcC = mk(), sctx = srcC.getContext('2d', { willReadFrequently: true });
+    const hColor = mk(), dColor = mk(), offC = mk(), bandC = mk(), hBlur = mk();
+    let srcData = null, W = 0, H = 0, pending = false, hOut = null, dOut = null, live = null, shownVer = -1;
+
+    // Light conditions. scene: what the light does to the scene for everyone. you / deer: how each eye renders it.
+    // Values are an illustration of the trends, not measurements.
+    const CONDS = {
+      photo:  { scene: { tint: [1, 1, 1], gamma: 1, fog: 0 }, lamp: 0.12,
+                you: { gain: 1, sat: 1, noise: 0, blur: 0 }, deer: { gain: 1, sat: 1, noise: 0, blur: 1 } },
+      sunny:  { scene: { tint: [1.06, 1.0, 0.92], gamma: 1.12, fog: 0 }, lamp: 0.05,
+                you: { gain: 1.45, sat: 1.15, noise: 0, blur: 0 }, deer: { gain: 1.45, sat: 1.15, noise: 0, blur: 1 } },
+      cloudy: { scene: { tint: [0.95, 0.98, 1.06], gamma: 0.85, fog: 0 }, lamp: 0.15,
+                you: { gain: 0.55, sat: 0.8, noise: 0, blur: 0 }, deer: { gain: 0.58, sat: 0.8, noise: 0, blur: 1 } },
+      fog:    { scene: { tint: [0.97, 0.99, 1.02], gamma: 0.8, fog: 0.62 }, lamp: 0.35,
+                you: { gain: 0.9, sat: 0.7, noise: 0, blur: 0.6 }, deer: { gain: 0.9, sat: 0.7, noise: 0, blur: 1.4 } },
+      dusk:   { scene: { tint: [1.0, 0.95, 1.05], gamma: 1, fog: 0 }, lamp: 0.6,
+                you: { gain: 0.28, sat: 0.6, noise: 6, blur: 1.2 }, deer: { gain: 0.75, sat: 0.5, noise: 8, blur: 1.3 } },
+      moon:   { scene: { tint: [1, 1, 1], gamma: 1, fog: 0 }, lamp: 1,
+                you: { gain: 0.07, sat: 0, rod: true, noise: 7, blur: 6 }, deer: { gain: 0.3, sat: 0, rod: true, noise: 12, blur: 2.2 } },
+      dark:   { scene: { tint: [1, 1, 1], gamma: 1, fog: 0 }, lamp: 1,
+                you: { gain: 0.012, sat: 0, rod: true, noise: 4, blur: 12 }, deer: { gain: 0.09, sat: 0, rod: true, noise: 16, blur: 3.5 } },
+    };
+    const FOG = 0.82;
+    // Headlamp: lights a spot at the center of the frame. UV is outside what a camera records, so it is drawn
+    // as the faint violet a person barely notices and the blue-violet glow a UV-sensitive deer eye would pick up.
+    const LAMPS = {
+      off: null, white: { rgb: [1, 1, 1] }, red: { rgb: [1, 0.03, 0.01] }, green: { rgb: [0.06, 1, 0.12] },
+      uv: { rgb: [1, 1, 1], uv: true, you: [0.006, 0.0, 0.014], deer: [0.12, 0.12, 0.75] },
+    };
+    const LAMP_I = 0.9;
+    let gx = null, gy = null, fogRow = null;
+
+    function eye(R, G, B, e) {
+      if (e.rod) { const Y = 0.07*R + 0.58*G + 0.35*B; R = G = B = Y; }
+      else if (e.sat !== 1) { const Y = 0.2126*R + 0.7152*G + 0.0722*B; R = Y + e.sat*(R - Y); G = Y + e.sat*(G - Y); B = Y + e.sat*(B - Y); }
+      return [R * e.gain, G * e.gain, B * e.gain];
+    }
+    function setSize(w, h, maxSide) {
+      const scale = Math.min(1, maxSide / Math.max(w, h));
+      W = Math.round(w * scale); H = Math.round(h * scale);
+      for (const c of [deerC, humanC, srcC, hColor, dColor, offC, bandC, hBlur]) { c.width = W; c.height = H; }
+      hOut = new ImageData(W, H); dOut = new ImageData(W, H);
+    }
+    function process() {
+      pending = false;
+      if (!srcData) return;
+      const C = CONDS[$('light').value] || CONDS.photo, sc = C.scene;
+      const L = LAMPS[$('lamp').value] || null, li = L ? LAMP_I * C.lamp : 0;
+      const s = srcData.data, hd = hOut.data, dd = dOut.data;
+      const hy = H * (+$('horizon').value) / 100;
+      if (!fogRow || fogRow.length !== H) fogRow = new Float32Array(H);
+      for (let y = 0; y < H; y++) { const below = Math.max(0, (y - hy) / Math.max(1, H - hy)); fogRow[y] = sc.fog * (y <= hy ? 1 : 1 - 0.75 * below); }
+      if (L) {
+        const R = 0.3 * W;
+        if (!gx || gx.length !== W) gx = new Float32Array(W);
+        if (!gy || gy.length !== H) gy = new Float32Array(H);
+        for (let x = 0; x < W; x++) { const t = (x - W / 2) / R; gx[x] = Math.exp(-t * t); }
+        for (let y = 0; y < H; y++) { const t = (y - hy) / R; gy[y] = Math.exp(-t * t); }
+      }
+      const plain = C === CONDS.photo && !L;
+      for (let y = 0, i = 0; y < H; y++) {
+        const f = fogRow[y];
+        for (let x = 0; x < W; x++, i += 4) {
+          const r0 = toLin[s[i]], g0 = toLin[s[i+1]], b0 = toLin[s[i+2]];
+          let r = r0, g = g0, b = b0;
+          const sp = L ? li * gx[x] * gy[y] : 0;
+          if (!plain) {
+            r *= sc.tint[0]; g *= sc.tint[1]; b *= sc.tint[2];
+            if (sc.gamma !== 1) { r = Math.pow(r, sc.gamma); g = Math.pow(g, sc.gamma); b = Math.pow(b, sc.gamma); }
+            if (f > 0) { r = r*(1 - f) + FOG*f; g = g*(1 - f) + FOG*f; b = b*(1 - f) + FOG*f; }
+          }
+          if (plain) { hd[i] = s[i]; hd[i+1] = s[i+1]; hd[i+2] = s[i+2]; }
+          else {
+            let [R, G, B] = eye(r, g, b, C.you);
+            if (sp > 0.002) {
+              if (L.uv) { R += sp * L.you[0]; G += sp * L.you[1]; B += sp * L.you[2]; }
+              else { R += sp * r0 * L.rgb[0]; G += sp * g0 * L.rgb[1]; B += sp * b0 * L.rgb[2]; }
+            }
+            const n = C.you.noise ? (Math.random() - 0.5) * C.you.noise : 0;
+            hd[i] = enc(R) + n; hd[i+1] = enc(G) + n; hd[i+2] = enc(B) + n;
+          }
+          hd[i+3] = 255;
+          const [dr, dg, db] = deerLin(r, g, b);
+          let [R, G, B] = eye(dr, dg, db, C.deer);
+          if (sp > 0.002) {
+            if (L.uv) { const a = sp * (0.2126*r0 + 0.7152*g0 + 0.0722*b0 + 0.15); R += a * L.deer[0]; G += a * L.deer[1]; B += a * L.deer[2]; }
+            else { const [lr, lg, lb] = deerLin(r0 * L.rgb[0], g0 * L.rgb[1], b0 * L.rgb[2]); R += sp * lr; G += sp * lg; B += sp * lb; }
+          }
+          const n = C.deer.noise ? (Math.random() - 0.5) * C.deer.noise : 0;
+          dd[i] = enc(R) + n; dd[i+1] = enc(G) + n; dd[i+2] = enc(B) + n; dd[i+3] = 255;
+        }
+      }
+      hColor.getContext('2d').putImageData(hOut, 0, 0);
+      dColor.getContext('2d').putImageData(dOut, 0, 0);
+      // Acuity: 20/X resolves about X/20 arcmin. Gaussian sigma ~ half that, in image pixels.
+      const pxPerArcmin = W / (HFOV * 60);
+      const sigC = 0.5 * ((+$('acuity').value) / 20) * pxPerArcmin * C.deer.blur, sigOff = sigC * 3;
+      $('acuityV').textContent = `σ ${sigC.toFixed(1)} px`;
+      const sigH = 0.5 * pxPerArcmin * C.you.blur;
+      hctx.clearRect(0, 0, W, H);
+      if (sigH >= 0.3) { blurInto(hBlur, hColor, sigH, W, H); hctx.drawImage(hBlur, 0, 0); } else hctx.drawImage(hColor, 0, 0);
+      blurInto(offC, dColor, sigOff, W, H); blurInto(bandC, dColor, sigC, W, H);
+      const m = bandC.getContext('2d');
+      m.globalCompositeOperation = 'destination-in';
+      const g = m.createLinearGradient(0, hy - H * 0.45, 0, hy + H * 0.45);
+      g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(0.3, 'rgba(0,0,0,1)'); g.addColorStop(0.7, 'rgba(0,0,0,1)'); g.addColorStop(1, 'rgba(0,0,0,0)');
+      m.fillStyle = g; m.fillRect(0, 0, W, H);
+      m.globalCompositeOperation = 'source-over';
+      dctx.clearRect(0, 0, W, H); dctx.drawImage(offC, 0, 0); dctx.drawImage(bandC, 0, 0);
+    }
+    const schedule = () => { if (live) return; if (!pending) { pending = true; requestAnimationFrame(process); } };
+    function fromPhoto() {
+      setSize(PHOTO.w, PHOTO.h, MAXW);
+      sctx.drawImage(PHOTO.c, 0, 0);
+      srcData = sctx.getImageData(0, 0, W, H);
+      shownVer = PHOTO.ver;
+      $('caption').textContent = PHOTO.sample
+        ? (CAN_LIVE ? 'Sample scene (drawn, not a photo). Tap Live camera, or take a photo in the woods to try your own.' : 'Sample scene (drawn, not a photo). Take a photo in the woods to try your own.')
+        : 'Your photo. Slide Compare to sweep between your view and the deer view.';
+      process(); updateSplit(); updateHorizonLine();
+    }
+    function updateSplit() {
+      const v = +$('split').value;
+      humanC.style.clipPath = `inset(0 ${100 - v}% 0 0)`;
+      $('divider').style.left = `calc(${v}% - 1px)`;
+      $('splitV').textContent = `${v} / ${100 - v}`;
+    }
+    let hzTimer;
+    function updateHorizonLine(show) {
+      const v = +$('horizon').value; $('horizonV').textContent = v + '%';
+      const l = $('horizonLine'); l.style.top = v + '%';
+      if (show) { l.classList.add('show'); clearTimeout(hzTimer); hzTimer = setTimeout(() => l.classList.remove('show'), 1500); }
+    }
+    async function startLive() {
+      if (!(await openCamera())) return;
+      live = { raf: 0 };
+      setSize(video.videoWidth, video.videoHeight, LIVEW);
+      updateSplit(); updateHorizonLine(); setLiveUI(true);
+      const tick = () => {
+        if (!live) return;
+        if (video.readyState >= 2) { sctx.drawImage(video, 0, 0, W, H); srcData = sctx.getImageData(0, 0, W, H); process(); }
+        live.raf = requestAnimationFrame(tick);
+      };
+      tick();
+    }
+    function stopLive(keepFrame) {
+      if (!live) return;
+      cancelAnimationFrame(live.raf); live = null;
+      closeCamera(); setLiveUI(false);
+      if (!keepFrame) fromPhoto();
+    }
+    function capture() {
+      if (!live) return;
+      cancelAnimationFrame(live.raf); live = null;
+      setPhoto((x, w, h) => x.drawImage(video, 0, 0, w, h), video.videoWidth, video.videoHeight, false);
+      closeCamera(); setLiveUI(false);
+      $('caption').textContent = 'Captured frame at full quality. It is also used by Camo check, Shine finder and Skyline check.';
+    }
+    function setLiveUI(on) {
+      $('liveBtn').textContent = on ? 'Stop live' : 'Live camera';
+      $('liveBtn').setAttribute('aria-pressed', on);
+      $('captureBtn').hidden = !on;
+      $('saveBtn').hidden = on || !saveReady;
+      if (on) $('caption').textContent = 'Live camera. Sweep the phone slowly; the live view runs at lower resolution, so tap Capture for a sharp shot.';
+    }
+    $('liveBtn').addEventListener('click', () => live ? stopLive() : startLive());
+    $('captureBtn').addEventListener('click', capture);
+    $('split').addEventListener('input', updateSplit);
+    $('horizon').addEventListener('input', () => { updateHorizonLine(true); schedule(); });
+    for (const id of ['acuity', 'light', 'lamp']) $(id).addEventListener('change', schedule);
+    $('zoomBtn').addEventListener('click', () => {
+      const on = $('stage').classList.toggle('zoom');
+      $('zoomBtn').setAttribute('aria-pressed', on); $('zoomBtn').textContent = on ? 'Fit to screen' : 'Zoom 3×';
+    });
+
+    // save
+    let saveReady = false;
+    const saveBtn = $('saveBtn');
+    if (IN_CLAUDE) {
+      (async () => {
+        const dl = await window.claude.use('downloads');
+        if (!dl) return;
+        saveReady = true; saveBtn.hidden = !!live;
+        saveBtn.addEventListener('click', () => {
+          deerC.toBlob(async blob => {
+            if (!blob) { toast('Could not create the image.'); return; }
+            saveBtn.disabled = true;
+            try { await dl.save({ filename: 'deer-view.jpg', data: blob }); toast('Saved deer-view.jpg'); }
+            catch (e) {
+              if (e && e.code === 'declined') {}
+              else if (e && e.code === 'rate_limited') toast('A save prompt is already open.');
+              else { saveReady = false; saveBtn.hidden = true; toast('Saving is not available here.'); }
+            } finally { saveBtn.disabled = false; }
+          }, 'image/jpeg', 0.92);
+        });
+      })();
+    } else {
+      saveReady = true; saveBtn.hidden = false;
+      saveBtn.addEventListener('click', () => {
+        deerC.toBlob(blob => {
+          if (!blob) { toast('Could not create the image.'); return; }
+          const a = document.createElement('a');
+          a.href = URL.createObjectURL(blob); a.download = 'deer-view.jpg';
+          document.body.appendChild(a); a.click(); a.remove();
+          setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+          toast('Saved deer-view.jpg');
+        }, 'image/jpeg', 0.92);
+      });
+    }
+
+    // color check
+    const SW = [
+      ['Blaze orange', '#ff5f15'], ['Blaze pink', '#ff4fa3'], ['Hunter red plaid', '#b22222'], ['Bright blue', '#1e6fd9'],
+      ['Blue jeans', '#3b5b8c'], ['Yellow', '#f2c500'], ['Tan / khaki', '#b59b6d'], ['Brown bark', '#6b4a2e'],
+      ['Olive drab', '#5a5e2c'], ['White', '#f4f4f0'], ['Gray', '#808080'], ['Black', '#1a1a1a']
+    ];
+    const hexRGB = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
+    const deerRGB = rgb => deerLin(toLin[rgb[0]], toLin[rgb[1]], toLin[rgb[2]]).map(enc);
+    (function buildSwatches() {
+      const fH = hexRGB('#4c7d3a'), fD = deerRGB(fH), lfH = lab(fH), lfD = lab(fD), host = $('swatches');
+      for (const [name, hex] of SW) {
+        const h = hexRGB(hex), dd = deerRGB(h), eh = dE(lab(h), lfH), ed = dE(lab(dd), lfD);
+        const el = document.createElement('div'); el.className = 'sw';
+        el.innerHTML = `<div class="pair"><div style="background:${hex}"><small>you</small></div><div style="background:${hexOf(dd)}"><small>deer</small></div></div>
+          <div class="meta"><div class="name"></div><div class="de">ΔE vs leaves: you <b>${eh.toFixed(0)}</b> · deer <b>${ed.toFixed(0)}</b></div></div>`;
+        el.querySelector('.name').textContent = name;
+        host.appendChild(el);
+      }
+    })();
+
+    return {
+      show() { if (shownVer !== PHOTO.ver) fromPhoto(); },
+      hide() { stopLive(true); },
+      photo() { stopLive(true); fromPhoto(); },
+    };
+  })();
+
+  // =================================================================
+  // BLOOD TRAIL
+  // =================================================================
+  const blood = (() => {
+    const cv = $('bloodCanvas'), ctx = cv.getContext('2d');
+    const tmp = mk(), tctx = tmp.getContext('2d', { willReadFrequently: true });
+    let ver = -1, live = null, out = null;
+    // Hue/saturation/brightness windows for blood. Sensitivity widens them. Red leaves can still match.
+    function matcher() {
+      const k = (+$('bdSens').value - 5) / 5, type = $('bdType').value;
+      const fresh = { lo: 348 - 6 * k, hi: 10 + 4 * k, sat: 0.55 - 0.15 * k, vmin: 0.22 - 0.06 * k, vmax: 1 };
+      const dried = { lo: 344 - 6 * k, hi: 22 + 5 * k, sat: 0.36 - 0.12 * k, vmin: 0.09, vmax: 0.48 + 0.08 * k };
+      const wins = type === 'fresh' ? [fresh] : type === 'dried' ? [dried] : [fresh, dried];
+      return (r, g, b) => {
+        const mx = Math.max(r, g, b), mn = Math.min(r, g, b);
+        if (mx !== r || mx === mn) return false;
+        const v = mx / 255, s = (mx - mn) / mx;
+        let h = 60 * ((g - b) / (mx - mn)); if (h < 0) h += 360;
+        for (const w of wins) if ((h >= w.lo || h <= w.hi) && s >= w.sat && v >= w.vmin && v <= w.vmax) return true;
+        return false;
+      };
+    }
+    function render(srcCtx, W, H) {
+      const s = srcCtx.getImageData(0, 0, W, H).data;
+      if (!out || out.width !== W || out.height !== H) out = new ImageData(W, H);
+      const d = out.data, mode = $('bdView').value, isBlood = matcher();
+      const CELL = Math.max(4, Math.round(W / 110)), gw = Math.ceil(W / CELL), gh = Math.ceil(H / CELL), grid = new Uint16Array(gw * gh);
+      for (let y = 0, i = 0; y < H; y++) for (let x = 0; x < W; x++, i += 4) {
+        const r = s[i], g = s[i+1], b = s[i+2], hit = isBlood(r, g, b);
+        if (hit) grid[((y / CELL) | 0) * gw + ((x / CELL) | 0)]++;
+        if (mode === 'off') { d[i] = r; d[i+1] = g; d[i+2] = b; }
+        else if (mode === 'hl') {
+          if (hit) { d[i] = 255; d[i+1] = 16; d[i+2] = 48; }
+          else { const L = (0.299*r + 0.587*g + 0.114*b) * 0.55; d[i] = L; d[i+1] = L; d[i+2] = L; }
+        } else {
+          if (hit) { d[i] = Math.min(255, r * 1.45 + 30); d[i+1] = g * 0.45; d[i+2] = b * 0.55; }
+          else { const L = 0.299*r + 0.587*g + 0.114*b; d[i] = L + (r - L) * 0.35; d[i+1] = L + (g - L) * 0.35; d[i+2] = L + (b - L) * 0.35; }
+        }
+        d[i+3] = 255;
+      }
+      ctx.putImageData(out, 0, 0);
+      // group neighbouring cells into spots and ring them
+      const minHits = Math.max(2, (CELL * CELL) / 25), seen = new Uint8Array(gw * gh), spots = [];
+      for (let c = 0; c < gw * gh; c++) {
+        if (seen[c] || grid[c] < minHits) continue;
+        const q = [c]; let minx = 1e9, miny = 1e9, maxx = -1, maxy = -1; seen[c] = 1;
+        while (q.length) {
+          const kk = q.pop(), kx = kk % gw, ky = (kk / gw) | 0;
+          minx = Math.min(minx, kx); maxx = Math.max(maxx, kx); miny = Math.min(miny, ky); maxy = Math.max(maxy, ky);
+          for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
+            const nx = kx + dx, ny = ky + dy; if (nx < 0 || ny < 0 || nx >= gw || ny >= gh) continue;
+            const nk = ny * gw + nx; if (!seen[nk] && grid[nk] >= minHits) { seen[nk] = 1; q.push(nk); }
+          }
+        }
+        spots.push([(minx + maxx + 1) / 2 * CELL, (miny + maxy + 1) / 2 * CELL, Math.max(maxx - minx + 1, maxy - miny + 1) * CELL / 2]);
+      }
+      if (mode !== 'off') {
+        ctx.lineWidth = Math.max(2, W / 300);
+        for (const [x, y, r] of spots.slice(0, 80)) {
+          const R = r + W / 60;
+          ctx.strokeStyle = 'rgba(0,0,0,.65)'; ctx.beginPath(); ctx.arc(x, y, R + ctx.lineWidth, 0, 7); ctx.stroke();
+          ctx.strokeStyle = '#2ee6ff'; ctx.beginPath(); ctx.arc(x, y, R, 0, 7); ctx.stroke();
+        }
+      }
+      $('bdCount').textContent = spots.length > 80 ? '80+' : String(spots.length);
+    }
+    function runPhoto() {
+      cv.width = PHOTO.w; cv.height = PHOTO.h;
+      render(PHOTO.c.getContext('2d'), PHOTO.w, PHOTO.h);
+      ver = PHOTO.ver;
+    }
+    async function startLive() {
+      if (!(await openCamera())) return;
+      const vw = video.videoWidth, vh = video.videoHeight, sc = Math.min(1, LIVEW / Math.max(vw, vh));
+      const W = Math.round(vw * sc), H = Math.round(vh * sc);
+      cv.width = tmp.width = W; cv.height = tmp.height = H;
+      live = { raf: 0 }; setUI(true);
+      const tick = () => {
+        if (!live) return;
+        if (video.readyState >= 2) { tctx.drawImage(video, 0, 0, W, H); render(tctx, W, H); }
+        live.raf = requestAnimationFrame(tick);
+      };
+      tick();
+    }
+    function stopLive(redraw) {
+      if (!live) return; cancelAnimationFrame(live.raf); live = null; closeCamera(); setUI(false);
+      if (redraw) runPhoto();
+    }
+    function capture() {
+      if (!live) return;
+      cancelAnimationFrame(live.raf); live = null;
+      setPhoto((x, w, h) => x.drawImage(video, 0, 0, w, h), video.videoWidth, video.videoHeight, false);
+      closeCamera(); setUI(false);
+    }
+    function setUI(on) {
+      $('bdLive').textContent = on ? 'Stop live' : 'Live camera'; $('bdLive').setAttribute('aria-pressed', on);
+      $('bdCapture').hidden = !on;
+    }
+    const again = () => { if (!live) runPhoto(); };
+    $('bdLive').addEventListener('click', () => live ? stopLive(true) : startLive());
+    $('bdCapture').addEventListener('click', capture);
+    $('bdView').addEventListener('change', again);
+    $('bdType').addEventListener('change', again);
+    $('bdSens').addEventListener('input', () => { $('bdSensV').textContent = $('bdSens').value; again(); });
+    return { show() { if (!live && ver !== PHOTO.ver) runPhoto(); }, hide() { stopLive(false); }, photo() { stopLive(false); runPhoto(); } };
+  })();
+
+  // =================================================================
+  // TRACK FINDER
+  // =================================================================
+  const track = (() => {
+    const cv = $('trackCanvas'), ctx = cv.getContext('2d');
+    const src = mk(), sctx = src.getContext('2d', { willReadFrequently: true });
+    const grayC = mk(), smoothC = mk(), wideC = mk();
+    const sampleC = mk();
+    let ver = -1, live = null, usingSample = false, W = 0, H = 0, out = null;
+    let marks = { ref: [], trk: [] }, tapWhat = 'ref', sampleKind = 'track';
+
+    // drawn sample: a hoofprint pressed into mud with a quarter beside it, lit from the upper left
+    (function drawTrackSample() {
+      const w = 1200, h = 900; sampleC.width = w; sampleC.height = h;
+      const x = sampleC.getContext('2d');
+      let sd = 4242; const r = () => ((sd = (sd * 16807) % 2147483647) / 2147483647);
+      x.fillStyle = '#6b5238'; x.fillRect(0, 0, w, h);
+      for (let i = 0; i < 9000; i++) { const v = 70 + r() * 60; x.fillStyle = `rgba(${v + 30},${v + 12},${v - 10},.35)`; x.fillRect(r() * w, r() * h, 2 + r() * 5, 2 + r() * 4); }
+      for (let i = 0; i < 40; i++) { x.fillStyle = ['#8a6a3c', '#5c4a2c', '#9a7a48'][(r() * 3) | 0]; x.save(); x.translate(r() * w, r() * h); x.rotate(r() * 6); x.beginPath(); x.ellipse(0, 0, 10 + r() * 16, 4 + r() * 6, 0, 0, 7); x.fill(); x.restore(); }
+      const halves = [
+        'M594 282 C560 320 525 420 528 500 C530 560 560 585 590 580 C596 520 597 400 594 282 Z',
+        'M618 282 C652 320 687 420 684 500 C682 560 652 585 622 580 C616 520 615 400 618 282 Z'
+      ];
+      for (const d of halves) {
+        const p = new Path2D(d);
+        x.fillStyle = '#4f3c27'; x.fill(p);
+        x.save(); x.clip(p);
+        x.filter = 'blur(6px)'; x.fillStyle = '#6a5136'; x.translate(9, 11); x.fill(p); x.filter = 'none';
+        x.restore();
+        x.save(); x.translate(3, 4); x.strokeStyle = 'rgba(160,130,90,.45)'; x.lineWidth = 3; x.stroke(p); x.restore();
+      }
+      // dewclaw dimples behind the hoof
+      for (const cx of [560, 652]) { x.fillStyle = 'rgba(70,52,34,.8)'; x.beginPath(); x.ellipse(cx, 640, 10, 7, 0, 0, 7); x.fill(); }
+      // quarter
+      const g = x.createRadialGradient(840, 640, 10, 850, 650, 55); g.addColorStop(0, '#d9d9d4'); g.addColorStop(1, '#8e8e88');
+      x.fillStyle = g; x.beginPath(); x.arc(850, 650, 52.5, 0, 7); x.fill();
+      x.strokeStyle = '#6f6f6a'; x.lineWidth = 3; x.stroke();
+      x.strokeStyle = 'rgba(80,80,76,.6)'; x.lineWidth = 1.5; x.beginPath(); x.arc(850, 650, 44, 0, 7); x.stroke();
+      // soften everything so the print is faint, as it is in real mud
+      x.fillStyle = 'rgba(107,82,56,.5)'; x.fillRect(0, 0, w, h);
+      x.save(); x.beginPath(); x.arc(850, 650, 53, 0, 7); x.clip(); x.fillStyle = 'rgba(200,200,195,.35)'; x.fillRect(780, 580, 140, 140); x.restore();
+    })();
+    // drawn sample for Trail scan: leaf-covered ground with a packed trail winding away
+    const trailC = mk();
+    (function drawTrailSample() {
+      const w = 1200, h = 900; trailC.width = w; trailC.height = h;
+      const x = trailC.getContext('2d');
+      let sd = 777; const r = () => ((sd = (sd * 16807) % 2147483647) / 2147483647);
+      const top = 230;
+      const sky = x.createLinearGradient(0, 0, 0, top); sky.addColorStop(0, '#b9c9d6'); sky.addColorStop(1, '#d9dccf');
+      x.fillStyle = sky; x.fillRect(0, 0, w, top);
+      x.fillStyle = '#5b5a44'; x.fillRect(0, top - 40, w, 50);
+      for (let i = 0; i < 70; i++) { x.fillStyle = r() > .5 ? '#4a3f30' : '#5f564a'; const tx = r() * w, tw = 3 + r() * 9; x.fillRect(tx, 40 + r() * 80, tw, top - 40); }
+      x.fillStyle = '#6e5434'; x.fillRect(0, top, w, h - top);
+      const cxAt = y => { const t = (y - top) / (h - top); return 600 + 230 * Math.sin(t * 2.4 - 0.4) * t; };
+      const wAt = y => { const t = (y - top) / (h - top); return 6 + 105 * Math.pow(t, 1.25); };
+      const leafCols = ['#a0522d', '#c68a3c', '#8b5a2b', '#b5651d', '#d9a441', '#7a5a34', '#9c7b4a', '#5e4630'];
+      for (let i = 0; i < 26000; i++) {
+        const y = top + Math.pow(r(), 0.8) * (h - top), xx = r() * w, t = (y - top) / (h - top), sz = 1 + t * 9;
+        const inTrail = Math.abs(xx - cxAt(y)) < wAt(y);
+        if (inTrail && r() < 0.88) continue;
+        x.fillStyle = inTrail ? '#5e4630' : leafCols[(r() * leafCols.length) | 0];
+        x.save(); x.translate(xx, y); x.rotate(r() * 6); x.fillRect(-sz, -sz * 0.45, sz * 2, sz * 0.9); x.restore();
+      }
+      for (let y = top; y < h; y += 2) { x.fillStyle = 'rgba(70,52,34,.18)'; x.fillRect(cxAt(y) - wAt(y), y, wAt(y) * 2, 2); }
+      for (let i = 0; i < 9; i++) { const tx = r() * w, yb = top + 60 + r() * (h - top - 60), tw = 6 + (yb - top) / 14; x.fillStyle = r() > .5 ? '#4b3a2a' : '#615a50'; x.fillRect(tx, 0, tw, yb); }
+      x.fillStyle = 'rgba(110,84,52,.22)'; x.fillRect(0, top, w, h - top);
+    })();
+    const SAMPLE_MARKS = { ref: [[797.5 / 1200, 650 / 900], [902.5 / 1200, 650 / 900]], trk: [[606 / 1200, 282 / 900], [606 / 1200, 583 / 900]] };
+
+    function loadSource() {
+      usingSample = PHOTO.sample;
+      const smp = $('tkView').value === 'trail' ? trailC : sampleC;
+      sampleKind = smp === trailC ? 'trail' : 'track';
+      const from = usingSample ? smp : PHOTO.c;
+      W = usingSample ? smp.width : PHOTO.w; H = usingSample ? smp.height : PHOTO.h;
+      for (const c of [src, cv, grayC, smoothC, wideC]) { c.width = W; c.height = H; }
+      sctx.drawImage(from, 0, 0);
+      marks = usingSample && sampleKind === 'track' ? JSON.parse(JSON.stringify(SAMPLE_MARKS)) : { ref: [], trk: [] };
+      setTap(marks.ref.length < 2 ? 'ref' : 'trk');
+      ver = PHOTO.ver;
+    }
+    function render() {
+      const s = sctx.getImageData(0, 0, W, H).data, mode = $('tkView').value;
+      const gain = +$('tkStrength').value;
+      if (!out || out.width !== W || out.height !== H) out = new ImageData(W, H);
+      const d = out.data;
+      if (mode === 'off') { ctx.drawImage(src, 0, 0); drawMarks(); return; }
+      // gray image, a lightly smoothed copy (kills grain) and a wide blur (the local average)
+      const gd = new ImageData(W, H), g = gd.data;
+      for (let i = 0; i < s.length; i += 4) { const L = 0.299*s[i] + 0.587*s[i+1] + 0.114*s[i+2]; g[i] = g[i+1] = g[i+2] = L; g[i+3] = 255; }
+      grayC.getContext('2d').putImageData(gd, 0, 0);
+      blurInto(smoothC, grayC, Math.max(0.8, W / 900), W, H);
+      blurInto(wideC, grayC, W / 45, W, H);
+      const sm = smoothC.getContext('2d').getImageData(0, 0, W, H).data, wd = wideC.getContext('2d').getImageData(0, 0, W, H).data;
+      if (mode === 'trail') {
+        // band-pass brightness (mid-size shapes) plus a smoothness map (packed ground has less fine texture)
+        const midC = mk(); midC.width = W; midC.height = H;
+        blurInto(midC, grayC, W / 140, W, H);
+        const md = midC.getContext('2d').getImageData(0, 0, W, H).data;
+        const det = new ImageData(W, H), dt = det.data;
+        for (let i = 0; i < s.length; i += 4) { const v = Math.min(255, Math.abs(g[i] - sm[i]) * 6); dt[i] = dt[i+1] = dt[i+2] = v; dt[i+3] = 255; }
+        const tC = mk(); tC.width = W; tC.height = H; tC.getContext('2d').putImageData(det, 0, 0);
+        const tB = mk(); tB.width = W; tB.height = H; blurInto(tB, tC, W / 45, W, H);
+        const tx = tB.getContext('2d').getImageData(0, 0, W, H).data;
+        // compare texture within each row: far ground is finer than near ground, and an all-smooth row (sky) scores nothing
+        let sum = 0, n = 0; for (let i = 0; i < tx.length; i += 16) { sum += tx[i]; n++; }
+        const meanT = Math.max(1, sum / n), k = gain / 6, rowT = new Float32Array(H);
+        for (let y = 0; y < H; y++) { let a = 0; for (let x = 0; x < W; x += 2) a += tx[(y * W + x) * 4]; rowT[y] = a / Math.ceil(W / 2); }
+        for (let i = 0; i < s.length; i += 4) {
+          const L = g[i], band = (md[i] - wd[i]) * 1.6 * k, y = (i >> 2) / W | 0;
+          let r = s[i] * 0.3 + L * 0.7 + band, gg = s[i+1] * 0.3 + L * 0.7 + band, b = s[i+2] * 0.3 + L * 0.7 + band;
+          const rt = rowT[y], ref = Math.max(rt, meanT * 0.5);
+          const smooth = rt < meanT * 0.35 || L > 190 ? 0 : Math.max(0, Math.min(1, (ref - tx[i]) / ref * 1.8)) * Math.min(1, k);
+          if (smooth > 0.15) { const a = smooth * 0.65; r = r * (1 - a) + 255 * a; gg = gg * (1 - a) + 205 * a; b = b * (1 - a) + 40 * a; }
+          d[i] = r; d[i+1] = gg; d[i+2] = b; d[i+3] = 255;
+        }
+      } else if (mode === 'relief') {
+        const a = (+$('tkAngle').value) * Math.PI / 180, step = Math.max(1, Math.round(W / 500));
+        const dx = Math.round(Math.sin(a) * step), dy = Math.round(-Math.cos(a) * step), k = gain * 1.6;
+        for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+          const i = (y * W + x) * 4;
+          const x1 = Math.min(W - 1, Math.max(0, x + dx)), y1 = Math.min(H - 1, Math.max(0, y + dy));
+          const x2 = Math.min(W - 1, Math.max(0, x - dx)), y2 = Math.min(H - 1, Math.max(0, y - dy));
+          const v = 128 + (sm[(y2 * W + x2) * 4] - sm[(y1 * W + x1) * 4]) * k + (sm[i] - wd[i]) * gain * 0.25;
+          d[i] = v * 1.06; d[i+1] = v; d[i+2] = v * 0.86; d[i+3] = 255;
+        }
+      } else if (mode === 'contrast') {
+        const k = gain * 0.7;
+        for (let i = 0; i < s.length; i += 4) {
+          const diff = sm[i] - wd[i], L = 0.299*s[i] + 0.587*s[i+1] + 0.114*s[i+2];
+          const nl = Math.max(0, Math.min(255, 118 + diff * (1 + k)));
+          const f = L > 1 ? nl / L : 1;
+          d[i] = s[i] * f; d[i+1] = s[i+1] * f; d[i+2] = s[i+2] * f; d[i+3] = 255;
+        }
+      } else {
+        const k = gain * 2.2;
+        for (let i = 0; i < s.length; i += 4) {
+          const dent = Math.max(0, wd[i] - sm[i]) * k;
+          const v = 250 - Math.min(230, dent);
+          d[i] = v; d[i+1] = v * 0.97; d[i+2] = v * 0.92; d[i+3] = 255;
+        }
+      }
+      ctx.putImageData(out, 0, 0);
+      drawMarks();
+    }
+    function drawMarks() {
+      if ($('tkView').value === 'trail') { result(); return; }
+      const lw = Math.max(2, W / 350), fs = Math.round(W / 38);
+      ctx.font = `600 ${fs}px system-ui, sans-serif`;
+      for (const [key, col, label] of [['ref', '#33c4ff', 'object'], ['trk', '#ff7a1a', 'track']]) {
+        const p = marks[key];
+        p.forEach(q => { const x = q[0] * W, y = q[1] * H; ctx.fillStyle = '#000'; ctx.beginPath(); ctx.arc(x, y, lw * 3.2, 0, 7); ctx.fill(); ctx.fillStyle = col; ctx.beginPath(); ctx.arc(x, y, lw * 2.4, 0, 7); ctx.fill(); });
+        if (p.length === 2) {
+          const [a, b] = p.map(q => [q[0] * W, q[1] * H]);
+          ctx.lineWidth = lw + 2; ctx.strokeStyle = '#000'; ctx.beginPath(); ctx.moveTo(...a); ctx.lineTo(...b); ctx.stroke();
+          ctx.lineWidth = lw; ctx.strokeStyle = col; ctx.beginPath(); ctx.moveTo(...a); ctx.lineTo(...b); ctx.stroke();
+          const mx = (a[0] + b[0]) / 2 + fs * 0.6, my = (a[1] + b[1]) / 2;
+          ctx.lineWidth = 4; ctx.strokeStyle = '#000'; ctx.strokeText(label, mx, my); ctx.fillStyle = col; ctx.fillText(label, mx, my);
+        }
+      }
+      result();
+    }
+    function refInches() { const v = $('tkRef').value; return v === 'custom' ? +$('tkCustom').value : +v; }
+    function result() {
+      const el = $('tkResult');
+      const len = p => Math.hypot((p[1][0] - p[0][0]) * W, (p[1][1] - p[0][1]) * H);
+      if (marks.ref.length < 2) { el.innerHTML = `<div class="caption">${marks.ref.length ? 'Tap the other end of the object.' : 'Tap one end of the object.'}</div>`; return; }
+      if (marks.trk.length < 2) { el.innerHTML = `<div class="caption">${marks.trk.length ? 'Now tap the heel of the track.' : 'Now tap the tip of the track.'}</div>`; return; }
+      const ref = refInches(); if (!(ref > 0)) { el.innerHTML = '<div class="caption">Type the object size in inches.</div>'; return; }
+      const inch = len(marks.trk) / len(marks.ref) * ref, cm = inch * 2.54;
+      const [label, pill, note] = inch < 1.9 ? ['Small', 'good', 'Likely a fawn or a small yearling.']
+        : inch < 2.6 ? ['Medium', 'mid', 'Typical of a doe or a young buck.']
+        : inch < 3.1 ? ['Large', 'bad', 'A big-bodied deer.']
+        : ['Very large', 'bad', 'A big, heavy deer, often an older buck.'];
+      el.innerHTML = `<div class="stats"><div class="stat"><span class="caption">Track length</span><span class="big">${inch.toFixed(2)} in</span><span class="caption">${cm.toFixed(1)} cm</span></div>
+        <div class="stat"><span class="caption">Size</span><span><span class="pill ${pill}">${label}</span></span><span class="caption">${note}</span></div></div>
+        <p class="caption" style="margin:8px 0 0">Size alone can't tell a buck from a doe. Hooves spread in soft mud and snow, which makes a track look bigger, and front hooves are a little larger than back ones. Measure from the tip to the back of the hoof, not to the dewclaw marks.</p>`;
+    }
+    function setTap(w) { tapWhat = w; $('tkTapRef').setAttribute('aria-pressed', w === 'ref'); $('tkTapTrk').setAttribute('aria-pressed', w === 'trk'); }
+    cv.addEventListener('click', e => {
+      if (live) { toast('Tap Capture first, then measure on the still picture.'); return; }
+      const r = cv.getBoundingClientRect(), p = [(e.clientX - r.left) / r.width, (e.clientY - r.top) / r.height];
+      const list = marks[tapWhat];
+      if (list.length >= 2) list.length = 0;
+      list.push(p);
+      if (tapWhat === 'ref' && list.length === 2 && marks.trk.length < 2) setTap('trk');
+      render();
+    });
+    $('tkTapRef').addEventListener('click', () => setTap('ref'));
+    $('tkTapTrk').addEventListener('click', () => setTap('trk'));
+    $('tkClear').addEventListener('click', () => { marks = { ref: [], trk: [] }; setTap('ref'); if (!live) render(); else result(); });
+    $('tkRef').addEventListener('change', () => { $('tkCustomRow').hidden = $('tkRef').value !== 'custom'; result(); });
+    $('tkCustom').addEventListener('input', result);
+    let pend = false;
+    const again = () => { if (live || pend) return; pend = true; requestAnimationFrame(() => { pend = false; render(); }); };
+    $('tkView').addEventListener('change', () => {
+      $('tkTrailNote').hidden = $('tkView').value !== 'trail';
+      if (!live && usingSample && (($('tkView').value === 'trail') !== (sampleKind === 'trail'))) { loadSource(); setUI(false); }
+      again();
+    });
+    $('tkStrength').addEventListener('input', () => { $('tkStrengthV').textContent = $('tkStrength').value; again(); });
+    $('tkAngle').addEventListener('input', () => { $('tkAngleV').textContent = $('tkAngle').value + '°'; again(); });
+
+    async function startLive() {
+      if (!(await openCamera())) return;
+      const vw = video.videoWidth, vh = video.videoHeight, sc = Math.min(1, 560 / Math.max(vw, vh));
+      W = Math.round(vw * sc); H = Math.round(vh * sc);
+      for (const c of [src, cv, grayC, smoothC, wideC]) { c.width = W; c.height = H; }
+      marks = { ref: [], trk: [] }; setTap('ref');
+      live = { raf: 0 }; setUI(true);
+      const tick = () => {
+        if (!live) return;
+        if (video.readyState >= 2) { sctx.drawImage(video, 0, 0, W, H); render(); }
+        live.raf = requestAnimationFrame(tick);
+      };
+      tick();
+    }
+    function stopLive(redraw) { if (!live) return; cancelAnimationFrame(live.raf); live = null; closeCamera(); setUI(false); if (redraw) { loadSource(); render(); } }
+    function capture() {
+      if (!live) return;
+      cancelAnimationFrame(live.raf); live = null;
+      setPhoto((x, w, h) => x.drawImage(video, 0, 0, w, h), video.videoWidth, video.videoHeight, false);
+      closeCamera(); setUI(false);
+    }
+    function setUI(on) {
+      $('tkLive').textContent = on ? 'Stop live' : 'Live camera'; $('tkLive').setAttribute('aria-pressed', on);
+      $('tkCapture').hidden = !on;
+      $('tkCaption').textContent = on ? 'Live view. Hold steady with the light low and to the side, then tap Capture to measure.'
+        : usingSample ? (sampleKind === 'trail' ? 'Sample picture (drawn): leaf-covered ground with a packed game trail winding away.' : 'Sample picture (drawn): a faint hoofprint in mud with a quarter beside it.') : 'Your photo.';
+    }
+    $('tkLive').addEventListener('click', () => live ? stopLive(true) : startLive());
+    $('tkCapture').addEventListener('click', capture);
+    return {
+      show() { if (!live && ver !== PHOTO.ver) loadSource(); if (!live) { render(); setUI(false); } },
+      hide() { stopLive(false); },
+      photo() { stopLive(false); loadSource(); render(); setUI(false); },
+    };
+  })();
+
+  // =================================================================
+  // CAMO CHECK
+  // =================================================================
+  const camo = (() => {
+    const cv = $('camoCanvas'), ctx = cv.getContext('2d');
+    const humanV = mk(), deerV = mk();
+    let data = null, ver = -1, showDeer = false, target = 'you';
+    let pts = { you: null, bg: null };
+    function build() {
+      const W = PHOTO.w, H = PHOTO.h;
+      for (const c of [cv, humanV, deerV]) { c.width = W; c.height = H; }
+      humanV.getContext('2d').drawImage(PHOTO.c, 0, 0);
+      data = humanV.getContext('2d').getImageData(0, 0, W, H);
+      const out = new ImageData(W, H), s = data.data, d = out.data;
+      for (let i = 0; i < s.length; i += 4) {
+        const [R, G, B] = deerLin(toLin[s[i]], toLin[s[i+1]], toLin[s[i+2]]);
+        d[i] = enc(R); d[i+1] = enc(G); d[i+2] = enc(B); d[i+3] = 255;
+      }
+      deerV.getContext('2d').putImageData(out, 0, 0);
+      pts = PHOTO.sample ? { you: [0.64, 0.58], bg: [0.2, 0.3] } : { you: null, bg: null };
+      setTarget(pts.you ? 'you' : 'you');
+      ver = PHOTO.ver;
+    }
+    function avg(p) {
+      const W = PHOTO.w, H = PHOTO.h, rad = Math.max(4, Math.round(W * 0.03));
+      const cx = Math.round(p[0] * W), cy = Math.round(p[1] * H), s = data.data;
+      let r = 0, g = 0, b = 0, n = 0;
+      for (let y = Math.max(0, cy - rad); y < Math.min(H, cy + rad); y++)
+        for (let x = Math.max(0, cx - rad); x < Math.min(W, cx + rad); x++) {
+          if ((x - cx) ** 2 + (y - cy) ** 2 > rad * rad) continue;
+          const i = (y * W + x) * 4; r += toLin[s[i]]; g += toLin[s[i+1]]; b += toLin[s[i+2]]; n++;
+        }
+      return n ? [r / n, g / n, b / n] : [0, 0, 0];
+    }
+    function verdict(d) { return d < 10 ? ['Blends in', 'good'] : d < 25 ? ['Noticeable', 'mid'] : ['Stands out', 'bad']; }
+    function draw() {
+      ctx.drawImage(showDeer ? deerV : humanV, 0, 0);
+      const rad = Math.max(4, Math.round(PHOTO.w * 0.03));
+      for (const [k, col, label] of [['you', '#ff7a1a', 'CAMO'], ['bg', '#33c4ff', 'BACKGROUND']]) {
+        const p = pts[k]; if (!p) continue;
+        const x = p[0] * PHOTO.w, y = p[1] * PHOTO.h;
+        ctx.lineWidth = Math.max(2, PHOTO.w / 320); ctx.strokeStyle = '#000'; ctx.beginPath(); ctx.arc(x, y, rad + ctx.lineWidth, 0, 7); ctx.stroke();
+        ctx.strokeStyle = col; ctx.beginPath(); ctx.arc(x, y, rad, 0, 7); ctx.stroke();
+        ctx.font = `600 ${Math.round(PHOTO.w / 45)}px system-ui, sans-serif`; ctx.fillStyle = col; ctx.strokeStyle = '#000'; ctx.lineWidth = Math.max(2, PHOTO.w / 400);
+        ctx.strokeText(label, x + rad + 6, y + 5); ctx.fillText(label, x + rad + 6, y + 5);
+      }
+      const res = $('camoRes');
+      if (!pts.you || !pts.bg) { res.innerHTML = `<div class="caption">${!pts.you ? 'Tap on your camo in the photo.' : 'Now tap on the background next to it.'}</div>`; return; }
+      const a = avg(pts.you), b = avg(pts.bg);
+      const da = deerLin(...a), db = deerLin(...b);
+      const dh = dE(labLin(...a), labLin(...b)), dd = dE(labLin(...da), labLin(...db));
+      const ya = 0.2126*a[0] + 0.7152*a[1] + 0.0722*a[2], yb = 0.2126*b[0] + 0.7152*b[1] + 0.0722*b[2];
+      const bright = Math.round(100 * Math.abs(ya - yb) / Math.max(ya, yb, 1e-4));
+      const sw = c => hexOf(c.map(enc));
+      const [vh, ch] = verdict(dh), [vd, cd] = verdict(dd);
+      res.innerHTML = `
+        <div class="cr"><span class="k">You see</span><div class="chips"><div style="background:${sw(a)}"></div><div style="background:${sw(b)}"></div></div><div>ΔE <b>${dh.toFixed(0)}</b> <span class="pill ${ch}">${vh}</span></div></div>
+        <div class="cr"><span class="k">Deer sees</span><div class="chips"><div style="background:${sw(da)}"></div><div style="background:${sw(db)}"></div></div><div>ΔE <b>${dd.toFixed(0)}</b> <span class="pill ${cd}">${vd}</span></div></div>
+        <div class="caption">Brightness difference: ${bright}%. ${bright > 40 ? 'Your camo is much ' + (ya > yb ? 'lighter' : 'darker') + ' than the background, which a deer still sees clearly. Pick a pattern closer in brightness.' : 'Brightness is a reasonable match.'}</div>`;
+    }
+    function setTarget(t) { target = t; $('tapYou').setAttribute('aria-pressed', t === 'you'); $('tapBg').setAttribute('aria-pressed', t === 'bg'); }
+    cv.addEventListener('click', e => {
+      const r = cv.getBoundingClientRect();
+      const p = [(e.clientX - r.left) / r.width, (e.clientY - r.top) / r.height];
+      pts[target] = p;
+      if (target === 'you' && !pts.bg) setTarget('bg'); else if (target === 'bg' && !pts.you) setTarget('you');
+      draw();
+    });
+    $('tapYou').addEventListener('click', () => setTarget('you'));
+    $('tapBg').addEventListener('click', () => setTarget('bg'));
+    $('camoShowYou').addEventListener('click', () => { showDeer = false; $('camoShowYou').setAttribute('aria-pressed', true); $('camoShowDeer').setAttribute('aria-pressed', false); draw(); });
+    $('camoShowDeer').addEventListener('click', () => { showDeer = true; $('camoShowYou').setAttribute('aria-pressed', false); $('camoShowDeer').setAttribute('aria-pressed', true); draw(); });
+    return { show() { if (ver !== PHOTO.ver) build(); draw(); }, photo() { build(); draw(); } };
+  })();
+
+  // =================================================================
+  // MOVEMENT
+  // =================================================================
+  const movement = (() => {
+    const cv = $('mvCanvas'), ctx = cv.getContext('2d');
+    const tmp = mk(), tctx = tmp.getContext('2d', { willReadFrequently: true });
+    let run = null, bg = null, W = 0, H = 0;
+    function idle() {
+      W = 480; H = 270; cv.width = W; cv.height = H;
+      ctx.fillStyle = '#111'; ctx.fillRect(0, 0, W, H);
+      ctx.fillStyle = '#888'; ctx.font = '600 18px system-ui, sans-serif'; ctx.textAlign = 'center';
+      ctx.fillText(CAN_LIVE ? 'Tap Start camera' : 'Live camera: website version only', W / 2, H / 2);
+      ctx.textAlign = 'start';
+    }
+    async function start() {
+      if (!(await openCamera())) return;
+      const vw = video.videoWidth, vh = video.videoHeight, sc = 480 / Math.max(vw, vh);
+      W = Math.round(vw * sc); H = Math.round(vh * sc);
+      cv.width = tmp.width = W; cv.height = tmp.height = H; bg = null;
+      run = { raf: 0 }; $('mvBtn').textContent = 'Stop camera'; $('mvBtn').setAttribute('aria-pressed', true);
+      const out = new ImageData(W, H);
+      const tick = () => {
+        if (!run) return;
+        if (video.readyState >= 2) {
+          tctx.drawImage(video, 0, 0, W, H);
+          const s = tctx.getImageData(0, 0, W, H).data, d = out.data, n = W * H;
+          if (!bg) { bg = new Float32Array(n); for (let p = 0, i = 0; p < n; p++, i += 4) bg[p] = 0.299*s[i] + 0.587*s[i+1] + 0.114*s[i+2]; }
+          const sens = +$('mvSens').value, thr = 46 - sens * 4;
+          let moving = 0;
+          for (let p = 0, i = 0; p < n; p++, i += 4) {
+            const Y = 0.299*s[i] + 0.587*s[i+1] + 0.114*s[i+2];
+            const diff = Math.abs(Y - bg[p]);
+            bg[p] = bg[p] * 0.82 + Y * 0.18;
+            if (diff > thr) { moving++; const k = Math.min(1, (diff - thr) / 40 + 0.5); d[i] = 255; d[i+1] = 90 + 80 * (1 - k); d[i+2] = 20; }
+            else { const g = Y * 0.38; d[i] = g; d[i+1] = g; d[i+2] = g * 1.05; }
+            d[i+3] = 255;
+          }
+          ctx.putImageData(out, 0, 0);
+          const pct = Math.min(100, Math.round(100 * moving / n * 4));
+          $('mvBar').style.width = pct + '%'; $('mvPct').textContent = pct + '%';
+        }
+        run.raf = requestAnimationFrame(tick);
+      };
+      tick();
+    }
+    function stop() {
+      if (!run) return; cancelAnimationFrame(run.raf); run = null; closeCamera();
+      $('mvBtn').textContent = 'Start camera'; $('mvBtn').setAttribute('aria-pressed', false);
+      $('mvBar').style.width = '0%'; $('mvPct').textContent = '0%';
+    }
+    $('mvBtn').addEventListener('click', () => run ? stop() : start());
+    $('mvSens').addEventListener('input', () => { $('mvSensV').textContent = $('mvSens').value; });
+    idle();
+    return { show() { if (!run) idle(); }, hide: stop };
+  })();
+
+  // =================================================================
+  // WIND & SCENT (shared wind state is also used by the compass)
+  // =================================================================
+  const CARD16 = ['N','NNE','NE','ENE','E','ESE','SE','SSE','S','SSW','SW','WSW','W','WNW','NW','NNW'];
+  const cardinal = deg => CARD16[Math.round(((deg % 360) + 360) % 360 / 22.5) % 16];
+  const WIND = store.get('wind', { from: 315, speed: 7 });
+  const LOC = store.get('loc', DEFAULT_LOC);
+  const pol = (cx, cy, r, deg) => [cx + r * Math.sin(deg * Math.PI / 180), cy - r * Math.cos(deg * Math.PI / 180)];
+  const coneHalf = sp => sp < 3 ? 50 : sp < 8 ? 25 : 15;
+  function sector(cx, cy, r, a0, a1) {
+    const [x0, y0] = pol(cx, cy, r, a0), [x1, y1] = pol(cx, cy, r, a1);
+    const large = ((a1 - a0 + 360) % 360) > 180 ? 1 : 0;
+    return `M${cx},${cy} L${x0.toFixed(1)},${y0.toFixed(1)} A${r},${r} 0 ${large} 1 ${x1.toFixed(1)},${y1.toFixed(1)} Z`;
+  }
+  const wind = (() => {
+    const sel = $('windFrom');
+    for (let i = 0; i < 16; i++) { const o = document.createElement('option'); o.value = i * 22.5; o.textContent = CARD16[i]; sel.appendChild(o); }
+    function snap() { sel.value = String(Math.round(WIND.from / 22.5) % 16 * 22.5); }
+    function render() {
+      const sp = WIND.speed, to = (WIND.from + 180) % 360, half = coneHalf(sp), len = Math.min(125, 45 + sp * 6);
+      let g = '';
+      g += `<circle cx="150" cy="150" r="132" fill="none" stroke="var(--line)" stroke-width="1.5"/>`;
+      for (let a = 0; a < 360; a += 30) { const [x0, y0] = pol(150, 150, 132, a), [x1, y1] = pol(150, 150, a % 90 ? 126 : 120, a); g += `<line x1="${x0}" y1="${y0}" x2="${x1}" y2="${y1}" stroke="var(--muted)" stroke-width="1.5"/>`; }
+      for (const [t, a] of [['N', 0], ['E', 90], ['S', 180], ['W', 270]]) { const [x, y] = pol(150, 150, 108, a); g += `<text x="${x}" y="${y + 5}" text-anchor="middle" font-family="var(--font-display)" font-weight="700" font-size="16" fill="${t === 'N' ? 'var(--accent)' : 'var(--fg)'}">${t}</text>`; }
+      g += `<path d="${sector(150, 150, len, to - half, to + half)}" fill="var(--h-sky)" fill-opacity=".28" stroke="var(--h-sky)" stroke-width="1.5"/>`;
+      const [ax, ay] = pol(150, 150, 128, WIND.from), [bx, by] = pol(150, 150, 70, WIND.from);
+      g += `<line x1="${ax}" y1="${ay}" x2="${bx}" y2="${by}" stroke="var(--fg)" stroke-width="3" stroke-linecap="round"/>`;
+      const [h1x, h1y] = pol(bx, by, 11, WIND.from - 25), [h2x, h2y] = pol(bx, by, 11, WIND.from + 25);
+      g += `<path d="M${h1x},${h1y} L${bx},${by} L${h2x},${h2y}" fill="none" stroke="var(--fg)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>`;
+      const [lx, ly] = pol(150, 150, 140, WIND.from);
+      g += `<circle cx="150" cy="150" r="7" fill="var(--accent)" stroke="var(--bg)" stroke-width="2"/>`;
+      const [sx, sy] = pol(150, 150, len * 0.62, to);
+      g += `<text x="${sx}" y="${sy + 4}" text-anchor="middle" font-size="11" font-weight="600" fill="var(--h-sky)">your scent</text>`;
+      $('windDial').innerHTML = g;
+      $('windFromV').textContent = Math.round(WIND.from) + '°';
+      $('windSpeedV').textContent = sp + ' mph';
+      $('windText').textContent = `Wind from the ${cardinal(WIND.from)} at ${sp} mph. Your scent drifts toward the ${cardinal(to)}. Deer ${cardinal(WIND.from)} of you (upwind) can't smell you.` + (sp < 3 ? ' Light wind swirls, so the cone is wide.' : '');
+    }
+    function save() { store.set('wind', WIND); render(); }
+    sel.addEventListener('change', () => { WIND.from = +sel.value; save(); });
+    $('windSpeed').addEventListener('input', () => { WIND.speed = +$('windSpeed').value; save(); });
+    // live forecast (website only)
+    $('wLat').value = LOC.lat; $('wLon').value = LOC.lon;
+    const arrow = deg => `<svg viewBox="0 0 24 24" style="transform:rotate(${deg}deg)"><use href="#i-arrow"/></svg>`;
+    async function fetchWind() {
+      const lat = +$('wLat').value, lon = +$('wLon').value;
+      if (!isFinite(lat) || !isFinite(lon)) { toast('Enter a latitude and longitude first.'); return; }
+      LOC.lat = lat; LOC.lon = lon; store.set('loc', LOC);
+      $('wFetchBtn').disabled = true; $('windSrc').textContent = 'Loading forecast…';
+      try {
+        const u = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=wind_speed_10m,wind_direction_10m,wind_gusts_10m&hourly=wind_speed_10m,wind_direction_10m&wind_speed_unit=mph&timezone=auto&forecast_days=2`;
+        const r = await fetch(u); if (!r.ok) throw new Error(r.status);
+        const j = await r.json();
+        WIND.from = Math.round(j.current.wind_direction_10m); WIND.speed = Math.round(j.current.wind_speed_10m);
+        $('windSpeed').value = WIND.speed; snap(); save();
+        const now = j.current.time.slice(0, 13) + ':00';
+        let k = j.hourly.time.findIndex(t => t >= now); if (k < 0) k = 0;
+        let h = '';
+        for (let i = k; i < Math.min(k + 12, j.hourly.time.length); i++) {
+          const t = j.hourly.time[i].slice(11, 16), dir = j.hourly.wind_direction_10m[i], sp = Math.round(j.hourly.wind_speed_10m[i]);
+          h += `<div class="hr"><span>${t}</span>${arrow((dir + 180) % 360)}<b>${sp} mph</b><span class="caption">from ${cardinal(dir)}</span></div>`;
+        }
+        $('windHours').innerHTML = h;
+        $('windSrc').textContent = `Now: gusts to ${Math.round(j.current.wind_gusts_10m)} mph. Arrows point where the wind (and your scent) goes. Forecast from Open-Meteo.`;
+      } catch (e) {
+        $('windSrc').textContent = 'Could not load the forecast. Check your internet connection, or set the wind by hand.';
+      } finally { $('wFetchBtn').disabled = false; }
+    }
+    $('wFetchBtn').addEventListener('click', fetchWind);
+    $('wLocBtn').addEventListener('click', () => getLocation((lat, lon) => { $('wLat').value = lat; $('wLon').value = lon; fetchWind(); }));
+    $('windSpeed').value = WIND.speed; snap(); render();
+    return { show: render };
+  })();
+
+  function getLocation(cb) {
+    if (!navigator.geolocation) { toast('Location is not available in this browser.'); return; }
+    navigator.geolocation.getCurrentPosition(
+      p => { const lat = +p.coords.latitude.toFixed(3), lon = +p.coords.longitude.toFixed(3); LOC.lat = lat; LOC.lon = lon; store.set('loc', LOC); cb(lat, lon); },
+      e => toast(e.code === 1 ? 'Location access was blocked. Allow it in Chrome site settings, or type the numbers in.' : 'Could not get your location.'),
+      { enableHighAccuracy: false, timeout: 10000, maximumAge: 600000 });
+  }
+
+  // =================================================================
+  // COMPASS
+  // =================================================================
+  const compass = (() => {
+    let heading = null, mark = store.get('mark', null), listening = false, smooth = null;
+    // ---- faded compass rose behind the home screen ----
+    const BG = 500;
+    (function buildBg() {
+      let g = `<g id="bgRose">`;
+      g += `<circle cx="${BG}" cy="${BG}" r="470" fill="none" stroke="currentColor" stroke-width="3"/>`;
+      g += `<circle cx="${BG}" cy="${BG}" r="300" fill="none" stroke="currentColor" stroke-width="1.5" stroke-dasharray="2 10"/>`;
+      g += `<circle cx="${BG}" cy="${BG}" r="150" fill="none" stroke="currentColor" stroke-width="1.5"/>`;
+      for (let a = 0; a < 360; a += 2) {
+        const big = a % 30 === 0, mid = a % 10 === 0;
+        const [x0, y0] = pol(BG, BG, 468, a), [x1, y1] = pol(BG, BG, big ? 425 : mid ? 440 : 452, a);
+        g += `<line x1="${x0.toFixed(1)}" y1="${y0.toFixed(1)}" x2="${x1.toFixed(1)}" y2="${y1.toFixed(1)}" stroke="currentColor" stroke-width="${big ? 4 : mid ? 2.5 : 1.2}"/>`;
+      }
+      for (let a = 30; a < 360; a += 30) { if (a % 90 === 0) continue; const [x, y] = pol(BG, BG, 395, a); g += `<text x="${x.toFixed(1)}" y="${(y + 10).toFixed(1)}" text-anchor="middle" font-size="30" font-family="var(--font-mono)" fill="currentColor" transform="rotate(${a} ${x.toFixed(1)} ${y.toFixed(1)})">${a}</text>`; }
+      for (const [t, a] of [['N', 0], ['E', 90], ['S', 180], ['W', 270]]) { const [x, y] = pol(BG, BG, 355, a); g += `<text x="${x.toFixed(1)}" y="${(y + 30).toFixed(1)}" text-anchor="middle" font-family="var(--font-display)" font-weight="700" font-size="86" fill="${t === 'N' ? 'var(--accent)' : 'currentColor'}" transform="rotate(${a} ${x.toFixed(1)} ${y.toFixed(1)})">${t}</text>`; }
+      for (let a = 0; a < 360; a += 45) { // star points
+        const long = a % 90 === 0, [tx, ty] = pol(BG, BG, long ? 290 : 190, a), [lx, ly] = pol(BG, BG, 34, a - 45), [rx, ry] = pol(BG, BG, 34, a + 45);
+        g += `<path d="M${BG},${BG} L${lx.toFixed(1)},${ly.toFixed(1)} L${tx.toFixed(1)},${ty.toFixed(1)} L${rx.toFixed(1)},${ry.toFixed(1)} Z" fill="${a === 0 ? 'var(--accent)' : 'currentColor'}" fill-opacity="${long ? .55 : .3}"/>`;
+      }
+      g += `</g>`;
+      g += `<path d="M${BG} 8 L${BG + 22} 52 L${BG - 22} 52 Z" fill="var(--accent)"/>`; // fixed marker: where the phone points
+      $('bgCompass').innerHTML = g;
+    })();
+    let bgAngle = 0;
+    function renderBg() {
+      const t = $('homeHeadingT');
+      if (heading == null) { t.innerHTML = listening ? 'Compass: waiting for sensor' : (CAN_LIVE ? 'Tap to start compass' : 'Compass: website version'); return; }
+      const d = ((-heading - bgAngle + 540) % 360) - 180; bgAngle += d; // turn the short way round
+      $('bgRose').setAttribute('transform', `rotate(${bgAngle.toFixed(1)} ${BG} ${BG})`);
+      t.innerHTML = `<b>${Math.round(heading)}°</b> ${cardinal(heading)}`;
+    }
+    function render() {
+      const h = heading == null ? 0 : heading;
+      let g = `<g transform="rotate(${-h} 150 150)">`;
+      g += `<circle cx="150" cy="150" r="138" fill="var(--surface)" stroke="var(--line)" stroke-width="2"/>`;
+      for (let a = 0; a < 360; a += 5) { const big = a % 30 === 0, [x0, y0] = pol(150, 150, 136, a), [x1, y1] = pol(150, 150, big ? 122 : 130, a); g += `<line x1="${x0}" y1="${y0}" x2="${x1}" y2="${y1}" stroke="${big ? 'var(--fg)' : 'var(--muted)'}" stroke-width="${big ? 2 : 1}"/>`; }
+      for (let a = 30; a < 360; a += 30) { if (a % 90 === 0) continue; const [x, y] = pol(150, 150, 110, a); g += `<text x="${x}" y="${y + 4}" text-anchor="middle" font-size="11" fill="var(--muted)" transform="rotate(${a} ${x} ${y})">${a}</text>`; }
+      for (const [t, a] of [['N', 0], ['E', 90], ['S', 180], ['W', 270]]) { const [x, y] = pol(150, 150, 104, a); g += `<text x="${x}" y="${y + 7}" text-anchor="middle" font-family="var(--font-display)" font-weight="700" font-size="22" fill="${t === 'N' ? 'var(--accent)' : 'var(--fg)'}" transform="rotate(${a} ${x} ${y})">${t}</text>`; }
+      const to = (WIND.from + 180) % 360, half = coneHalf(WIND.speed);
+      g += `<path d="${sector(150, 150, 88, to - half, to + half)}" fill="var(--h-sky)" fill-opacity=".25" stroke="var(--h-sky)" stroke-width="1.2"/>`;
+      if (mark != null) { const [x, y] = pol(150, 150, 128, mark); g += `<circle cx="${x}" cy="${y}" r="8" fill="var(--accent)" stroke="var(--bg)" stroke-width="2"/>`; }
+      g += `</g>`;
+      g += `<path d="M150 18 L160 38 L140 38 Z" fill="var(--accent)"/>`;
+      g += `<line x1="150" y1="44" x2="150" y2="150" stroke="var(--fg)" stroke-width="2.5" stroke-linecap="round"/>`;
+      g += `<circle cx="150" cy="150" r="6" fill="var(--fg)"/>`;
+      $('compassDial').innerHTML = g;
+      $('cmpDeg').textContent = heading == null ? '—' : Math.round(heading) + '°';
+      $('cmpCard').textContent = heading == null ? '—' : cardinal(heading);
+      $('cmpMark').textContent = mark == null ? '—' : Math.round(mark) + '° ' + cardinal(mark);
+    }
+    function onOrient(e) {
+      let h = null;
+      if (typeof e.webkitCompassHeading === 'number') h = e.webkitCompassHeading;
+      else if (e.absolute !== false && typeof e.alpha === 'number') h = (360 - e.alpha) % 360;
+      if (h == null) return;
+      if (screen.orientation && typeof screen.orientation.angle === 'number') h = (h + screen.orientation.angle) % 360;
+      if (smooth == null) smooth = h; else { let d = ((h - smooth + 540) % 360) - 180; smooth = (smooth + d * 0.25 + 360) % 360; }
+      heading = smooth;
+      if (current === 'compass') render();
+      if (current === 'home') renderBg();
+    }
+    async function start() {
+      if (listening) return;
+      try {
+        if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
+          const r = await DeviceOrientationEvent.requestPermission(); if (r !== 'granted') { toast('Compass access was not allowed.'); return; }
+        }
+      } catch (e) {}
+      if ('ondeviceorientationabsolute' in window) window.addEventListener('deviceorientationabsolute', onOrient);
+      else window.addEventListener('deviceorientation', onOrient);
+      listening = true; $('cmpStart').hidden = true; renderBg();
+      setTimeout(() => { if (heading == null) toast('No compass reading yet. This phone or browser may not share its compass.'); }, 3000);
+    }
+    $('cmpStart').addEventListener('click', start);
+    $('cmpMarkBtn').addEventListener('click', () => { if (heading == null) { toast(CAN_LIVE ? 'Start the compass first.' : 'The compass works on the website version.'); return; } mark = Math.round(heading); store.set('mark', mark); render(); toast('Bearing saved: ' + mark + '°'); });
+    $('cmpClear').addEventListener('click', () => { mark = null; store.set('mark', null); render(); });
+    function quietStart() {
+      // Android Chrome shares the compass without a prompt; browsers that ask for permission wait for the button.
+      if (listening || typeof DeviceOrientationEvent === 'undefined' || typeof DeviceOrientationEvent.requestPermission === 'function') return;
+      if ('ondeviceorientationabsolute' in window) window.addEventListener('deviceorientationabsolute', onOrient);
+      else window.addEventListener('deviceorientation', onOrient);
+      listening = true; $('cmpStart').hidden = true;
+    }
+    $('homeHeading').addEventListener('click', () => { if (!CAN_LIVE) { toast('The live compass works on the website version of this app.'); return; } if (!listening) start(); else location.hash = 'compass'; });
+    return {
+      show() { render(); if (CAN_LIVE) quietStart(); },
+      home() { if (CAN_LIVE) quietStart(); renderBg(); },
+    };
+  })();
+
+  // =================================================================
+  // SUN & MOON
+  // =================================================================
+  const sunmoon = (() => {
+    const rad = Math.PI / 180;
+    // Sunrise/sunset algorithm from the US Naval Observatory "Almanac for Computers" (accurate to about a minute).
+    function sunEvent(y, m, d, lat, lon, zenith, rising) {
+      const N = Math.floor((Date.UTC(y, m - 1, d) - Date.UTC(y, 0, 0)) / 864e5);
+      const lngHour = lon / 15, t = N + ((rising ? 6 : 18) - lngHour) / 24;
+      const Mn = 0.9856 * t - 3.289;
+      let L = Mn + 1.916 * Math.sin(Mn * rad) + 0.020 * Math.sin(2 * Mn * rad) + 282.634; L = (L % 360 + 360) % 360;
+      let RA = Math.atan(0.91764 * Math.tan(L * rad)) / rad; RA = (RA % 360 + 360) % 360;
+      RA += Math.floor(L / 90) * 90 - Math.floor(RA / 90) * 90; RA /= 15;
+      const sinDec = 0.39782 * Math.sin(L * rad), cosDec = Math.cos(Math.asin(sinDec));
+      const cosH = (Math.cos(zenith * rad) - sinDec * Math.sin(lat * rad)) / (cosDec * Math.cos(lat * rad));
+      if (cosH > 1 || cosH < -1) return null;
+      let H = rising ? 360 - Math.acos(cosH) / rad : Math.acos(cosH) / rad; H /= 15;
+      const T = H + RA - 0.06571 * t - 6.622;
+      const UT = ((T - lngHour) % 24 + 24) % 24;
+      let ms = Date.UTC(y, m - 1, d) + UT * 36e5;
+      const localNoon = Date.UTC(y, m - 1, d, 12) - lngHour * 36e5;
+      while (ms - localNoon > 12 * 36e5) ms -= 864e5;
+      while (localNoon - ms > 12 * 36e5) ms += 864e5;
+      return new Date(ms);
+    }
+    const SYN = 29.530588853, NEW0 = Date.UTC(2000, 0, 6, 18, 14);
+    function moonAge(ms) { return (((ms - NEW0) / 864e5) % SYN + SYN) % SYN; }
+    function phaseName(a) {
+      const f = a / SYN;
+      return f < 0.0339 || f > 0.9661 ? 'New moon' : f < 0.2161 ? 'Waxing crescent' : f < 0.2839 ? 'First quarter' : f < 0.4661 ? 'Waxing gibbous'
+        : f < 0.5339 ? 'Full moon' : f < 0.7161 ? 'Waning gibbous' : f < 0.7839 ? 'Last quarter' : 'Waning crescent';
+    }
+    const fmt = d => d ? d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }) : '—';
+    const fmtDay = ms => new Date(ms).toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' });
+    function moonSVG(age) {
+      const f = age / SYN, illum = (1 - Math.cos(2 * Math.PI * f)) / 2;
+      const r = 40, cx = 50, cy = 50, waxing = f < 0.5;
+      const k = Math.cos(2 * Math.PI * f); // terminator ellipse x-radius factor
+      const rx = Math.abs(k) * r;
+      // lit part: one half-disc plus or minus the terminator ellipse
+      const side = waxing ? 1 : 0;
+      const sweepTerm = (waxing ? k > 0 : k > 0) ? (waxing ? 0 : 1) : (waxing ? 1 : 0);
+      const lit = `M${cx},${cy - r} A${r},${r} 0 0 ${side} ${cx},${cy + r} A${rx},${r} 0 0 ${sweepTerm} ${cx},${cy - r} Z`;
+      return { svg: `<circle cx="50" cy="50" r="40" fill="#2b2f36" stroke="var(--line)"/>` + (illum > 0.01 ? `<path d="${lit}" fill="#f2efe2"/>` : ''), illum };
+    }
+    function render() {
+      const lat = +$('sLat').value, lon = +$('sLon').value, dv = $('sDate').value;
+      if (!dv || !isFinite(lat) || !isFinite(lon)) return;
+      LOC.lat = lat; LOC.lon = lon; store.set('loc', LOC);
+      const [y, m, d] = dv.split('-').map(Number);
+      const rise = sunEvent(y, m, d, lat, lon, 90.833, true), set = sunEvent(y, m, d, lat, lon, 90.833, false);
+      const dawn = sunEvent(y, m, d, lat, lon, 96, true), dusk = sunEvent(y, m, d, lat, lon, 96, false);
+      const half = ms => ms ? new Date(ms) : null;
+      const cells = [
+        ['First light (civil dawn)', dawn], ['Sunrise', rise], ['Sunset', set], ['Last light (civil dusk)', dusk],
+        ['30 min before sunrise', rise && half(rise.getTime() - 18e5)], ['30 min after sunset', set && half(set.getTime() + 18e5)],
+      ];
+      $('sunTimes').innerHTML = cells.map(([n, t]) => `<div class="time"><span class="n">${n}</span><span class="t">${fmt(t)}</span></div>`).join('');
+      const noonLocal = Date.UTC(y, m - 1, d, 12) - lon / 15 * 36e5;
+      const age = moonAge(noonLocal), mo = moonSVG(age);
+      $('moonPic').innerHTML = mo.svg;
+      const toFull = ((SYN / 2 - age) % SYN + SYN) % SYN, toNew = (SYN - age) % SYN;
+      $('moonText').innerHTML = `<div style="font-family:var(--font-display);font-weight:700;font-size:1.5rem;text-transform:uppercase;letter-spacing:.03em">${phaseName(age)}</div>
+        <div>${Math.round(mo.illum * 100)}% lit · ${age.toFixed(1)} days old</div>
+        <div class="caption">Next full moon about ${fmtDay(noonLocal + toFull * 864e5)} · next new moon about ${fmtDay(noonLocal + toNew * 864e5)}</div>`;
+    }
+    const t = new Date(); $('sDate').value = `${t.getFullYear()}-${String(t.getMonth() + 1).padStart(2, '0')}-${String(t.getDate()).padStart(2, '0')}`;
+    for (const id of ['sDate', 'sLat', 'sLon']) $(id).addEventListener('change', render);
+    $('sLocBtn').addEventListener('click', () => getLocation((lat, lon) => { $('sLat').value = lat; $('sLon').value = lon; render(); }));
+    return { show() { $('sLat').value = LOC.lat; $('sLon').value = LOC.lon; render(); } };
+  })();
+
+  // =================================================================
+  // SHINE FINDER
+  // =================================================================
+  const shine = (() => {
+    const cv = $('shineCanvas'), ctx = cv.getContext('2d');
+    let ver = -1;
+    function run() {
+      const W = PHOTO.w, H = PHOTO.h; cv.width = W; cv.height = H;
+      const src = PHOTO.c.getContext('2d').getImageData(0, 0, W, H), s = src.data;
+      const out = new ImageData(W, H), d = out.data;
+      const sens = +$('shineSens').value, yThr = 0.97 - sens * 0.03; // 0.94 .. 0.67 (linear)
+      const CELL = Math.max(6, Math.round(W / 120)), gw = Math.ceil(W / CELL), gh = Math.ceil(H / CELL);
+      const grid = new Uint8Array(gw * gh);
+      for (let y = 0, i = 0; y < H; y++) for (let x = 0; x < W; x++, i += 4) {
+        const r = toLin[s[i]], g = toLin[s[i+1]], b = toLin[s[i+2]];
+        const Y = 0.2126*r + 0.7152*g + 0.0722*b, mx = Math.max(s[i], s[i+1], s[i+2]), mn = Math.min(s[i], s[i+1], s[i+2]);
+        const sat = mx ? (mx - mn) / mx : 0, gray = enc(Y) * 0.45;
+        if (Y > yThr && sat < 0.22) { d[i] = 255; d[i+1] = 255; d[i+2] = 255; grid[((y / CELL) | 0) * gw + ((x / CELL) | 0)]++; }
+        else { d[i] = gray; d[i+1] = gray; d[i+2] = gray; }
+        d[i+3] = 255;
+      }
+      ctx.putImageData(out, 0, 0);
+      // group neighbouring cells into spots
+      const minHits = Math.max(2, (CELL * CELL) / 40), seen = new Uint8Array(gw * gh), spots = [];
+      for (let c = 0; c < gw * gh; c++) {
+        if (seen[c] || grid[c] < minHits) continue;
+        let q = [c], minx = 1e9, miny = 1e9, maxx = -1, maxy = -1; seen[c] = 1;
+        while (q.length) {
+          const k = q.pop(), kx = k % gw, ky = (k / gw) | 0;
+          minx = Math.min(minx, kx); maxx = Math.max(maxx, kx); miny = Math.min(miny, ky); maxy = Math.max(maxy, ky);
+          for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
+            const nx = kx + dx, ny = ky + dy; if (nx < 0 || ny < 0 || nx >= gw || ny >= gh) continue;
+            const nk = ny * gw + nx; if (!seen[nk] && grid[nk] >= minHits) { seen[nk] = 1; q.push(nk); }
+          }
+        }
+        spots.push([(minx + maxx + 1) / 2 * CELL, (miny + maxy + 1) / 2 * CELL, Math.max(maxx - minx + 1, maxy - miny + 1) * CELL / 2]);
+      }
+      spots.sort((a, b) => b[2] - a[2]);
+      const shown = spots.slice(0, 40);
+      ctx.lineWidth = Math.max(3, W / 260);
+      for (const [x, y, r] of shown) {
+        ctx.strokeStyle = 'rgba(0,0,0,.7)'; ctx.beginPath(); ctx.arc(x, y, r + W / 70 + ctx.lineWidth, 0, 7); ctx.stroke();
+        ctx.strokeStyle = '#ff7a1a'; ctx.beginPath(); ctx.arc(x, y, r + W / 70, 0, 7); ctx.stroke();
+      }
+      $('shineCount').textContent = spots.length > 40 ? '40+' : String(spots.length);
+      ver = PHOTO.ver;
+    }
+    let pend = false;
+    $('shineSens').addEventListener('input', () => { $('shineSensV').textContent = $('shineSens').value; if (!pend) { pend = true; requestAnimationFrame(() => { pend = false; run(); }); } });
+    return { show() { if (ver !== PHOTO.ver) run(); }, photo: run };
+  })();
+
+  // =================================================================
+  // SKYLINE CHECK
+  // =================================================================
+  const skyline = (() => {
+    const cv = $('skyCanvas'), ctx = cv.getContext('2d');
+    const over = mk();
+    let ver = -1;
+    function run() {
+      const W = PHOTO.w, H = PHOTO.h; cv.width = W; cv.height = H;
+      const sw = Math.min(480, W), sh = Math.round(H * sw / W);
+      const small = mk(); small.width = sw; small.height = sh;
+      const sx = small.getContext('2d'); sx.drawImage(PHOTO.c, 0, 0, sw, sh);
+      const s = sx.getImageData(0, 0, sw, sh).data, n = sw * sh;
+      const sens = +$('skySens').value, yThr = 0.62 - sens * 0.04; // 0.58 .. 0.22 (linear)
+      const isSkyish = new Uint8Array(n);
+      for (let p = 0, i = 0; p < n; p++, i += 4) {
+        const r = toLin[s[i]], g = toLin[s[i+1]], b = toLin[s[i+2]], Y = 0.2126*r + 0.7152*g + 0.0722*b;
+        const mx = Math.max(s[i], s[i+1], s[i+2]), mn = Math.min(s[i], s[i+1], s[i+2]), sat = mx ? (mx - mn) / mx : 0;
+        isSkyish[p] = Y > yThr && (s[i+2] >= s[i] * 0.9 || sat < 0.12) ? 1 : 0;
+      }
+      // sky = bright, bluish or gray pixels connected to the top edge
+      const sky = new Uint8Array(n), q = [];
+      for (let x = 0; x < sw; x++) if (isSkyish[x]) { sky[x] = 1; q.push(x); }
+      while (q.length) {
+        const p = q.pop(), x = p % sw, y = (p / sw) | 0;
+        if (x > 0 && !sky[p - 1] && isSkyish[p - 1]) { sky[p - 1] = 1; q.push(p - 1); }
+        if (x < sw - 1 && !sky[p + 1] && isSkyish[p + 1]) { sky[p + 1] = 1; q.push(p + 1); }
+        if (y > 0 && !sky[p - sw] && isSkyish[p - sw]) { sky[p - sw] = 1; q.push(p - sw); }
+        if (y < sh - 1 && !sky[p + sw] && isSkyish[p + sw]) { sky[p + sw] = 1; q.push(p + sw); }
+      }
+      // outline = non-sky pixel touching sky, and clearly darker than it
+      over.width = sw; over.height = sh;
+      const o = new ImageData(sw, sh), od = o.data;
+      let skyN = 0, edgeN = 0;
+      for (let y = 0; y < sh; y++) for (let x = 0; x < sw; x++) {
+        const p = y * sw + x; if (sky[p]) { skyN++; continue; }
+        let touch = false;
+        for (let dy = -2; dy <= 2 && !touch; dy++) for (let dx = -2; dx <= 2; dx++) {
+          const nx = x + dx, ny = y + dy; if (nx < 0 || ny < 0 || nx >= sw || ny >= sh) continue;
+          if (sky[ny * sw + nx]) { touch = true; break; }
+        }
+        if (touch) { const i = p * 4; od[i] = 255; od[i+1] = 122; od[i+2] = 26; od[i+3] = 255; edgeN++; }
+      }
+      over.getContext('2d').putImageData(o, 0, 0);
+      // picture: sky tinted light, land dimmed, outlines in orange on top
+      ctx.drawImage(PHOTO.c, 0, 0);
+      ctx.fillStyle = 'rgba(0,0,0,.45)'; ctx.fillRect(0, 0, W, H);
+      ctx.imageSmoothingEnabled = true; ctx.drawImage(over, 0, 0, W, H);
+      $('skyPct').textContent = Math.round(100 * skyN / n) + '%';
+      const len = edgeN / sw; // outline length, in picture widths
+      $('skyEdge').textContent = skyN < n * 0.01 ? 'No sky' : len < 0.3 ? 'Little' : len < 1.5 ? 'Some' : 'A lot';
+      ver = PHOTO.ver;
+    }
+    let pend = false;
+    $('skySens').addEventListener('input', () => { $('skySensV').textContent = $('skySens').value; if (!pend) { pend = true; requestAnimationFrame(() => { pend = false; run(); }); } });
+    return { show() { if (ver !== PHOTO.ver) run(); }, photo: run };
+  })();
+
+  // =================================================================
+  // GEAR CHECKLIST
+  // =================================================================
+  const checklist = (() => {
+    const DEFAULT = [
+      'Clothes washed in a UV-free detergent', 'Clothes checked with a 365 nm UV light', 'No fabric softener or dryer sheets',
+      'Clothes stored in a scent-free bag or tote', 'Showered with scent-free soap', 'Wind checked for stand and walk-in route',
+      'Headlamp set to red for the walk in', 'Shiny gear covered (watch, glasses, phone screen)', 'Blaze orange worn where the law requires it',
+      'Legal hunting hours checked', 'Tree-stand safety harness', 'Someone knows where you are hunting and when you will be back',
+      'License and tags', 'Knife, drag rope, flashlight, first-aid kit'
+    ];
+    let items = store.get('checklist', null);
+    if (!Array.isArray(items)) items = DEFAULT.map(t => ({ t, d: false }));
+    const save = () => store.set('checklist', items);
+    function render() {
+      const host = $('ckList'); host.innerHTML = '';
+      items.forEach((it, i) => {
+        const lab = document.createElement('label');
+        const cb = document.createElement('input'); cb.type = 'checkbox'; cb.checked = it.d; cb.id = 'ck' + i;
+        const sp = document.createElement('span'); sp.textContent = it.t; if (it.d) sp.className = 'done';
+        const rm = document.createElement('button'); rm.type = 'button'; rm.className = 'rm'; rm.textContent = '×'; rm.setAttribute('aria-label', 'Remove ' + it.t);
+        cb.addEventListener('change', () => { it.d = cb.checked; save(); render(); });
+        rm.addEventListener('click', e => { e.preventDefault(); items.splice(i, 1); save(); render(); });
+        lab.append(cb, sp, rm); host.appendChild(lab);
+      });
+      const done = items.filter(x => x.d).length;
+      $('ckCount').textContent = `${done} / ${items.length}`;
+      $('ckBar').style.width = items.length ? (100 * done / items.length) + '%' : '0%';
+    }
+    function add() { const t = $('ckNew').value.trim(); if (!t) return; items.push({ t, d: false }); $('ckNew').value = ''; save(); render(); }
+    $('ckAdd').addEventListener('click', add);
+    $('ckNew').addEventListener('keydown', e => { if (e.key === 'Enter') add(); });
+    $('ckReset').addEventListener('click', () => { items.forEach(x => x.d = false); save(); render(); });
+    render();
+    return { show: render };
+  })();
+
+  // =================================================================
+  // FIELD OF VIEW
+  // =================================================================
+  const fov = (() => {
+    const svg = $('fovDial');
+    const SPEC = { deer: { total: 310, bin: 55 }, you: { total: 200, bin: 120 } };
+    let who = 'deer', hunter = [215, 70];
+    function zone(heading) {
+      const sp = SPEC[who];
+      const b = (Math.atan2(hunter[0] - 150, -(hunter[1] - 150)) / (Math.PI / 180) + 360) % 360;
+      const rel = Math.abs(((b - heading + 540) % 360) - 180);
+      return rel <= sp.bin / 2 ? 'bin' : rel <= sp.total / 2 ? 'side' : 'blind';
+    }
+    function render() {
+      const h = +$('fovHead').value, sp = SPEC[who];
+      $('fovHeadV').textContent = h + '° ' + cardinal(h);
+      let g = `<circle cx="150" cy="150" r="140" fill="none" stroke="var(--line)" stroke-dasharray="3 5"/>`;
+      g += `<path d="${sector(150, 150, 130, h - sp.total / 2, h + sp.total / 2)}" fill="var(--h-blaze)" fill-opacity=".14" stroke="var(--h-blaze)" stroke-opacity=".5"/>`;
+      g += `<path d="${sector(150, 150, 130, h - sp.bin / 2, h + sp.bin / 2)}" fill="var(--h-blaze)" fill-opacity=".32" stroke="var(--h-blaze)"/>`;
+      const [bx, by] = pol(150, 150, 96, h + 180);
+      g += `<text x="${bx}" y="${by + 4}" text-anchor="middle" font-size="12" font-weight="600" fill="var(--muted)">blind spot</text>`;
+      const [fx, fy] = pol(150, 150, 70, h);
+      g += `<text x="${fx}" y="${fy + 4}" text-anchor="middle" font-size="11" font-weight="600" fill="var(--fg)">both eyes</text>`;
+      // viewer at the center: a little deer head or person, pointing along the heading
+      g += `<g transform="rotate(${h} 150 150)">`;
+      g += who === 'deer'
+        ? `<g transform="translate(132 130) scale(1.5)" style="color:var(--fg)"><use href="#i-deer" width="24" height="24"/></g>`
+        : `<circle cx="150" cy="146" r="9" fill="var(--fg)"/><path d="M144 140 l6 -10 l6 10" fill="var(--fg)"/>`;
+      g += `</g>`;
+      const z = zone(h);
+      g += `<line x1="150" y1="150" x2="${hunter[0]}" y2="${hunter[1]}" stroke="var(--fg)" stroke-dasharray="4 4" stroke-opacity=".5"/>`;
+      g += `<circle id="fovHunter" cx="${hunter[0]}" cy="${hunter[1]}" r="12" fill="var(--accent)" stroke="var(--bg)" stroke-width="3" style="cursor:grab"/>`;
+      svg.innerHTML = g;
+      const viewer = who === 'deer' ? 'The deer' : 'You';
+      $('fovText').innerHTML = z === 'bin' ? `<span class="pill bad">Seen clearly</span> ${viewer} sees this spot with both eyes, the sharpest view with depth.`
+        : z === 'side' ? `<span class="pill mid">Side vision</span> ${viewer} can see this spot from the side. Movement here gets noticed fast.`
+        : `<span class="pill good">Blind spot</span> ${viewer} can't see this spot without turning its head.`;
+      if (who === 'you') $('fovText').innerHTML = $('fovText').innerHTML.replace('its head', 'your head');
+    }
+    let drag = false;
+    function toSvg(e) { const r = svg.getBoundingClientRect(); return [(e.clientX - r.left) / r.width * 300, (e.clientY - r.top) / r.height * 300]; }
+    svg.addEventListener('pointerdown', e => { drag = true; svg.setPointerCapture(e.pointerId); hunter = toSvg(e).map(v => Math.max(12, Math.min(288, v))); render(); });
+    svg.addEventListener('pointermove', e => { if (!drag) return; hunter = toSvg(e).map(v => Math.max(12, Math.min(288, v))); render(); });
+    svg.addEventListener('pointerup', () => { drag = false; });
+    $('fovHead').addEventListener('input', render);
+    $('fovDeer').addEventListener('click', () => { who = 'deer'; $('fovDeer').setAttribute('aria-pressed', true); $('fovYou').setAttribute('aria-pressed', false); render(); });
+    $('fovYou').addEventListener('click', () => { who = 'you'; $('fovDeer').setAttribute('aria-pressed', false); $('fovYou').setAttribute('aria-pressed', true); render(); });
+    render();
+    return { show: render };
+  })();
+
+  // =================================================================
+  // ROUTER
+  // =================================================================
+  const TOOLS = { vision, blood, track, camo, movement, wind, compass, sun: sunmoon, shine, skyline, checklist, fov, guide: {} };
+  let current = 'home';
+  function route() {
+    const name = (location.hash || '').replace('#', '');
+    const next = TOOLS[name] ? name : 'home';
+    if (current !== next && TOOLS[current] && TOOLS[current].hide) TOOLS[current].hide();
+    document.querySelectorAll('.view').forEach(v => { v.hidden = v.id !== 'v-' + next; });
+    current = next;
+    $('bgWrap').hidden = next !== 'home';
+    if (next === 'home') compass.home();
+    if (TOOLS[next] && TOOLS[next].show) TOOLS[next].show();
+    window.scrollTo(0, 0);
+  }
+  document.querySelectorAll('.back').forEach(b => b.addEventListener('click', () => { location.hash = ''; }));
+  window.addEventListener('hashchange', route);
+  document.addEventListener('visibilitychange', () => { if (document.hidden && TOOLS[current] && TOOLS[current].hide) TOOLS[current].hide(); });
+
+  setPhoto(drawSample, 1600, 1067, true);
+  route();
+})();
+
+</script>
+
+<script>if ('serviceWorker' in navigator && location.protocol === 'https:') addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));</script>
+</body>
+</html>

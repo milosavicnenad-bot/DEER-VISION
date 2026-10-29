@@ -1,0 +1,22 @@
+{
+  "name": "Deer Eyes",
+  "short_name": "Deer Eyes",
+  "description": "Whitetail field kit: deer vision, blood trail, track finder, wind, compass and more.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#141712",
+  "theme_color": "#141712",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Blood trail", "url": "./#blood", "icons": [{ "src": "icon-192.png", "sizes": "192x192" }] },
+    { "name": "Track finder", "url": "./#track", "icons": [{ "src": "icon-192.png", "sizes": "192x192" }] },
+    { "name": "Compass", "url": "./#compass", "icons": [{ "src": "icon-192.png", "sizes": "192x192" }] },
+    { "name": "Deer vision", "url": "./#vision", "icons": [{ "src": "icon-192.png", "sizes": "192x192" }] }
+  ]
+}
