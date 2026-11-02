@@ -1,6 +1,8 @@
 // Deer Eyes offline helper: keeps the app and the maps you've viewed working without signal in the woods.
-const CACHE = 'deer-eyes-v2';
-const TILES = 'deer-eyes-tiles';
+// Each copy of the app (each website folder) keeps its own saved pages, so two versions can live side by side.
+const SCOPE = self.registration.scope;
+const CACHE = 'deer-eyes-core-v3 ' + SCOPE;
+const TILES = 'deer-eyes-tiles'; // map pictures are shared between copies
 const CORE = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png'];
 const TILE_HOSTS = ['basemap.nationalmap.gov', 'tile.opentopomap.org', 'a.tile.opentopomap.org', 'b.tile.opentopomap.org', 'c.tile.opentopomap.org', 'tile.openstreetmap.org',
   'gisservices.its.ny.gov', 'gisservices.dec.ny.gov', 'mapsdep.nj.gov'];
@@ -27,7 +29,8 @@ self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(CORE)).then(() => self.skipWaiting()));
 });
 self.addEventListener('activate', e => {
-  e.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(k => k !== CACHE && k !== TILES).map(k => caches.delete(k)))).then(() => self.clients.claim()));
+  // only clean up this copy's own older saves; never touch another version's
+  e.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(k => k.startsWith('deer-eyes-core') && k.endsWith(' ' + SCOPE) && k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim()));
 });
 self.addEventListener('fetch', e => {
   const req = e.request;
