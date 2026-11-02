@@ -264,6 +264,26 @@ html.night body { background: #000; }
 .dg svg { width: 100%; height: auto; color: var(--fg); }
 .dg b { font-size: .88rem; } .dg span { font-size: .76rem; color: var(--muted); line-height: 1.35; }
 .dg-grid.wide { grid-template-columns: 1fr; }
+.fd-nav { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 2px; position: sticky; top: 0; z-index: 5; background: var(--bg); }
+.fd-nav a { flex: none; padding: 7px 12px; border-radius: 99px; border: 1px solid var(--line); background: var(--surface); color: var(--fg); text-decoration: none; font: 600 .82rem var(--font-body); }
+.fd-guide { display: grid; gap: 16px; }
+.fd-sec { display: grid; gap: 12px; scroll-margin-top: 50px; }
+.fd-sec > p { margin: 0; font-size: .92rem; max-width: 70ch; }
+.fd-step { display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 10px; }
+@media (min-width: 700px) { .fd-step { grid-template-columns: 300px minmax(0, 1fr); align-items: start; } }
+.fd-step svg { width: 100%; height: auto; color: var(--fg); background: var(--surface); border-radius: 8px; }
+.fd-step h3 { margin: 0 0 6px; font: 700 1.05rem var(--font-display); letter-spacing: .03em; text-transform: uppercase; display: flex; gap: 8px; align-items: center; }
+.fd-step h3 i { font-style: normal; width: 26px; height: 26px; border-radius: 50%; background: #c62828; color: #fff; display: grid; place-items: center; font: 700 .85rem var(--font-body); flex: none; }
+.fd-step ol, .fd-step ul { margin: 0; padding-left: 1.2rem; display: grid; gap: 5px; font-size: .9rem; }
+.fd-tip { margin-top: 8px; font-size: .84rem; border-left: 3px solid var(--h-moss); padding: 4px 8px; background: color-mix(in srgb, var(--h-moss) 8%, transparent); border-radius: 0 6px 6px 0; }
+.fd-tip.no { border-left-color: #c62828; background: color-mix(in srgb, #c62828 7%, transparent); }
+.fd-gear { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 6px 14px; margin: 0; padding-left: 1.1rem; font-size: .9rem; }
+.fd-links { display: grid; gap: 8px; }
+.fd-links a { display: grid; gap: 2px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); color: var(--fg); text-decoration: none; }
+.fd-links a b { font-size: .92rem; } .fd-links a span { font-size: .78rem; color: var(--muted); }
+.fd-legend { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: .78rem; color: var(--muted); }
+.fd-legend i { display: inline-block; width: 22px; height: 0; border-top: 2.5px dashed #c62828; vertical-align: middle; margin-right: 5px; }
+.fd-legend i.bone { border-top: 4px solid #bdb5a6; } .fd-legend i.seam { border-top: 2px dashed #7a5230; } .fd-legend i.move { border-top: 2.5px solid #2f6fae; }
 /* Leaflet 1.9.4 (BSD-2-Clause) */
 /* required styles */
 
@@ -1737,50 +1757,11 @@ details.drop > .dropbody { padding: 0 14px 14px; }
     <div class="vhead" style="--h: var(--h-blood)"><button class="back" type="button"><svg><use href="#i-back"/></svg>Menu</button><span class="vic"><svg><use href="#i-knife"/></svg></span><h2>Field dressing</h2></div>
     <div class="panel" id="fdCool"><h2 style="margin:0">Cool the meat</h2><div id="fdCoolTxt" class="caption">Getting the temperature…</div>
       <div class="row"><label for="fdTemp">Air temperature</label><input type="range" id="fdTemp" min="0" max="80" value="45"><span class="v" id="fdTempV">45°F</span></div></div>
+    <nav class="fd-nav" id="fdNav" aria-label="Sections"></nav>
+    <div id="fdGuide" class="fd-guide"></div>
     <div class="panel">
-      <h2 style="margin:0">Step by step</h2>
-      <div class="dg-grid" id="fdPics"></div>
-      <ol class="fd-steps">
-        <li><b>Make sure it's dead and tag it.</b> Approach from behind; touch the eye with a stick. Fill out or report your tag the way your state requires before you move it.</li>
-        <li><b>Gloves on.</b> Wear long rubber or nitrile gloves. Have a sharp knife, paper towels, a bag for heart and liver, and water if you can.</li>
-        <li><b>Roll it on its back</b>, head uphill if possible so the guts slide out. Prop it with your knees or a log.</li>
-        <li><b>First cut:</b> pinch up the belly skin just in front of the pelvis and make a small cut, only through skin and the thin muscle.</li>
-        <li><b>Open the belly:</b> put two fingers in the cut, blade up between them, and lift the skin as you cut toward the chest. Don't puncture the stomach or intestines.</li>
-        <li><b>Free the rear:</b> cut around the anus deep enough to free the colon (or split the pelvis with a saw). Tie it off with string or a zip tie if you can.</li>
-        <li><b>Open the chest:</b> cut the diaphragm (the thin wall between belly and chest) all the way around against the ribs.</li>
-        <li><b>Free the windpipe:</b> reach up into the chest as far as you can and cut the windpipe and gullet. Watch your fingers.</li>
-        <li><b>Pull it out:</b> pull the windpipe toward the tail; everything comes out together. Cut any tissue still holding.</li>
-        <li><b>Save heart and liver</b> if you want them. Liver should be dark red and smooth; skip it if it has spots or worms.</li>
-        <li><b>Drain and cool:</b> tip the deer belly-down to drain, wipe out the cavity, and prop it open with a stick so air can flow. Get it out of the woods and cooling.</li>
-      </ol>
       <div class="warn"><b>Chronic wasting disease (CWD):</b> if you hunt in another state, many states, including New York, don't allow whole carcasses back in. Bring deboned meat, cleaned skull caps and hides, and check the rules where you hunt. Don't eat meat from a deer that acted sick.</div>
     </div>
-    <div class="panel">
-      <h2 style="margin:0">Quartering (deer hanging from a tree)</h2>
-      <div class="caption">Hang the deer by its hind legs from a gambrel on a strong limb, about head height, so you can work standing up. This works with or without field dressing first (the "gutless" method: everything comes off the outside, then you open the belly only to reach the tenderloins).</div>
-      <div class="dg-grid" id="qtPics"></div>
-      <ol class="fd-steps">
-        <li><b>Hang it.</b> Cut a slit between the bone and the big tendon above each hock, slide the gambrel through, and hoist the deer until its head is just off the ground. Tie the rope off well.</li>
-        <li><b>Skin it from the top down.</b> Cut around both hind legs below the hocks, then down the inside of each hind leg to the crotch and down the belly. Peel the hide down toward the head, using the knife only where it sticks. Cut around the front legs at the knees and pull them out of the hide.</li>
-        <li><b>Front shoulders.</b> Pull the front leg out away from the body and cut in the gap behind the shoulder blade, against the ribs. There's no joint holding it on: keep cutting close to the ribs and the whole shoulder comes free.</li>
-        <li><b>Backstraps.</b> Make a long cut on each side of the spine from the hips down to the neck, then a second cut along the top of the ribs. Peel each backstrap off the bone in one long piece, working your knife against the ribs and spine.</li>
-        <li><b>Hindquarters.</b> Cut along the pelvis from the top and the inside until you reach the ball joint at the hip. Bend the leg to pop the joint, cut around it, and the hindquarter comes off. Do one side, then the other, while it still hangs from the gambrel (or saw off at the hock).</li>
-        <li><b>Tenderloins, neck and trim.</b> Reach inside (or open the belly) for the two tenderloins under the spine. Take the neck meat and trim the ribs and flank for burger.</li>
-      </ol>
-    </div>
-
-    <div class="panel">
-      <h2 style="margin:0">Bone out the meat</h2>
-      <div class="caption">Boned-out meat cools faster, packs out lighter, and is what you bring home if you hunt where whole carcasses aren't allowed back. Follow the natural seams (the thin white membranes) between muscles; you hardly need to cut meat at all.</div>
-      <div class="dg-grid" id="boPics"></div>
-      <ol class="fd-steps">
-        <li><b>Hindquarter:</b> lay it outside down. Follow the seams to separate the big muscle groups: <b>top round</b> (inside), <b>bottom round</b> and <b>eye of round</b> (back of the leg), <b>sirloin tip</b> (front, over the knee), and the <b>rump</b> at the top. Then cut the meat off the leg bone (femur). The shank (below the knee) is for stew or burger.</li>
-        <li><b>Shoulder:</b> cut the meat off the shoulder blade on both sides and off the leg bones. Mostly roasts, stew and burger.</li>
-        <li><b>Clean as you go:</b> trim off fat, silver skin and any bloodshot meat. Deer fat tastes strong; don't keep it.</li>
-        <li><b>Keep it cold and clean:</b> put the meat in clean game bags or bags in a cooler with ice, not touching water. Label each bag (backstrap, round, shoulder, burger).</li>
-      </ol>
-    </div>
-
     <div class="panel">
       <h2 style="margin:0">Weight and meat</h2>
       <div class="row"><label for="fdW">Dressed weight</label><input type="range" id="fdW" min="40" max="250" value="120"><span class="v" id="fdWV">120 lb</span></div>
@@ -7213,56 +7194,237 @@ details.drop > .dropbody { padding: 0 14px 14px; }
   // =================================================================
   const dress = (() => {
     let got = false;
-    // ---- schematic drawings (simple line art; red dashed lines are cuts) ----
-    const CUT = 'stroke="#c62828" stroke-width="2.4" stroke-dasharray="6 4" fill="none" stroke-linecap="round"';
-    const ARW = '<defs><marker id="dgA" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0L10 5L0 10z" fill="#2f6fae"/></marker></defs>';
-    const num = (x, y, n) => `<circle cx="${x}" cy="${y}" r="8" fill="#c62828"/><text x="${x}" y="${y + 3.5}" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">${n}</text>`;
-    const lbl = (x, y, t, a = 'middle') => `<text x="${x}" y="${y}" text-anchor="${a}" font-size="9" fill="currentColor" fill-opacity=".8">${t}</text>`;
-    // deer on its back, seen from above (head to the right)
-    const belly = extra => `<svg viewBox="0 0 240 168" aria-hidden="true">${ARW}<g fill="currentColor" fill-opacity=".08" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <ellipse cx="118" cy="75" rx="70" ry="30"/><path d="M186 70 Q200 66 212 70 L212 80 Q200 84 186 80" /><ellipse cx="222" cy="75" rx="14" ry="9"/>
-      <path d="M160 50 L172 14 M160 100 L172 136 M80 52 L60 14 M80 98 L60 136" fill="none" stroke-width="5"/><path d="M48 72 L36 70" fill="none"/></g>${extra}</svg>`;
-    // deer on its side
-    const side = extra => `<svg viewBox="0 0 240 152" aria-hidden="true">${ARW}<g fill="currentColor" fill-opacity=".08" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <ellipse cx="115" cy="62" rx="66" ry="26"/><path d="M172 50 Q186 30 194 20 L204 26 Q196 42 182 64"/><ellipse cx="206" cy="20" rx="13" ry="8"/>
-      <path d="M78 84 L74 122 M98 86 L96 122 M146 84 L148 122 M160 82 L166 122" fill="none" stroke-width="5"/></g>${extra}</svg>`;
-    // deer hanging head-down by its hind legs from a gambrel on a limb
-    const hang = (extra, view) => `<svg viewBox="0 0 170 240" aria-hidden="true">${ARW}
-      <path d="M10 10 Q85 4 160 12" stroke="#8a5a2b" stroke-width="7" fill="none" stroke-linecap="round"/><path d="M85 9 L85 30" stroke="currentColor" stroke-width="1.6"/>
-      <path d="M50 32 L120 32" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
-      <g fill="currentColor" fill-opacity=".08" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M56 33 L66 80 M114 33 L104 80" fill="none" stroke-width="7"/>
-      <path d="M62 78 Q85 66 108 78 Q118 120 108 168 Q85 182 62 168 Q52 120 62 78Z"/>
-      <path d="M76 176 L74 196 L96 196 L94 176"/><ellipse cx="85" cy="212" rx="11" ry="17"/>
-      <path d="M66 160 L54 222 M104 160 L116 222" fill="none" stroke-width="5"/></g>
-      ${view ? lbl(85, 236, view) : ''}${extra}</svg>`;
-    // hindquarter (outside view), with the natural muscle groups
-    const ham = `<svg viewBox="0 0 240 172" aria-hidden="true">
-      <g stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M40 30 Q120 10 190 30 Q215 70 196 110 Q170 140 140 146 L120 150 Q90 140 72 118 Q38 80 40 30Z" fill="currentColor" fill-opacity=".06"/>
-      <path d="M120 150 L126 166" stroke-width="6" stroke-linecap="round"/></g>
-      <g stroke="#7a5230" stroke-width="1.6" stroke-dasharray="4 3" fill="none"><path d="M62 52 Q120 44 186 52"/><path d="M120 52 Q122 100 120 146"/><path d="M120 92 Q90 96 70 112"/><path d="M150 118 Q170 108 196 104"/></g>
-      <path d="M95 34 L136 140" stroke="#bdbdbd" stroke-width="5" stroke-linecap="round" opacity=".7"/>
-      ${lbl(120, 40, 'Rump')}${lbl(86, 82, 'Top round')}${lbl(90, 128, 'Eye of round')}${lbl(158, 82, 'Bottom round')}${lbl(172, 136, 'Sirloin tip')}${lbl(136, 158, 'shank', 'start')}${lbl(8, 164, 'gray line: femur (bone)', 'start')}</svg>`;
-    const card = (svg, t, s) => `<div class="dg">${svg}<b>${t}</b><span>${s}</span></div>`;
-    $('fdPics').innerHTML = [
-      card(belly(`<path d="M130 152 L205 152" stroke="#2f6fae" stroke-width="2" marker-end="url(#dgA)"/>${lbl(96, 156, 'head uphill', 'end')}`), '1 · On its back', 'Belly up, head uphill. Brace it with your knees or a log.'),
-      card(belly(`<path d="M64 75 L168 75" ${CUT}/>${num(64, 58, 1)}<path d="M100 75 L130 75" stroke="#2f6fae" stroke-width="2" marker-end="url(#dgA)"/>${lbl(120, 162, 'skin only: blade up, between two fingers')}`), '2 · Open the belly', 'From just in front of the pelvis to the breastbone. Shallow: don\'t cut the guts.'),
-      card(belly(`<circle cx="46" cy="75" r="9" ${CUT}/>${num(46, 52, 2)}<path d="M50 75 L64 75" ${CUT}/>${lbl(8, 162, 'core around the anus', 'start')}`), '3 · Free the rear', 'Cut around the anus deep enough to free it (or split the pelvis).'),
-      card(belly(`<path d="M150 49 Q138 75 150 101" ${CUT}/><path d="M174 75 L206 75" ${CUT}/>${num(144, 40, 3)}${num(206, 58, 4)}${lbl(140, 162, 'diaphragm')}${lbl(212, 162, 'windpipe')}`), '4 · Chest and windpipe', 'Cut the diaphragm against the ribs all around; reach up and cut the windpipe.'),
-      card(side(`<ellipse cx="118" cy="106" rx="30" ry="14" fill="#b3122a" fill-opacity=".25" stroke="#b3122a" stroke-width="1.5"/><path d="M118 86 L118 130" stroke="#2f6fae" stroke-width="2.4" marker-end="url(#dgA)"/>${lbl(160, 142, 'roll it out downhill')}`), '5 · Pull and roll out', 'Pull the windpipe toward the tail; roll the deer so everything slides out.'),
-      card(side(`<path d="M80 74 L150 74" stroke="#8a5a2b" stroke-width="4" stroke-linecap="round"/><path d="M60 40 Q50 30 40 34 M170 40 Q182 30 192 34" stroke="#2f6fae" stroke-width="1.6" fill="none" marker-end="url(#dgA)"/>${lbl(115, 136, 'stick props the cavity open')}${lbl(115, 148, 'shade, air, off the ground')}`), '6 · Drain and cool', 'Tip it belly-down to drain, wipe out, prop open with a stick.'),
-    ].join('');
-    $('qtPics').innerHTML = [
-      card(hang(`<path d="M50 32 L56 33 M120 32 L114 33" stroke="#c62828" stroke-width="2"/>${lbl(150, 48, 'gambrel', 'end')}${lbl(150, 24, 'strong limb', 'end')}`), '1 · Hang it', 'Gambrel through the hocks, head just off the ground.'),
-      card(hang(`<path d="M60 52 L60 46 M110 52 L110 46" ${CUT}/><path d="M64 56 L74 90 L85 100 L96 90 L106 56" ${CUT}/><path d="M85 100 L85 172" ${CUT}/><path d="M48 205 l12 0 M110 205 l12 0" ${CUT}/>${num(30, 60, 1)}${lbl(85, 236, 'peel the hide down')}<path d="M140 90 L140 140" stroke="#2f6fae" stroke-width="2" marker-end="url(#dgA)"/>`), '2 · Skin top down', 'Around the hocks, down the inside of the legs and belly; peel it down.'),
-      card(hang(`<path d="M60 128 Q46 150 58 172 Q76 182 84 162 Q86 140 72 126 Z" ${CUT}/>${num(36, 140, 3)}${lbl(85, 236, 'side view')}`, ''), '3 · Front shoulders', 'No joint: cut between the shoulder blade and the ribs.'),
-      card(hang(`<path d="M78 80 L78 172 M92 80 L92 172" ${CUT}/><path d="M70 80 L70 172 M100 80 L100 172" stroke="#c62828" stroke-width="1.2" stroke-dasharray="2 4"/>${num(85, 128, 4)}${lbl(85, 236, 'back view: both sides of the spine')}`), '4 · Backstraps', 'Along each side of the spine, hips to neck; peel off in one piece.'),
-      card(hang(`<path d="M60 34 Q48 70 64 100 Q86 110 104 100 Q122 70 110 34" ${CUT}/><circle cx="72" cy="96" r="5" fill="none" stroke="#c62828" stroke-width="2"/><circle cx="98" cy="96" r="5" fill="none" stroke="#c62828" stroke-width="2"/>${num(140, 80, 5)}${lbl(140, 104, 'ball joint', 'middle')}`), '5 · Hindquarters', 'Cut along the pelvis to the ball joint, pop it, cut around it.'),
-      card(hang(`<path d="M80 100 L80 150 M90 100 L90 150" stroke="#b3122a" stroke-width="5" stroke-linecap="round" opacity=".7"/><path d="M76 176 L94 176 L94 196 L76 196" ${CUT}/>${num(130, 125, 6)}${lbl(85, 236, 'inside: tenderloins under the spine')}`), '6 · Tenderloins, neck, trim', 'Tenderloins from inside, then the neck and rib/flank trim.'),
-    ].join('');
-    $('boPics').innerHTML = card(ham, 'Hindquarter, outside view', 'Dashed brown lines: the natural seams between muscle groups. Separate along them, then cut the meat off the femur. Not to scale.')
-      + card(`<svg viewBox="0 0 240 170" aria-hidden="true"><g stroke="currentColor" stroke-width="2" fill="currentColor" fill-opacity=".06" stroke-linejoin="round"><path d="M30 60 Q120 30 210 60 L210 100 Q120 120 30 100 Z"/></g><path d="M30 80 L210 80" stroke="#bdbdbd" stroke-width="5" opacity=".7"/>${lbl(120, 74, 'backstrap (loin)')}${lbl(120, 100, 'silver skin: peel it off')}<path d="M40 64 Q120 44 200 64" stroke="#7a5230" stroke-dasharray="4 3" stroke-width="1.6" fill="none"/>${lbl(120, 140, 'cut into steaks across the grain')}<path d="M80 120 L80 156 M120 120 L120 156 M160 120 L160 156" stroke="#c62828" stroke-dasharray="4 3" stroke-width="2"/></svg>`, 'Backstrap', 'Trim the silver skin, then slice into steaks across the grain, or keep whole for roasts.')
-      + card(`<svg viewBox="0 0 240 170" aria-hidden="true"><g stroke="currentColor" stroke-width="2" fill="currentColor" fill-opacity=".06" stroke-linejoin="round"><path d="M60 20 Q140 10 190 40 Q170 90 130 110 L118 160 L104 160 L100 110 Q70 80 60 20Z"/></g><path d="M80 30 Q130 30 170 44 L120 100Z" fill="none" stroke="#bdbdbd" stroke-width="3" opacity=".8"/><path d="M111 105 L111 158" stroke="#bdbdbd" stroke-width="5" opacity=".7"/>${lbl(186, 80, 'shoulder blade', 'end')}${lbl(150, 140, 'leg bones', 'start')}<path d="M70 40 Q100 70 110 100" stroke="#c62828" stroke-dasharray="4 3" stroke-width="2" fill="none"/></svg>`, 'Shoulder', 'Cut the meat off both sides of the shoulder blade and off the leg bones: roasts, stew, burger.');
+    // ================= detailed field-dressing guide: labeled drawings + full steps =================
+    // colors: red dashed = cut, blue = direction / pull, tan = bone, brown dashed = muscle seams
+    const C = { cut: '#c62828', bone: '#bdb5a6', seam: '#7a5230', hide: '#8d6e63', meat: '#c97b63', move: '#2f6fae', fat: '#e8dcc0' };
+    const cutP = d => `<path d="${d}" stroke="${C.cut}" stroke-width="2.6" stroke-dasharray="7 4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`;
+    const arrow = (d, w = 2.4) => `<path d="${d}" stroke="${C.move}" stroke-width="${w}" fill="none" stroke-linecap="round" marker-end="url(#fdA)"/>`;
+    const tag = (x, y, t, a = 'middle', s = 10) => `<text x="${x}" y="${y}" text-anchor="${a}" font-size="${s}" fill="currentColor" font-family="system-ui,sans-serif">${t}</text>`;
+    const callout = (x1, y1, x2, y2, t, a) => `<path d="M${x1} ${y1} L${x2} ${y2}" stroke="currentColor" stroke-opacity=".5" stroke-width="1"/><circle cx="${x1}" cy="${y1}" r="2" fill="currentColor"/>${tag(x2 + (a === 'end' ? -3 : a === 'start' ? 3 : 0), y2 + (y2 > y1 ? 10 : -3), t, a || 'middle', 9.5)}`;
+    const badge = (x, y, n) => `<circle cx="${x}" cy="${y}" r="10" fill="${C.cut}"/><text x="${x}" y="${y + 4}" text-anchor="middle" font-size="11" font-weight="700" fill="#fff" font-family="system-ui,sans-serif">${n}</text>`;
+    const DEFS = `<defs><marker id="fdA" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0L10 5L0 10z" fill="${C.move}"/></marker></defs>`;
+    const svgW = (vb, body) => `<svg viewBox="${vb}" role="img" aria-hidden="true">${DEFS}${body}</svg>`;
+
+    // --- deer in profile (lying on its side, seen from above), head right. opts: fill, anatomy layers ---
+    function profile(o = {}) {
+      const fill = o.fill || C.hide, op = o.op == null ? 0.32 : o.op;
+      let s = o.tarp ? `<rect x="18" y="14" width="292" height="168" rx="8" fill="${C.move}" fill-opacity=".06" stroke="${C.move}" stroke-opacity=".25"/>` : '';
+      // far legs (behind)
+      s += `<g stroke="currentColor" stroke-opacity=".45" stroke-width="5" stroke-linecap="round" fill="none"><path d="M182 104 L176 134 L172 162"/><path d="M106 108 L100 138 L104 164"/></g>`;
+      s += `<path d="M52 78 C60 62 90 58 130 60 C165 60 190 54 208 50 C222 40 236 26 248 20 L254 12 L262 4 L262 18 C272 20 284 26 290 32 C292 37 288 41 282 41 C270 40 260 42 252 46 C244 56 236 72 228 90 C224 100 214 106 202 106 L204 132 L202 160 L210 168 L196 168 L194 160 L194 132 L190 106 C170 110 130 112 110 108 C100 112 92 118 92 128 L82 142 L84 162 L92 170 L78 170 L74 160 L72 140 C66 128 56 114 52 100 C50 92 50 84 52 78 Z" fill="${fill}" fill-opacity="${op}" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>`;
+      s += `<path d="M52 78 C44 76 40 82 43 89" stroke="currentColor" stroke-width="2" fill="none"/><circle cx="272" cy="29" r="2.2" fill="currentColor"/>`;
+      if (o.spine) s += `<path d="M56 70 C110 60 170 56 210 50 C226 42 240 30 250 22" stroke="${C.bone}" stroke-width="4" fill="none" stroke-linecap="round"/>`;
+      if (o.ribs) for (let x = 140; x <= 196; x += 11) s += `<path d="M${x} ${66 - (x - 140) * 0.12} Q${x + 7} 86 ${x - 2} ${106 + (x > 180 ? -2 : 2)}" stroke="${C.bone}" stroke-width="2.2" fill="none"/>`;
+      if (o.blade) s += `<path d="M186 58 L216 60 L208 98 L190 94 Z" fill="${C.bone}" fill-opacity=".45" stroke="${C.bone}" stroke-width="1.5"/>`;
+      if (o.pelvis) s += `<path d="M60 74 L112 80" stroke="${C.bone}" stroke-width="5" stroke-linecap="round"/><circle cx="88" cy="92" r="6" fill="#fff" stroke="${C.bone}" stroke-width="3"/>`;
+      if (o.strap) s += `<path d="M68 66 C120 58 170 56 206 52 L206 60 C170 63 120 66 70 74 Z" fill="${C.meat}" fill-opacity=".85" stroke="#9c4a35" stroke-width="1"/>`;
+      if (o.loin) s += `<path d="M76 80 C96 76 114 74 134 72" stroke="${C.meat}" stroke-width="7" stroke-linecap="round" stroke-dasharray="2 3" opacity=".9"/>`;
+      if (o.diaphragm) s += `<path d="M138 63 C128 80 128 96 134 110" stroke="#6d4c41" stroke-width="2" stroke-dasharray="3 3" fill="none"/>`;
+      return s + (o.extra || '');
+    }
+    // --- deer on its back, seen from above (belly up), head right ---
+    function bellyUp(o = {}) {
+      let s = `<g stroke="currentColor" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" fill="none"><path d="M212 66 L232 42 L226 16"/><path d="M212 134 L232 158 L226 184"/><path d="M96 70 L76 46 L94 20"/><path d="M96 130 L76 154 L94 180"/></g>`;
+      s += `<path d="M66 100 C66 72 96 64 130 66 C160 68 172 60 200 58 C226 58 240 76 242 100 C240 124 226 142 200 142 C172 140 160 132 130 134 C96 136 66 128 66 100 Z" fill="${C.hide}" fill-opacity=".28" stroke="currentColor" stroke-width="2"/>`;
+      s += `<path d="M240 92 C252 90 262 90 270 92 L270 108 C262 110 252 110 240 108" fill="${C.hide}" fill-opacity=".28" stroke="currentColor" stroke-width="2"/><ellipse cx="288" cy="100" rx="18" ry="12" fill="${C.hide}" fill-opacity=".28" stroke="currentColor" stroke-width="2"/><path d="M280 89 L276 76 L286 86 M280 111 L276 124 L286 114" stroke="currentColor" stroke-width="2" fill="none"/>`;
+      s += `<path d="M66 100 L54 100" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>`;
+      if (o.bones) s += `<path d="M162 70 C190 64 228 70 236 100 C228 130 190 136 162 130" stroke="${C.bone}" stroke-width="2" stroke-dasharray="2 4" fill="none"/><path d="M196 100 L238 100" stroke="${C.bone}" stroke-width="5" stroke-linecap="round"/><path d="M76 84 Q92 100 76 116" stroke="${C.bone}" stroke-width="5" fill="none" stroke-linecap="round"/>`;
+      return s + (o.extra || '');
+    }
+    // --- whole deer hanging head-down from a gambrel, belly toward you ---
+    function hanging(o = {}) {
+      let s = `<path d="M8 12 Q110 2 212 14" stroke="#7a5230" stroke-width="9" fill="none" stroke-linecap="round"/><path d="M110 9 L110 46" stroke="currentColor" stroke-width="1.6"/><path d="M110 46 L66 56 M110 46 L154 56" stroke="currentColor" stroke-width="1.4"/><path d="M50 58 L170 58" stroke="#5f6368" stroke-width="5" stroke-linecap="round"/>`;
+      s += `<g stroke="currentColor" stroke-width="5" stroke-linecap="round" fill="none"><path d="M70 60 L64 26 L60 18"/><path d="M150 60 L156 26 L160 18"/></g>`;
+      s += `<path d="M64 62 C58 80 56 104 62 128 C66 140 78 146 90 148 L130 148 C142 146 154 140 158 128 C164 104 162 80 156 62 C150 76 146 96 138 116 L110 124 L82 116 C74 96 70 76 64 62 Z" fill="${o.fill || C.hide}" fill-opacity="${o.op || 0.32}" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>`;
+      s += `<path d="M90 148 C76 176 72 214 80 246 C88 262 98 268 110 268 C122 268 132 262 140 246 C148 214 144 176 130 148 Z" fill="${o.fill || C.hide}" fill-opacity="${o.op || 0.32}" stroke="currentColor" stroke-width="2"/>`;
+      s += `<path d="M98 266 L96 284 L124 284 L122 266" fill="${C.hide}" fill-opacity=".3" stroke="currentColor" stroke-width="2"/><ellipse cx="110" cy="300" rx="13" ry="18" fill="${C.hide}" fill-opacity=".3" stroke="currentColor" stroke-width="2"/><path d="M100 288 L88 280 M120 288 L132 280" stroke="currentColor" stroke-width="2"/>`;
+      s += `<g stroke="currentColor" stroke-width="5" stroke-linecap="round" fill="none"><path d="M84 232 L66 268 L60 304"/><path d="M136 232 L154 268 L160 304"/></g>`;
+      if (o.bones) s += `<path d="M110 120 L110 264" stroke="${C.bone}" stroke-width="3" stroke-dasharray="3 3"/><path d="M84 112 Q110 132 136 112" stroke="${C.bone}" stroke-width="4" fill="none"/><circle cx="80" cy="118" r="5" fill="#fff" stroke="${C.bone}" stroke-width="2.5"/><circle cx="140" cy="118" r="5" fill="#fff" stroke="${C.bone}" stroke-width="2.5"/>`;
+      return s + (o.extra || '');
+    }
+    // --- a single hind leg hanging from a hook through the hock ---
+    function legHang(o = {}) {
+      let s = `<path d="M8 10 Q100 2 192 12" stroke="#7a5230" stroke-width="9" fill="none" stroke-linecap="round"/><path d="M100 8 L100 30" stroke="currentColor" stroke-width="1.6"/>`;
+      s += `<path d="M100 30 q-11 0 -11 10 t11 10 l0 26" stroke="#5f6368" stroke-width="3.2" fill="none" stroke-linecap="round"/>`;
+      s += `<g stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M92 76 L88 44 L84 26 L92 22 L96 40 L106 76 Z" fill="${C.hide}" fill-opacity=".4"/>`;
+      s += `<path d="M88 76 C70 92 58 130 60 170 C62 214 84 250 110 262 C134 256 150 222 150 180 C150 136 132 96 108 76 Z" fill="${o.skinned ? C.meat : C.hide}" fill-opacity="${o.skinned ? 0.55 : 0.38}"/></g>`;
+      s += `<path d="M96 80 L104 80" stroke="#fff" stroke-width="3"/>`; // the gap the hook passes through
+      if (o.bone) s += `<path d="M100 82 L104 150 L110 248" stroke="${C.bone}" stroke-width="7" stroke-linecap="round" opacity=".95"/><circle cx="110" cy="252" r="7" fill="#fff" stroke="${C.bone}" stroke-width="3"/>`;
+      if (o.seams) s += `<g stroke="${C.seam}" stroke-width="1.8" stroke-dasharray="5 3" fill="none"><path d="M64 140 Q100 150 146 136"/><path d="M62 190 Q100 204 150 186"/><path d="M128 96 Q120 160 132 236"/></g>`;
+      return s + (o.extra || '');
+    }
+
+    // ------------------------- content -------------------------
+    const step = (n, title, svg, items, tip, warn) => `<div class="fd-step">${svg}<div><h3><i>${n}</i>${title}</h3><ol>${items.map(t => `<li>${t}</li>`).join('')}</ol>${tip ? `<div class="fd-tip"><b>Tip:</b> ${tip}</div>` : ''}${warn ? `<div class="fd-tip no"><b>Avoid:</b> ${warn}</div>` : ''}</div></div>`;
+    const legend = `<div class="fd-legend"><span><i></i>cut here</span><span><i class="move"></i>pull / direction</span><span><i class="bone"></i>bone</span><span><i class="seam"></i>muscle seams</span></div>`;
+    const SECS = [];
+    SECS.push(['gear', 'Gear & safety', `<p>Lay everything out before you start; it goes faster and cleaner.</p>
+      <ul class="fd-gear"><li><b>Knife</b> with a 3–4 in. blade (a gut-hook or replaceable-blade knife helps), plus a sharpener or spare blades</li><li><b>Gloves:</b> long shoulder-length gloves with nitrile gloves over them</li><li><b>Zip ties or string</b> to tie off the colon and bladder</li><li><b>Game bags</b> (breathable cloth, not plastic) and a <b>tarp</b></li><li><b>Paper towels or rags</b> and a bottle of water</li><li><b>Rope, gambrel and S-hooks</b> (meat hooks) for hanging</li><li><b>Small bone saw</b> (optional: pelvis, legs, brisket)</li><li><b>Headlamp</b>, your <b>tag</b> and a pen, a bag for heart and liver</li></ul>
+      <div class="fd-tip no"><b>Safety:</b> unload your gun or put the arrow back in the quiver first. Always cut away from yourself and from your other hand. A sharp knife is safer than a dull one. Gloves protect you from bacteria and from CWD exposure.</div>`]);
+    SECS.push(['field', 'Classic field dressing', legend + [
+      step(1, 'Confirm, tag, and position', svgW('0 0 320 200', bellyUp({ extra: arrow('M150 192 L246 192') + tag(118, 196, 'head uphill', 'end', 10) })), [
+        'Approach from behind and above. Touch the open eye with a stick or arrow; no blink means it’s dead.',
+        'Tag it (or report it) the way your state requires <b>before</b> you move it, and take your photos now.',
+        'Roll the deer onto its back, head uphill if there is a slope, so the guts slide toward the rear and out.',
+        'Spread the hind legs. Brace the body with your knees, a log, or by tying a hind leg to a tree.'],
+        'On flat ground, a log or your pack under one side keeps it from rolling while you work.'),
+      step(2, 'The first cut', svgW('0 0 320 200', bellyUp({ bones: true, extra: cutP('M98 100 L118 100') + badge(108, 84, 1) + callout(78, 100, 52, 170, 'pelvis', 'start') + callout(116, 100, 170, 170, 'pinch the skin up here') })), [
+        'Just in front of the pelvis, in the soft belly, <b>pinch up the skin</b> and make a small cut (1–2 in.) through only the skin and the thin belly muscle.',
+        'You should see the white or gray membrane around the stomach and intestines. Do <b>not</b> cut into it.',
+        'On a buck, you can cut around the genitals and leave them attached to the pelvis area if your state requires proof of sex; check the rule.'],
+        null, 'stabbing in deep. A punctured stomach or intestine spills contents that taint the meat.'),
+      step(3, 'Open the belly to the breastbone', svgW('0 0 320 200', bellyUp({ bones: true, extra: cutP('M110 100 L198 100') + badge(150, 82, 2) + arrow('M126 116 L176 116', 2) + callout(200, 100, 230, 176, 'breastbone (stop here)') + `<path d="M150 96 l-6 -10 M154 96 l6 -10" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>` + tag(160, 196, 'two fingers lift the skin; blade up between them', 'middle', 9.5) })), [
+        'Put the index and middle finger of your free hand into the cut, palm up, and lift the skin away from the guts.',
+        'Hold the knife <b>blade up</b> between your fingers and cut forward to the breastbone, lifting as you go.',
+        'If you plan to mount the head (shoulder mount), stop here at the breastbone. Otherwise you can cut through the breastbone with a saw or a strong knife at the soft center to open the chest.'],
+        'A gut-hook blade makes this cut fast and safe; it unzips the skin without reaching the guts.'),
+      step(4, 'Free the rear end', svgW('0 0 320 200', bellyUp({ bones: true, extra: `<circle cx="60" cy="100" r="11" stroke="${C.cut}" stroke-width="2.6" stroke-dasharray="6 4" fill="none"/>` + badge(46, 72, 3) + callout(60, 112, 44, 176, 'core around the anus', 'start') + callout(80, 100, 120, 176, 'pelvic bone', 'start') })), [
+        'Cut a deep circle around the anus (and the vulva on a doe), 3–4 in. deep, as if coring an apple, until the colon is loose inside the pelvis.',
+        'Pull the freed colon out a little and <b>tie it off</b> tightly with a zip tie or string so nothing leaks.',
+        'Push the tied colon back inside the pelvis from behind; it will come out with the rest of the guts.',
+        'Optional: split the pelvis at its center seam with a small saw or a strong knife; that makes this step much easier and opens the hams to cool.'],
+        null, 'cutting the bladder (just inside the pelvis). Pinch its neck closed or tie it, and keep urine off the meat.'),
+      step(5, 'Cut the diaphragm and windpipe', svgW('0 0 320 200', bellyUp({ bones: true, extra: cutP('M178 68 C164 84 164 116 178 132') + cutP('M232 100 L262 100') + badge(160, 60, 4) + badge(262, 82, 5) + callout(172, 100, 148, 176, 'diaphragm: thin wall', 'middle') + callout(250, 100, 280, 176, 'windpipe', 'middle') })), [
+        'Find the <b>diaphragm</b>: the thin sheet of muscle that separates the belly from the chest. Cut it free all the way around, close to the ribs.',
+        'Reach up into the chest cavity, as far forward toward the neck as you can. Grab the windpipe and gullet (the ridged tube and the soft one beside it).',
+        'Carefully cut them as far up as you can reach. Your hand is blind in there: keep the blade pointing away from your fingers, or use a short, sharp blade.'],
+        'Hold the knife in your fist with the blade sticking out only an inch or two; you cut the tubes, not your hand.'),
+      step(6, 'Roll everything out', svgW('0 0 320 190', profile({ extra: `<ellipse cx="150" cy="150" rx="44" ry="20" fill="#b3122a" fill-opacity=".22" stroke="#b3122a" stroke-width="1.5"/>` + arrow('M150 112 L150 166') + tag(150, 186, 'pull the windpipe toward the tail; roll the deer on its side', 'middle', 9.5) })), [
+        'Grip the cut windpipe and pull it firmly toward the tail. Heart, lungs, liver, stomach and intestines come out together.',
+        'Roll the deer onto its side so the pile slides out downhill. Cut any tissue still holding along the backbone.',
+        'Pull the tied colon and bladder out through the pelvis with the rest.',
+        'Save the <b>heart and liver</b> if you want them: put them in a bag right away. Skip the liver if it has white spots, cysts or worms.'],
+        null, 'leaving the guts touching the meat. Move the deer a few feet away from the pile.'),
+      step(7, 'Drain, clean and cool', svgW('0 0 320 190', profile({ extra: `<path d="M120 84 L178 84" stroke="#7a5230" stroke-width="5" stroke-linecap="round"/>` + callout(150, 84, 150, 150, 'stick props the cavity open') + arrow('M40 40 C70 34 92 48 112 62', 1.8) + arrow('M296 60 C276 70 256 78 236 82', 1.8) + tag(160, 186, 'shade, air, off the ground', 'middle', 9.5) })), [
+        'Turn the deer belly-down for a few minutes, or lift the front end, to drain the blood.',
+        'Wipe out blood, hair and any spilled contents with paper towels or a rag. Use water only if something spilled; dry it afterwards.',
+        'Prop the belly open with a stick so air can flow, keep it in the shade, and get it out of the woods.',
+        'Cool it fast: see "Cool the meat" at the top for how long you have at today’s temperature.'],
+        'In warm weather, put bags of ice inside the cavity on the way home.'),
+    ].join('')]);
+    SECS.push(['hang', 'Hang & quarter', `<p>Hanging the whole deer head-down from a strong limb lets you skin and quarter it standing up, with gravity helping. Field dress it first (above), or skip the gutting and use the gutless method below.</p>` + legend + [
+      step(1, 'Hang it by the hind legs', svgW('0 0 220 320', hanging({ extra: callout(70, 58, 26, 92, 'gambrel through the hocks', 'start') + callout(64, 30, 30, 40, 'hock', 'start') + callout(160, 10, 180, 36, 'strong limb', 'middle') })), [
+        'At each hind leg, find the gap between the leg bone and the big tendon just above the hock (the backward-pointing "knee"). Cut a slit through the skin there.',
+        'Push the ends of the gambrel through both slits, tie a rope to the gambrel’s center ring, and throw it over a strong limb.',
+        'Hoist until the head is just off the ground (or the hams are at your chest height) and tie it off well. A pulley or a tree hoist makes this much easier.'],
+        'Pick a limb at least 4 in. thick. A deer can weigh 100–200 lb.'),
+      step(2, 'Skin from the top down', svgW('0 0 220 320', hanging({ extra: cutP('M58 40 L82 40 M138 40 L162 40') + cutP('M66 64 C78 96 92 110 110 118 C128 110 142 96 154 64') + cutP('M110 118 L110 262') + cutP('M56 290 L68 290 M152 290 L164 290') + badge(30, 120, 1) + arrow('M196 120 L196 210') + tag(196, 228, 'peel down', 'middle', 9.5) })), [
+        'Cut a ring through the hide around each hind leg just below the gambrel.',
+        'From each ring, slit the hide down the <b>inside</b> of the leg to the crotch, then down the middle of the belly to the neck.',
+        'Work the hide off the hams with your fingers and fist; use the knife only where it sticks, keeping the blade angled toward the hide, not the meat.',
+        'Pull the hide down over the back and shoulders. Cut a ring around each front leg at the knee and slit up the inside so the legs come out.',
+        'Cut through the neck and hide behind the head (or saw), and set the hide aside.'],
+        'Pull downward with steady weight; on a fresh, warm deer the hide comes off like a sweater.'),
+      step(3, 'Front shoulders (no joint)', svgW('0 0 220 320', hanging({ fill: C.meat, op: 0.45, extra: `<path d="M84 196 C66 206 64 238 76 256 C90 262 100 250 100 236 C100 218 96 204 84 196 Z" fill="${C.bone}" fill-opacity=".35"/>` + cutP('M82 192 C60 204 56 244 72 262 C92 270 106 254 104 234 C102 214 96 198 82 192') + badge(40, 220, 3) + arrow('M60 240 L28 252') + callout(88, 228, 214, 200, 'shoulder blade', 'end') })), [
+        'Grab a front leg and pull it out and away from the body; a seam opens between the shoulder blade and the ribs.',
+        'Cut into that seam, keeping the blade flat against the ribs. There is <b>no ball joint</b> holding the front leg on, only muscle.',
+        'Keep cutting around and behind the shoulder blade until the whole leg with the shoulder comes free. Bag it, then do the other side.'],
+        'Pull the leg as you cut; the tension shows you where the seam is.'),
+      step(4, 'Backstraps', svgW('0 0 220 320', hanging({ fill: C.meat, op: 0.45, extra: `<path d="M96 150 L96 262 L104 262 L104 150 Z M116 150 L116 262 L124 262 L124 150 Z" fill="${C.meat}" stroke="#9c4a35"/>` + `<path d="M110 146 L110 266" stroke="${C.bone}" stroke-width="4"/>` + cutP('M104 148 L104 264 M116 148 L116 264') + badge(150, 200, 4) + callout(110, 150, 216, 128, 'spine (back view)', 'end') })), [
+        'Turn the deer so its back faces you. The backstraps are the two long, round muscles on each side of the spine, from the hips to the base of the neck.',
+        'Cut straight down along one side of the spine, the full length, as deep as the bone. Keep the blade against the bone.',
+        'Make a second cut along the top of the ribs where the backstrap ends (you can feel the edge).',
+        'Starting at the top (hips), peel the backstrap down and away while your knife frees it from the bone. It comes off in one long piece. Repeat on the other side.'],
+        'Long smooth strokes with the knife flat against the bone leave almost no meat behind.'),
+      step(5, 'Hindquarters', svgW('0 0 220 320', hanging({ fill: C.meat, op: 0.45, bones: true, extra: cutP('M62 62 C54 96 60 126 82 140 C96 146 106 138 110 128') + badge(30, 100, 5) + callout(80, 118, 26, 160, 'ball joint', 'start') })), [
+        'Support the leg (it stays hanging from the gambrel). Cut through the meat along the pelvis, from the tail side and from the belly side, following the bone.',
+        'Find the <b>ball joint</b> where the leg bone meets the pelvis. Push the leg to pop the ball out of its socket.',
+        'Cut the tough ligament in the socket and around the joint, then the remaining meat; the whole hindquarter is free.',
+        'Take it off the gambrel, or saw/cut through the leg at the hock to leave the hook in place for the other side.'],
+        null, 'cutting into the colon or bladder if the deer was not gutted: stay against the pelvic bone.'),
+      step(6, 'Tenderloins, neck and trim', svgW('0 0 220 320', hanging({ fill: C.meat, op: 0.45, extra: `<path d="M100 150 L100 210 M120 150 L120 210" stroke="#b3122a" stroke-width="7" stroke-linecap="round" opacity=".75"/>` + callout(120, 180, 216, 166, 'tenderloins', 'end') + cutP('M94 264 L126 264 L126 284 L94 284 Z') + badge(150, 270, 6) })), [
+        'The two <b>tenderloins</b> run along the underside of the spine inside the body cavity, just in front of the hips. If the deer was gutted, reach in and peel them out with your fingers and a few small cuts.',
+        'Take the <b>neck meat</b> off both sides of the neck bones (great for roasts or burger).',
+        'Trim the meat between and over the ribs and the flank (belly meat) for burger or sausage.'],
+        'Tenderloins dry out fast: take them first if the deer will hang overnight.'),
+    ].join('')]);
+    SECS.push(['gutless', 'Gutless method', `<p>No gutting and no hoisting the whole deer: the four legs come off with the hide still on, then the backstraps and tenderloins, and each leg is hung on a tree to skin and debone. Ideal in big woods, on steep ground and when you are alone.</p>` + legend + [
+      step(1, 'Lay it on its side, front leg off (hide on)', svgW('0 0 320 190', profile({ tarp: true, blade: true, ribs: true, extra: cutP('M182 52 C176 72 182 96 196 110 C212 112 222 100 220 80 C218 62 208 52 196 48') + badge(196, 30, 1) + arrow('M206 132 L230 176') + callout(200, 78, 314, 124, 'shoulder blade', 'end') })), [
+        'Tag first. Lay the deer on its side on a tarp, back toward you. Gloves on.',
+        'Lift the top front leg up and away from the body to open the seam between the shoulder and the ribs.',
+        'Cut through the hide behind the shoulder, then work your knife in <b>behind the shoulder blade</b>, staying flat against the ribs.',
+        'Keep cutting around the shoulder blade (top, back and under the armpit) until the whole leg comes free, hide and all. Lay it on the tarp, cut side up.'],
+        'The hide stays on the leg: it keeps hair, dirt and flies off the meat until you’re ready to skin it at the tree.'),
+      step(2, 'Hind leg off (hide on)', svgW('0 0 320 190', profile({ tarp: true, pelvis: true, extra: cutP('M54 72 C46 92 54 112 70 120 C88 124 100 116 104 104 C108 92 104 80 96 72') + badge(40, 52, 2) + callout(88, 92, 130, 150, 'ball joint: pop it', 'start') + arrow('M80 150 L60 178') })), [
+        'Lift the top hind leg. Cut through the hide along the inside of the ham from the crotch up to the pelvis.',
+        'Cut along the top of the pelvis from the tail toward the hip, following the bone, then work inward to the <b>ball joint</b>.',
+        'Bend the leg hard to pop the ball out of its socket, cut the ligament inside the socket and the meat around it. The whole leg comes free, hide on.'],
+        null, 'cutting too far toward the belly: you’d open the gut cavity. Stay on the outside of the pelvis.'),
+      step(3, 'Flip it and repeat', svgW('0 0 320 190', `<rect x="12" y="12" width="296" height="166" rx="8" fill="${C.move}" fill-opacity=".06" stroke="${C.move}" stroke-opacity=".25"/>` + [[40, 30], [170, 30]].map(([x, y]) => `<path d="M${x} ${y} c40 4 64 30 64 60 c0 30 -20 50 -40 56 l-6 40 l-10 0 l2 -40 c-26 -12 -30 -70 -10 -116z" fill="${C.hide}" fill-opacity=".4" stroke="currentColor" stroke-width="2"/>`).join('') + [[108, 40], [238, 40]].map(([x, y]) => `<path d="M${x} ${y} c28 0 36 22 34 40 c-4 18 -16 26 -18 30 l0 52 l-10 0 l0 -52 c-12 -16 -16 -50 -6 -70z" fill="${C.hide}" fill-opacity=".4" stroke="currentColor" stroke-width="2"/>`).join('') + badge(290, 30, 3) + tag(160, 172, 'four legs, hide on, cut side up, off the dirt', 'middle', 10)), [
+        'Roll the deer over and take the other front leg and hind leg the same way.',
+        'Keep all four legs on the tarp or hang them on branches right away; out of the dirt, in the shade.'],
+        null),
+      step(4, 'Backstraps from the outside', svgW('0 0 320 190', profile({ tarp: true, spine: true, strap: true, extra: cutP('M56 66 C110 56 170 52 208 48') + cutP('M70 76 C120 70 170 66 206 62') + badge(130, 34, 4) + callout(160, 58, 314, 150, 'backstrap: hips to neck', 'end') })), [
+        'Roll the deer onto its belly or work from its side. Cut the hide along the top of the spine from the tail to the neck and peel it back on both sides to expose the backstraps.',
+        'Cut down along the spine, the full length, as deep as the bone (cut 1 in the drawing).',
+        'Cut along the top of the ribs where the backstrap ends (cut 2). Peel the strap away from the bone from the hips toward the neck, freeing it with long, flat strokes. Repeat on the other side.'],
+        'Fold the hide back over the meat while you work the other side to keep it clean.'),
+      step(5, 'Tenderloins without gutting', svgW('0 0 320 190', profile({ tarp: true, spine: true, ribs: true, loin: true, extra: cutP('M132 70 C126 82 128 96 136 106') + badge(112, 40, 5) + arrow('M100 30 L126 74') + callout(100, 78, 70, 150, 'tenderloin (inside)', 'middle') + callout(140, 90, 200, 150, 'behind the last rib', 'start') })), [
+        'Just <b>behind the last rib</b>, below the spine, cut a small opening (4–5 in.) through the thin belly wall, only deep enough to reach in.',
+        'Gently push the guts aside. The tenderloin is the long, round muscle running along the underside of the spine toward the hips.',
+        'Free it with your fingers and a few small cuts at each end, and pull it out. Do the same on the other side.'],
+        null, 'cutting deeper than the thin muscle wall. A punctured gut is the main risk of this method.'),
+      step(6, 'Hang each leg on a tree', svgW('0 0 200 280', legHang({ extra: callout(100, 80, 196, 44, 'hook through the gap', 'end') + callout(90, 60, 26, 70, 'hock', 'start') + badge(170, 140, 6) + tag(100, 276, 'hind leg, hide on', 'middle', 10) })), [
+        '<b>Hind leg:</b> push an S-hook or meat hook through the gap between the leg bone and the big tendon just above the hock.',
+        '<b>Front leg:</b> hook through the gap between the two leg bones just above the knee, or tie a cord tightly around the leg below the knee.',
+        'Hang it from a branch or a rope between trees at about chest height, so you can work standing up.'],
+        'Carry a few cheap S-hooks or a short rope with a loop; it beats deboning on the ground.'),
+      step(7, 'Skin the hanging leg', svgW('0 0 200 280', legHang({ extra: cutP('M84 86 Q100 96 114 86') + cutP('M98 92 L84 250') + badge(36, 120, 7) + arrow('M172 110 L172 210') + tag(172, 226, 'pull down', 'middle', 9.5) })), [
+        'Cut a ring through the hide all the way around the leg just below the hook.',
+        'Slit the hide from the ring down the inside of the leg to the cut end.',
+        'Pull the hide down and off with your hands; use the knife only where it sticks, edge toward the hide.'],
+        null, 'letting the hair side touch the meat. Roll the hide away from the meat as you pull.'),
+      step(8, 'Debone the hanging leg', svgW('0 0 200 280', legHang({ skinned: true, bone: true, seams: true, extra: badge(36, 120, 8) + callout(104, 150, 196, 104, 'leg bone', 'end') + callout(66, 160, 20, 210, 'seams', 'start') + `<rect x="138" y="232" width="50" height="34" rx="7" fill="${C.fat}" stroke="currentColor"/>` + tag(163, 254, 'game bag', 'middle', 9) })), [
+        'Find the natural seams (thin, white membranes) between the big muscles. Push your fingers in and pull the muscle groups apart; cut only where they hold.',
+        'Lift off each muscle group (see "Bone out the meat" for the names) and drop it straight into a clean game bag.',
+        'Cut the remaining meat off the leg bone with long, shallow cuts along the bone.',
+        'Front leg: cut the meat off both sides of the shoulder blade and off the leg bones.',
+        'Leave the bones and hide in the woods only where that is allowed.'],
+        'Keep each muscle whole now; trim fat and silver skin at home on a clean table.'),
+    ].join('')]);
+    const ham = (inside) => svgW('0 0 300 220', `<g stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M50 40 Q150 14 240 40 Q270 90 248 140 Q216 180 176 188 L152 194 Q112 182 90 152 Q46 104 50 40Z" fill="${C.meat}" fill-opacity=".45"/><path d="M152 194 L160 214" stroke-width="7" stroke-linecap="round"/></g>`
+      + (inside
+        ? `<g stroke="${C.seam}" stroke-width="2" stroke-dasharray="5 3" fill="none"><path d="M70 70 Q150 92 236 66"/><path d="M150 82 Q148 140 152 192"/></g><path d="M118 40 L170 186" stroke="${C.bone}" stroke-width="7" stroke-linecap="round" opacity=".9"/>${tag(110, 130, 'TOP ROUND', 'middle', 11)}${tag(200, 130, 'SIRLOIN TIP', 'middle', 11)}${tag(150, 56, 'pelvis side', 'middle', 9.5)}${callout(162, 160, 250, 196, 'femur', 'middle')}`
+        : `<g stroke="${C.seam}" stroke-width="2" stroke-dasharray="5 3" fill="none"><path d="M76 66 Q150 56 238 66"/><path d="M150 66 Q154 124 150 192"/><path d="M150 120 Q112 126 86 146"/><path d="M190 152 Q216 140 248 134"/></g><path d="M122 44 L172 184" stroke="${C.bone}" stroke-width="7" stroke-linecap="round" opacity=".7"/>${tag(150, 52, 'RUMP', 'middle', 11)}${tag(104, 104, 'TOP ROUND', 'middle', 10)}${tag(112, 160, 'EYE OF ROUND', 'middle', 9.5)}${tag(206, 100, 'BOTTOM ROUND', 'middle', 10)}${tag(212, 172, 'SIRLOIN TIP', 'middle', 9.5)}${tag(168, 216, 'shank', 'start', 9.5)}`));
+    SECS.push(['bone', 'Bone out the meat', `<p>Each muscle group sits in its own "sleeve" of thin membrane. Follow those seams and the meat separates almost by itself into clean cuts: steaks, roasts, jerky and burger. Boned-out meat cools faster, packs smaller and lighter, and is what most states require you to bring home from CWD areas.</p>` + legend + [
+      step(1, 'Hindquarter: outside', ham(false), [
+        'Lay the leg outside up on a clean surface (or work it hanging). The <b>rump</b> is the muscle at the top, above the ball joint; cut it off along its seam.',
+        'The <b>bottom round</b> (back of the leg) and the long, round <b>eye of round</b> under it separate along the seams; work them free with your fingers.',
+        'The <b>sirloin tip</b> (knuckle) sits on the front of the leg over the knee; lift it off the bone.'],
+        'Steaks: top round and sirloin tip. Roasts or jerky: bottom round and eye of round.'),
+      step(2, 'Hindquarter: inside', ham(true), [
+        'Turn the leg over. The big, flat <b>top round</b> covers the inside of the leg; peel it off along its seam. It is the most tender large cut on the leg.',
+        'With the big muscles off, cut the remaining meat away from the femur with long, shallow strokes along the bone.',
+        'The <b>shank</b> (below the knee) is full of tendons: slow-cook it, or grind it.'],
+        null, 'cutting across the muscles before they’re separated. Let the seams decide.'),
+      step(3, 'Shoulder', svgW('0 0 300 220', `<g stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M70 24 Q170 12 236 50 Q214 118 164 140 L150 206 L132 206 L126 140 Q84 104 70 24Z" fill="${C.meat}" fill-opacity=".45"/></g><path d="M92 34 Q162 34 214 54 L150 124Z" fill="${C.bone}" fill-opacity=".35" stroke="${C.bone}" stroke-width="3"/><path d="M140 128 L140 202" stroke="${C.bone}" stroke-width="7" stroke-linecap="round" opacity=".9"/>${callout(160, 70, 260, 104, 'shoulder blade', 'middle')}${callout(140, 170, 220, 190, 'leg bones', 'start')}` + cutP('M84 38 Q118 84 142 122')), [
+        'Cut along the ridge in the middle of the shoulder blade, then lift the meat off the flat blade on each side.',
+        'Turn it over and do the same on the inside.',
+        'Cut the meat off the upper leg bone and the lower leg. Shoulders give roasts, stew meat and burger.'],
+        'Shoulder meat has more connective tissue: braise it slowly, or grind it.'),
+      step(4, 'Backstrap and tenderloin', svgW('0 0 300 200', `<path d="M24 60 Q150 34 276 60 L276 100 Q150 120 24 100 Z" fill="${C.meat}" fill-opacity=".6" stroke="currentColor" stroke-width="2"/><path d="M24 62 Q150 38 276 62" stroke="#e8e6e0" stroke-width="5" fill="none" opacity=".95"/>${callout(150, 48, 210, 22, 'silver skin', 'start')}` + [80, 120, 160, 200, 240].map(x => cutP(`M${x} 40 L${x} 118`)).join('') + tag(150, 150, 'steaks 1–1.5 in. thick, across the grain', 'middle', 10) + `<path d="M60 172 Q150 162 240 172 L240 186 Q150 194 60 186Z" fill="${C.meat}" fill-opacity=".6" stroke="currentColor" stroke-width="1.6"/>${tag(150, 212, 'tenderloin: cook whole or cut into medallions', 'middle', 9.5)}`), [
+        'Slide a thin knife under the shiny <b>silver skin</b> on top of the backstrap and run it along, blade angled slightly up, to peel it off.',
+        'Cut across the grain into steaks 1–1.5 in. thick, or leave it in roast-size pieces.',
+        'Tenderloins need little trimming: pull off any membrane and cook them whole or as medallions.'],
+        'Freeze steaks in roast-size pieces and cut them when you cook: less surface, less freezer burn.'),
+      step(5, 'Trim and pack', svgW('0 0 300 160', `<rect x="20" y="30" width="80" height="60" rx="10" fill="${C.fat}" stroke="currentColor"/><rect x="110" y="30" width="80" height="60" rx="10" fill="${C.fat}" stroke="currentColor"/><rect x="200" y="30" width="80" height="60" rx="10" fill="${C.fat}" stroke="currentColor"/>${tag(60, 64, 'steaks', 'middle', 11)}${tag(150, 64, 'roasts', 'middle', 11)}${tag(240, 64, 'burger', 'middle', 11)}${tag(150, 120, 'labeled, cold, dry', 'middle', 11)}`), [
+        'Trim off all fat (deer fat tastes strong and goes rancid), silver skin, hair, and any bloodshot or dirty meat.',
+        'Sort as you go: steaks, roasts, stew and jerky, burger. Label each bag with the cut and the date.',
+        'Keep everything below 40°F: game bags in the shade, then a cooler with ice. Keep meat out of melt water.',
+        'Freeze within a few days, or age whole muscles in a fridge at 34–38°F for up to a week if you like.'],
+        null),
+    ].join('')]);
+    SECS.push(['videos', 'Real photos & videos', `<p>Watch it done on a real deer before your first time. These guides show every step with photos or video:</p><div class="fd-links">
+      <a href="https://deerassociation.com/field-dress-deer/" target="_blank" rel="noopener"><b>How to field dress a deer</b><span>National Deer Association · step-by-step photo guide</span></a>
+      <a href="https://extension.psu.edu/field-dressing-deer-pocket-guide" target="_blank" rel="noopener"><b>Field dressing deer: pocket guide</b><span>Penn State Extension · 12 illustrated steps, printable</span></a>
+      <a href="https://www.onxmaps.com/hunt/learn/collections/elk/post-hunt/gutless-method" target="_blank" rel="noopener"><b>The gutless method</b><span>onX Hunt · step-by-step photos, with a video by Remi Warren</span></a>
+      <a href="https://gohunt.com/browse/tips-and-tricks/how-to-perform-the-gutless-method-on-big-game" target="_blank" rel="noopener"><b>How to perform the gutless method</b><span>goHUNT · five-part video series</span></a>
+      <a href="https://www.fieldandstream.com/hunting/how-to-clean-big-game-with-the-gutless-method" target="_blank" rel="noopener"><b>How to clean big game with the gutless method</b><span>Field &amp; Stream · step-by-step article</span></a>
+      <a href="https://themeateater.com/cook/butchering-and-processing/video-how-to-debone-a-venison-hindquarter" target="_blank" rel="noopener"><b>How to debone a venison hindquarter</b><span>MeatEater · video</span></a>
+    </div><div class="caption">Links open the publishers’ own websites; they need signal.</div>`]);
+    $('fdNav').innerHTML = SECS.map(([id, t]) => `<a href="#dress" data-go="fd-${id}">${t}</a>`).join('');
+    $('fdGuide').innerHTML = SECS.map(([id, t, body]) => `<section class="panel fd-sec" id="fd-${id}"><h2 style="margin:0">${t}</h2>${body}</section>`).join('');
+    $('fdNav').addEventListener('click', e => { const a = e.target.closest('[data-go]'); if (!a) return; e.preventDefault(); $(a.dataset.go).scrollIntoView({ behavior: 'smooth', block: 'start' }); });
 
     function cool() {
       const t = +$('fdTemp').value; $('fdTempV').textContent = t + '°F';
