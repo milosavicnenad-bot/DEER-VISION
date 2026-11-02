@@ -836,7 +836,13 @@ svg.leaflet-image-layer.leaflet-interactive path {
 .mapbar select { flex: 1; min-width: 0; }
 .mapwrap { position: relative; border-radius: 10px; overflow: hidden; border: 1px solid var(--line); }
 #map { height: min(68vh, 620px); min-height: 380px; width: 100%; background: #d9dccf; }
-.mapfab { position: absolute; top: 10px; right: 10px; z-index: 500; display: grid; gap: 8px; }
+#map3d { position: absolute; inset: 0; z-index: 1001; background: #cfd6dc; }
+#map3d .maplibregl-popup-content { padding: 10px 12px; border-radius: 8px; color: #1d221b; font: 13px var(--font-body); }
+#map3d .maplibregl-ctrl-group button { width: 36px; height: 36px; }
+.mapfab .b3d { font: 800 15px var(--font-body); letter-spacing: .02em; }
+.mapfab .b3d[aria-pressed="true"] { background: #1d221b; color: #fff; }
+.m3-me { width: 18px; height: 18px; border-radius: 50%; background: #2f8cff; border: 3px solid #fff; box-shadow: 0 0 0 6px rgba(47,140,255,.25); }
+.mapfab { position: absolute; top: 10px; right: 10px; z-index: 1002; display: grid; gap: 8px; }
 .mapfab button { width: 44px; height: 44px; border-radius: 10px; border: 1px solid rgba(0,0,0,.2); background: #fff; color: #1d221b; display: grid; place-items: center; cursor: pointer; box-shadow: 0 1px 4px rgba(0,0,0,.25); }
 .mapfab button svg { width: 24px; height: 24px; }
 .mapfab button[aria-pressed="true"] { background: #2f6fae; color: #fff; }
@@ -1319,9 +1325,11 @@ details.drop > .dropbody { padding: 0 14px 14px; }
       </div>
       <div class="mapwrap">
         <div id="map" aria-label="Map"></div>
+        <div id="map3d" aria-label="3D terrain map" hidden></div>
         <div class="mapfab">
           <button type="button" id="mpLayersBtn" aria-label="Map layers"><svg><use href="#i-layers"/></svg></button>
           <button type="button" id="mpLocBtn" aria-label="Show my location"><svg><use href="#i-locate"/></svg></button>
+          <button type="button" id="mp3dBtn" class="b3d" aria-pressed="false" aria-label="Show 3D terrain view">3D</button>
         </div>
         <div class="crosshair" id="mpCross" hidden aria-hidden="true"></div>
       </div>
@@ -3982,11 +3990,13 @@ details.drop > .dropbody { padding: 0 14px 14px; }
       if (baseLayer) map.removeLayer(baseLayer);
       baseLayer = BASES[k][2]().addTo(map); baseLayer.bringToBack();
       document.querySelectorAll('#mpBase input').forEach(i => { i.checked = i.value === k; });
+      refresh3d();
     }
     function setOver(k, on) {
       overOn[k] = on; store.set('maps.over', overOn);
       if (on && !overLayers[k]) overLayers[k] = OVERS[k][2]();
       if (on) overLayers[k].addTo(map); else if (overLayers[k]) map.removeLayer(overLayers[k]);
+      refresh3d();
     }
     function buildLayerPanel() {
       $('mpBase').innerHTML = Object.entries(BASES).map(([k, b]) => `<label class="lyr"><input type="radio" name="mpBase" value="${k}"><div><b>${b[0]}</b><span>${b[1]}</span></div></label>`).join('');
@@ -3998,6 +4008,7 @@ details.drop > .dropbody { padding: 0 14px 14px; }
       $('mpOpacity').addEventListener('input', () => {
         opacity = +$('mpOpacity').value / 100; $('mpOpacityV').textContent = Math.round(opacity * 100) + '%'; store.set('maps.opacity', opacity);
         for (const [k, l] of Object.entries(overLayers)) if (l.setOpacity && !['hill', 'lidar', 'landcover'].includes(k)) l.setOpacity(opacity);
+        clearTimeout(window.__op3); window.__op3 = setTimeout(refresh3d, 300);
       });
     }
 
@@ -4174,9 +4185,10 @@ details.drop > .dropbody { padding: 0 14px 14px; }
       rulesPanel(z, ll, land);
       $('mp-rules').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
+    const zoomNow = () => is3d && m3 ? m3.getZoom() + 1 : map.getZoom();
     async function landInfo(ll) {
       const jobs = [];
-      if (overOn.nyParcels && map.getZoom() >= 14) jobs.push(['NY property', arcQuery(NYP + '/1', ll, 'PRIMARY_OWNER,ADD_OWNER,PARCEL_ADDR,MUNI_NAME,COUNTY_NAME,ACRES,CALC_ACRES,PROP_CLASS,PRINT_KEY,MAIL_ADDR,MAIL_CITY,MAIL_STATE'), f => {
+      if (overOn.nyParcels && zoomNow() >= 14) jobs.push(['NY property', arcQuery(NYP + '/1', ll, 'PRIMARY_OWNER,ADD_OWNER,PARCEL_ADDR,MUNI_NAME,COUNTY_NAME,ACRES,CALC_ACRES,PROP_CLASS,PRINT_KEY,MAIL_ADDR,MAIL_CITY,MAIL_STATE'), f => {
         const a = f.attributes, pc = String(a.PROP_CLASS || '');
         return `<h4>${esc(a.PARCEL_ADDR || 'Property')}</h4>` + dl([['Owner', [a.PRIMARY_OWNER, a.ADD_OWNER].filter(Boolean).join(' & ')], ['Size', acres(a.ACRES || a.CALC_ACRES)],
           ['Use', pc ? `${NY_CLASS[pc[0]] || ''} (${pc})` : null], ['Town', a.MUNI_NAME], ['County', a.COUNTY_NAME], ['Tax ID', a.PRINT_KEY], ['Mail to', [a.MAIL_ADDR, a.MAIL_CITY, a.MAIL_STATE].filter(Boolean).join(', ')]]);
@@ -4193,13 +4205,13 @@ details.drop > .dropbody { padding: 0 14px 14px; }
         return `<h4>${esc(a.FEATURE_NAME || 'State land')}</h4>` + dl([['Type', a.OWNERSHIP_USE], ['Hunting allowed', a.HUNTING_PERMITTED], ['Size', acres(a.ACRES)], ['Managed by', a.LAND_MANAGER]])
           + (url ? `<div class="muted"><a href="${esc(url)}" target="_blank" rel="noopener">Hunting rules for this area</a></div>` : '');
       }]);
-      if (overOn.njParcels && map.getZoom() >= 15) jobs.push(['NJ property', arcQuery(NJP, ll, '*'), f => {
+      if (overOn.njParcels && zoomNow() >= 15) jobs.push(['NJ property', arcQuery(NJP, ll, '*'), f => {
         const a = f.attributes, pick = re => { const k = Object.keys(a).find(x => re.test(x) && a[x] != null && String(a[x]).trim() !== ''); return k ? a[k] : null; };
         return `<h4>${esc(pick(/^PROP_LOC$|LOCATION|ADDRESS/i) || 'Property')}</h4>` + dl([['Owner', pick(/OWNER/i)], ['Size', acres(pick(/ACRE/i))], ['Class', pick(/PROP_CLASS|CLASS/i)],
           ['Town', pick(/MUN_NAME|MUNI/i)], ['County', pick(/^COUNTY/i)], ['Block / lot', [pick(/BLOCK/i), pick(/LOT$/i)].filter(Boolean).join(' / ')]]);
       }]);
       const zoneP = zoneAt(ll);
-      const pop = L.popup({ maxWidth: 290 }).setLatLng(ll).setContent(`<div class="pop"><div class="muted">Looking up this spot…</div></div>`).openOn(map);
+      const pop = openPop(ll, `<div class="pop"><div class="muted">Looking up this spot…</div></div>`);
       if (highlight) { map.removeLayer(highlight); highlight = null; }
       const res = await Promise.allSettled(jobs.map(j => j[1]));
       const zone = await zoneP; lastZone = { ll, z: zone };
@@ -4225,11 +4237,12 @@ details.drop > .dropbody { padding: 0 14px 14px; }
       if (!found && jobs.length) html += `<div class="sec muted">${failed ? 'Could not reach the property databases. Check your signal.' : 'No property or public-land records here.'}</div>`;
       if (!jobs.length) html += `<div class="sec muted">Turn on property or public-land layers (layers button) to see who owns this spot.</div>`;
       const box = document.createElement('div'); box.className = 'pop';
-      box.innerHTML = html + `<div class="sec muted">${ll.lat.toFixed(5)}, ${ll.lng.toFixed(5)}${me ? ' · ' + fmtDist(me.distanceTo(ll)) + ' from you' : ''}</div><div class="acts"><button type="button" data-a="add">Add marker here</button><button type="button" data-a="copy">Copy coordinates</button></div>`;
-      box.querySelector('[data-a=add]').onclick = () => { map.closePopup(); startAdd(null, ll); };
-      box.querySelector('[data-a=rules]').onclick = () => { map.closePopup(); showRules(ll, land); };
+      box.innerHTML = html + `<div class="sec muted">${ll.lat.toFixed(5)}, ${ll.lng.toFixed(5)}${is3d ? elevTxt(ll) : ''}${me ? ' · ' + fmtDist(me.distanceTo(ll)) + ' from you' : ''}</div><div class="acts"><button type="button" data-a="add">Add marker here</button><button type="button" data-a="copy">Copy coordinates</button></div>`;
+      box.querySelector('[data-a=add]').onclick = () => { closePops(); if (is3d) set3d(false); startAdd(null, ll); };
+      box.querySelector('[data-a=rules]').onclick = () => { closePops(); showRules(ll, land); };
       box.querySelector('[data-a=copy]').onclick = () => copyText(`${ll.lat.toFixed(6)}, ${ll.lng.toFixed(6)}`);
-      if (map.hasLayer(pop)) pop.setContent(box);
+      pop.set(box);
+      if (is3d) fill3d();
     }
     function copyText(t) {
       try { navigator.clipboard.writeText(t).then(() => toast('Copied ' + t), () => toast(t)); } catch (e) { toast(t); }
@@ -4387,6 +4400,7 @@ details.drop > .dropbody { padding: 0 14px 14px; }
         r.unshift({ kind: it.kind, title: it.title, sub: it.sub || '', lat: +it.ll.lat.toFixed(6), lon: +it.ll.lng.toFixed(6), b: it.b && it.b.isValid() ? [[it.b.getSouth(), it.b.getWest()], [it.b.getNorth(), it.b.getEast()]] : null });
         store.set('maps.recent', r.slice(0, 8));
       }
+      if (is3d) sync3dFrom2d();
       if (it.kind !== 'place' || !it.b) landInfo(it.ll); // owner, public land and hunting rules for that spot
       else $('mpInfo').innerHTML = `Showing <b>${esc(it.title)}</b>. Tap the map anywhere for land owner and hunting rules.`;
     }
@@ -4410,8 +4424,138 @@ details.drop > .dropbody { padding: 0 14px 14px; }
     });
     resEl.addEventListener('mousedown', e => e.preventDefault()); // keep the keyboard open while choosing
     resEl.addEventListener('click', e => { const b = e.target.closest('button[data-i]'); if (b) pick(sItems[+b.dataset.i]); });
-    $('mpQx').addEventListener('click', () => { qEl.value = ''; $('mpQx').hidden = true; clearPick(); if (map) map.closePopup(); qEl.focus(); showRecent(); });
+    $('mpQx').addEventListener('click', () => { qEl.value = ''; $('mpQx').hidden = true; clearPick(); if (map) closePops(); if (is3d) fill3d(); qEl.focus(); showRecent(); });
     document.addEventListener('pointerdown', e => { if (!e.target.closest('.mpsearch')) closeRes(); });
+
+
+    // ---------- 3D view: the same map draped over real terrain (MapLibre) ----------
+    const DEM = 'https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png', EXAG = 1.5;
+    let m3 = null, is3d = false, m3Marks = [], m3Pop = null, m3Me = null, m3Timer = null, m3Center = false, m3Busy = false;
+    function loadML() {
+      if (window.maplibregl) return Promise.resolve();
+      return new Promise((res, rej) => {
+        const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = 'maplibre-gl.css'; document.head.appendChild(l);
+        const s = document.createElement('script'); s.src = 'maplibre-gl.js'; s.onload = res; s.onerror = () => rej(new Error('load')); document.head.appendChild(s);
+      });
+    }
+    // turn the 2D (Leaflet) picture layers into 3D map sources, so the same layers show in both
+    function tilesOf(l) {
+      if (!l) return [];
+      if (!(l instanceof L.TileLayer)) return l.getLayers ? l.getLayers().flatMap(tilesOf) : [];
+      const o = l.options; let tiles;
+      if (l instanceof ArcTiles) {
+        const bb = 'bbox={bbox-epsg-3857}&bboxSR=3857&imageSR=3857&size=256,256';
+        tiles = [o.image ? `${l._url}/exportImage?${bb}&format=png&transparent=true&f=image${o.rr ? '&renderingRule=' + o.rr : ''}`
+          : `${l._url}/export?${bb}&dpi=96&format=png32&transparent=true&f=image${o.layers ? '&layers=' + o.layers : ''}`];
+      } else {
+        const subs = typeof o.subdomains === 'string' ? o.subdomains.split('') : (o.subdomains || ['a']);
+        tiles = l._url.includes('{s}') ? subs.map(s => l._url.replace('{s}', s)) : [l._url];
+      }
+      return [{ tiles, min: Math.max(0, (o.minZoom || 0) - 1), max: o.maxNativeZoom || 19, op: o.opacity == null ? 1 : o.opacity, z: o.zIndex == null ? 5 : o.zIndex, attr: o.attribution || '' }];
+    }
+    function style3d() {
+      const src = {}, lay = [];
+      tilesOf(baseLayer).forEach((t, i) => { src['b' + i] = { type: 'raster', tiles: t.tiles, tileSize: 256, maxzoom: t.max, attribution: t.attr }; lay.push({ id: 'b' + i, type: 'raster', source: 'b' + i }); });
+      src.dem = { type: 'raster-dem', tiles: [DEM], encoding: 'terrarium', tileSize: 256, maxzoom: 15, attribution: 'Elevation: AWS Terrain Tiles (USGS 3DEP, SRTM)' };
+      src.hs = Object.assign({}, src.dem);
+      lay.push({ id: 'hs', type: 'hillshade', source: 'hs', paint: { 'hillshade-exaggeration': 0.35, 'hillshade-shadow-color': '#2b2b2b' } });
+      const ov = [];
+      for (const k of Object.keys(OVERS)) if (overOn[k] && overLayers[k]) tilesOf(overLayers[k]).forEach(t => ov.push(t));
+      ov.sort((a, b) => a.z - b.z).forEach((t, i) => {
+        src['o' + i] = { type: 'raster', tiles: t.tiles, tileSize: 256, maxzoom: t.max, attribution: t.attr };
+        lay.push({ id: 'o' + i, type: 'raster', source: 'o' + i, minzoom: t.min, paint: { 'raster-opacity': t.op, 'raster-fade-duration': 0 } });
+      });
+      const empty = { type: 'geojson', data: { type: 'FeatureCollection', features: [] } };
+      for (const k of ['njp', 'trk', 'hl', 'sh']) src[k] = JSON.parse(JSON.stringify(empty));
+      lay.push({ id: 'njp', type: 'line', source: 'njp', minzoom: 14, paint: { 'line-color': '#ffd400', 'line-width': 1.6 } });
+      lay.push({ id: 'sh', type: 'line', source: 'sh', paint: { 'line-color': '#e0218a', 'line-width': 3, 'line-dasharray': [2, 1.5] } });
+      lay.push({ id: 'hl', type: 'line', source: 'hl', paint: { 'line-color': '#ff7a1a', 'line-width': 3 } });
+      lay.push({ id: 'trk', type: 'line', source: 'trk', paint: { 'line-color': '#ff3d7f', 'line-width': 5, 'line-opacity': 0.85 } });
+      return { version: 8, sources: src, layers: lay, terrain: { source: 'dem', exaggeration: EXAG } };
+    }
+    const polyFC = rings => ({ type: 'FeatureCollection', features: rings ? [{ type: 'Feature', properties: {}, geometry: { type: 'MultiLineString', coordinates: rings.map(r => r.map(p => [p[1], p[0]])) } }] : [] });
+    const llRings = layer => layer ? [].concat(...layer.getLatLngs().map(g => Array.isArray(g[0]) ? g : [g])).map(r => r.map(p => [p.lat, p.lng]).concat([[r[0].lat, r[0].lng]])) : null;
+    function fill3d() {
+      if (!m3 || !m3.isStyleLoaded()) return;
+      m3Marks.forEach(x => x.remove()); m3Marks = [];
+      for (const m of DB.markers.filter(inArea)) {
+        const box = document.createElement('div'); box.innerHTML = mkHtml(m.type); const el = box.firstChild; el.title = m.name || (MT[m.type] || MT.note)[0];
+        el.style.cursor = 'pointer';
+        el.addEventListener('click', ev => { ev.stopPropagation(); pop3d(L.latLng(m.lat, m.lon), `<div class="pop"><h4>${esc(m.name || (MT[m.type] || MT.note)[0])}</h4><div class="muted">${esc((MT[m.type] || MT.note)[0])} · ${esc(m.area)}</div>${m.notes ? `<div class="sec">${esc(m.notes).replace(/\n/g, '<br>')}</div>` : ''}<div class="sec muted">${m.lat.toFixed(5)}, ${m.lon.toFixed(5)}${elevTxt(L.latLng(m.lat, m.lon))}</div></div>`); });
+        m3Marks.push(new maplibregl.Marker({ element: el, anchor: 'bottom', offset: [0, -6] }).setLngLat([m.lon, m.lat]).addTo(m3));
+      }
+      if (sPin) { const el = document.createElement('div'); el.innerHTML = '<div class="mp-spin"><svg><use href="#i-pin"/></svg></div>'; const p = sPin.getLatLng(); m3Marks.push(new maplibregl.Marker({ element: el.firstChild, anchor: 'bottom' }).setLngLat([p.lng, p.lat]).addTo(m3)); }
+      m3.getSource('trk').setData({ type: 'FeatureCollection', features: DB.tracks.filter(inArea).map(t => ({ type: 'Feature', properties: {}, geometry: { type: 'LineString', coordinates: t.pts.map(p => [p[1], p[0]]) } })) });
+      m3.getSource('sh').setData(polyFC(llRings(sShape)));
+      m3.getSource('hl').setData(polyFC(llRings(highlight)));
+      loadNJP3d();
+    }
+    let njpKey = null;
+    async function loadNJP3d() {
+      if (!m3 || !overOn.njParcels || m3.getZoom() < 14) return;
+      const c = m3.getCenter(), d = 0.012, key = `${c.lng.toFixed(3)},${c.lat.toFixed(3)}`; if (key === njpKey) return; njpKey = key;
+      const q = new URLSearchParams({ where: '1=1', geometry: `${c.lng - d * 1.3},${c.lat - d},${c.lng + d * 1.3},${c.lat + d}`, geometryType: 'esriGeometryEnvelope', inSR: '4326', spatialRel: 'esriSpatialRelIntersects', outFields: 'OBJECTID', returnGeometry: 'true', outSR: '4326', maxAllowableOffset: '0.00002', resultRecordCount: '2000', f: 'json' });
+      try {
+        const j = await (await fetch(`${NJP}/query?${q}`)).json(); if (!m3 || njpKey !== key) return;
+        m3.getSource('njp').setData({ type: 'FeatureCollection', features: (j.features || []).filter(f => f.geometry && f.geometry.rings).map(f => ({ type: 'Feature', properties: {}, geometry: { type: 'MultiLineString', coordinates: f.geometry.rings } })) });
+      } catch (e) { /* offline: no lines */ }
+    }
+    function elevTxt(ll) {
+      try { const t = m3 && m3.terrain; if (!t) return ''; const e = t.getElevationForLngLatZoom(maplibregl.LngLat.convert([ll.lng, ll.lat]), Math.min(15, Math.floor(m3.getZoom() + 1))) / EXAG; return e ? ` · elevation <b>${Math.round(e * 3.28084).toLocaleString()} ft</b>` : ''; } catch (e) { return ''; }
+    }
+    function pop3d(ll, html) {
+      if (m3Pop) m3Pop.remove();
+      m3Pop = new maplibregl.Popup({ maxWidth: '290px', offset: 12 }).setLngLat([ll.lng, ll.lat]);
+      if (typeof html === 'string') m3Pop.setHTML(html); else m3Pop.setDOMContent(html);
+      m3Pop.addTo(m3); return m3Pop;
+    }
+    // popups used by the land look-up work in both 2D and 3D
+    function openPop(ll, html) {
+      if (is3d && m3) { const p = pop3d(ll, html); return { set(b) { if (p.isOpen()) p.setDOMContent(b); } }; }
+      const p = L.popup({ maxWidth: 290 }).setLatLng(ll).setContent(html).openOn(map);
+      return { set(b) { if (map.hasLayer(p)) p.setContent(b); } };
+    }
+    const closePops = () => { map.closePopup(); if (m3Pop) { m3Pop.remove(); m3Pop = null; } };
+    function sync3dFrom2d() {
+      if (!m3) return; const c = map.getCenter();
+      m3.jumpTo({ center: [c.lng, c.lat], zoom: map.getZoom() - 1 }); fill3d();
+    }
+    function refresh3d() { if (is3d && m3) { const cam = { center: m3.getCenter(), zoom: m3.getZoom(), pitch: m3.getPitch(), bearing: m3.getBearing() }; m3.setStyle(style3d()); m3.once('styledata', () => { m3.jumpTo(cam); setTimeout(fill3d, 50); }); njpKey = null; } }
+    async function set3d(on) {
+      if (on === is3d || m3Busy) return;
+      const btn = $('mp3dBtn'), box = $('map3d');
+      if (on) {
+        if (!window.WebGLRenderingContext) { toast('3D needs a phone or browser with WebGL graphics.'); return; }
+        m3Busy = true; btn.disabled = true; btn.textContent = '…';
+        try { await loadML(); } catch (e) { m3Busy = false; btn.disabled = false; btn.textContent = '3D'; toast('Could not load 3D. Open the app once with signal so it can be saved for offline use.'); return; }
+        m3Busy = false; btn.disabled = false;
+        closePops(); box.hidden = false; is3d = true;
+        const c = map.getCenter();
+        if (!m3) {
+          try {
+            m3 = new maplibregl.Map({ container: box, style: style3d(), center: [c.lng, c.lat], zoom: map.getZoom() - 1, pitch: 62, bearing: 0, maxPitch: 80, attributionControl: { compact: true } });
+          } catch (e) { is3d = false; box.hidden = true; btn.textContent = '3D'; toast('This phone could not start the 3D view.'); return; }
+          m3.addControl(new maplibregl.NavigationControl({ visualizePitch: true }), 'bottom-right');
+          m3.on('load', () => { fill3d(); box.querySelectorAll('.maplibregl-compact-show').forEach(e => e.classList.remove('maplibregl-compact-show')); });
+          m3.on('moveend', loadNJP3d);
+          m3.on('click', e => landInfo(L.latLng(e.lngLat.lat, e.lngLat.lng)));
+          if (!store.get('maps.3dtip', 0)) { store.set('maps.3dtip', 1); toast('3D: drag two fingers up or down to tilt, twist to turn. The compass button resets north.'); }
+        } else { m3.resize(); m3.jumpTo({ center: [c.lng, c.lat], zoom: map.getZoom() - 1, pitch: Math.max(m3.getPitch(), 45) }); refresh3d(); }
+        m3Timer = setInterval(() => {
+          if (!me) { if (m3Me) { m3Me.remove(); m3Me = null; } return; }
+          if (!m3Me) { const el = document.createElement('div'); el.className = 'm3-me'; m3Me = new maplibregl.Marker({ element: el }).setLngLat([me.lng, me.lat]).addTo(m3); } else m3Me.setLngLat([me.lng, me.lat]);
+          if (m3Center) { m3Center = false; m3.easeTo({ center: [me.lng, me.lat], zoom: Math.max(m3.getZoom(), 15) }); }
+        }, 1500);
+        btn.textContent = '2D'; btn.setAttribute('aria-pressed', 'true'); btn.setAttribute('aria-label', 'Back to flat 2D map');
+        $('mpInfo').innerHTML = '3D view: tap anywhere for land owner and hunting rules. Markers, measuring and safety rings are added and edited in 2D.';
+      } else {
+        is3d = false; clearInterval(m3Timer); if (m3Me) { m3Me.remove(); m3Me = null; }
+        if (m3) { const c = m3.getCenter(); if (m3Pop) { m3Pop.remove(); m3Pop = null; } map.setView([c.lat, c.lng], Math.round(m3.getZoom() + 1), { animate: false }); }
+        box.hidden = true; btn.textContent = '3D'; btn.setAttribute('aria-pressed', 'false'); btn.setAttribute('aria-label', 'Show 3D terrain view');
+        map.invalidateSize(); onMove();
+      }
+    }
+    $('mp3dBtn').addEventListener('click', () => set3d(!is3d));
 
     // ---------- my location ----------
     let me = null, meAcc = 0, meMarker = null, meCircle = null, watchId = null, follow = false, headTimer = null;
@@ -4524,6 +4668,7 @@ details.drop > .dropbody { padding: 0 14px 14px; }
     // ---------- tools ----------
     let tool = null;
     function setTool(t) {
+      if (is3d && (t === 'add' || t === 'measure')) set3d(false);
       if (tool === 'add' && t !== 'add') cancelAdd();
       tool = tool === t ? null : t;
       if (tool === 'layers') tool = null; // layers is a panel, not a map mode
@@ -4541,7 +4686,7 @@ details.drop > .dropbody { padding: 0 14px 14px; }
       else setTool(b.dataset.tool);
     }));
     $('mpLayersBtn').addEventListener('click', () => { const h = !$('mp-layers').hidden; if (!h && tool) setTool(null); $('mp-layers').hidden = h; if (!h) $('mp-layers').scrollIntoView({ behavior: 'smooth', block: 'nearest' }); });
-    $('mpLocBtn').addEventListener('click', () => { if (watchId != null && me && map.getBounds().contains(me)) stopGPS(); else startGPS(true); });
+    $('mpLocBtn').addEventListener('click', () => { if (is3d) { m3Center = true; if (watchId == null) startGPS(true); return; } if (watchId != null && me && map.getBounds().contains(me)) stopGPS(); else startGPS(true); });
 
     // add / edit marker
     let pending = null, editing = null, pType = 'stand';
