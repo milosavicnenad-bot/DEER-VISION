@@ -275,6 +275,7 @@ html.night body { background: #000; }
 .fd-step h3 { margin: 0 0 6px; font: 700 1.05rem var(--font-display); letter-spacing: .03em; text-transform: uppercase; display: flex; gap: 8px; align-items: center; }
 .fd-step h3 i { font-style: normal; width: 26px; height: 26px; border-radius: 50%; background: #c62828; color: #fff; display: grid; place-items: center; font: 700 .85rem var(--font-body); flex: none; }
 .fd-step ol, .fd-step ul { margin: 0; padding-left: 1.2rem; display: grid; gap: 5px; font-size: .9rem; }
+.fd-step .fd-ol { margin: 6px 0 8px; } .fd-step .fd-ol li::marker { color: #e08a1e; font-weight: 800; } .fd-step p { margin: 0 0 6px; font-size: .9rem; }
 .fd-tip { margin-top: 8px; font-size: .84rem; border-left: 3px solid var(--h-moss); padding: 4px 8px; background: color-mix(in srgb, var(--h-moss) 8%, transparent); border-radius: 0 6px 6px 0; }
 .fd-tip.no { border-left-color: #c62828; background: color-mix(in srgb, #c62828 7%, transparent); }
 .fd-gear { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 6px 14px; margin: 0; padding-left: 1.1rem; font-size: .9rem; }
@@ -7513,7 +7514,179 @@ details.drop > .dropbody { padding: 0 14px 14px; }
       + (inside
         ? `<g stroke="${C.seam}" stroke-width="2" stroke-dasharray="5 3" fill="none"><path d="M70 70 Q150 92 236 66"/><path d="M150 82 Q148 140 152 192"/></g><path d="M118 40 L170 186" stroke="${C.bone}" stroke-width="7" stroke-linecap="round" opacity=".9"/>${tag(110, 130, 'TOP ROUND', 'middle', 11)}${tag(200, 130, 'SIRLOIN TIP', 'middle', 11)}${tag(150, 56, 'pelvis side', 'middle', 9.5)}${callout(162, 160, 250, 196, 'femur', 'middle')}`
         : `<g stroke="${C.seam}" stroke-width="2" stroke-dasharray="5 3" fill="none"><path d="M76 66 Q150 56 238 66"/><path d="M150 66 Q154 124 150 192"/><path d="M150 120 Q112 126 86 146"/><path d="M190 152 Q216 140 248 134"/></g><path d="M122 44 L172 184" stroke="${C.bone}" stroke-width="7" stroke-linecap="round" opacity=".7"/>${tag(150, 52, 'RUMP', 'middle', 11)}${tag(104, 104, 'TOP ROUND', 'middle', 10)}${tag(112, 160, 'EYE OF ROUND', 'middle', 9.5)}${tag(206, 100, 'BOTTOM ROUND', 'middle', 10)}${tag(212, 172, 'SIRLOIN TIP', 'middle', 9.5)}${tag(168, 216, 'shank', 'start', 9.5)}`));
-    SECS.push(['bone', 'Bone out the meat', `<p>Each muscle group sits in its own "sleeve" of thin membrane. Follow those seams and the meat separates almost by itself into clean cuts: steaks, roasts, jerky and burger. Boned-out meat cools faster, packs smaller and lighter, and is what most states require you to bring home from CWD areas.</p>` + legend + [
+    // full-color anatomy pictures (dark background, like a photo on a butcher table)
+    const lab = (x1, y1, tx, ty, t, a = 'middle') => { const w = t.length * 5.9; const ex = a === 'start' && x1 > tx + w ? tx + w + 6 : a === 'end' && x1 < tx - w ? tx - w - 6 : tx; return `<path d="M${x1} ${y1} L${ex} ${ty}" stroke="#fff" stroke-opacity=".75" stroke-width="1.1"/><circle cx="${x1}" cy="${y1}" r="2.4" fill="#fff"/><text x="${tx + (a === 'start' ? 3 : a === 'end' ? -3 : 0)}" y="${ty + (ty > y1 ? 12 : -4)}" text-anchor="${a}" font-size="10.5" font-weight="600" fill="#fff" stroke="#1d1a17" stroke-width="3" paint-order="stroke" font-family="system-ui,sans-serif">${t}</text>`; };
+    const GRAD = `<defs>
+      <radialGradient id="mtA" cx="55%" cy="45%" r="70%"><stop offset="0" stop-color="#b8443a"/><stop offset=".6" stop-color="#8e2a25"/><stop offset="1" stop-color="#5e1715"/></radialGradient>
+      <linearGradient id="mtB" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#9c3029"/><stop offset="1" stop-color="#6a1b18"/></linearGradient>
+      <linearGradient id="slv" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f4f2ee" stop-opacity=".95"/><stop offset=".55" stop-color="#cfd6de" stop-opacity=".85"/><stop offset="1" stop-color="#e9e2d6" stop-opacity=".9"/></linearGradient>
+      <linearGradient id="bn" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f3ead8"/><stop offset="1" stop-color="#cdbf9f"/></linearGradient>
+      <linearGradient id="tnd" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#e9b7aa"/><stop offset="1" stop-color="#c98576"/></linearGradient>
+      <clipPath id="hamC"><path d="M112 92 C140 86 160 84 176 78 C200 54 246 34 292 38 C326 42 346 70 344 104 C342 138 318 166 282 178 C246 188 206 182 182 164 C164 150 144 138 116 130 Z"/></clipPath></defs>`;
+    const hqParts = `<svg viewBox="0 0 360 240" role="img" aria-hidden="true">${GRAD}<rect width="360" height="240" rx="10" fill="#26231f"/>
+      <path d="M18 103 L104 97 L113 90 L120 104 L113 117 L104 112 L18 115 Z" fill="url(#bn)" stroke="#8d7f63" stroke-width="1"/>
+      <path d="M20 122 C60 125 92 127 118 124" stroke="url(#tnd)" stroke-width="8" stroke-linecap="round" fill="none"/>
+      <path d="M112 92 C140 86 160 84 176 78 C200 54 246 34 292 38 C326 42 346 70 344 104 C342 138 318 166 282 178 C246 188 206 182 182 164 C164 150 144 138 116 130 Z" fill="url(#mtA)"/>
+      <g clip-path="url(#hamC)">
+        <path d="M110 80 C140 92 160 120 176 170 L100 170 Z" fill="#c4766a" opacity=".85"/>
+        <path d="M120 96 C138 104 150 116 160 136" stroke="#ecc0b4" stroke-width="2" fill="none" opacity=".8"/><path d="M126 112 C140 118 150 128 156 144" stroke="#ecc0b4" stroke-width="1.6" fill="none" opacity=".7"/>
+        <path d="M150 124 C200 150 250 160 300 158 L300 200 L130 200 Z" fill="#6b1b18"/>
+        <path d="M214 20 L360 20 L360 96 C320 90 286 84 264 96 C246 78 230 58 214 20 Z" fill="#8a2722"/>
+        <path d="M250 158 C280 152 312 140 350 118 L360 200 L250 200 Z" fill="#a8423a"/>
+        <g stroke="#f3e1da" stroke-width="1.5" fill="none" opacity=".75"><path d="M182 74 C214 92 236 120 246 176"/><path d="M168 140 C210 152 250 158 300 156"/><path d="M216 30 C230 62 246 82 266 96"/><path d="M250 160 C284 150 316 136 350 116"/></g>
+        <g stroke="#5a1412" stroke-width="1" fill="none" opacity=".45"><path d="M200 90 l20 30 M230 70 l14 34 M210 120 l24 26 M270 120 l12 24 M190 110 l10 20"/></g>
+      </g>
+      <path d="M262 46 C304 48 334 72 336 104 C336 132 316 156 286 168 C300 140 304 98 262 46 Z" fill="url(#slv)"/>
+      <path d="M284 64 C302 80 312 100 312 122" stroke="#fff" stroke-width="3" opacity=".55" fill="none" stroke-linecap="round"/>
+      <path d="M320 70 C334 86 338 104 336 116" stroke="#f1e6cf" stroke-width="6" opacity=".85" fill="none" stroke-linecap="round"/>
+      <circle cx="337" cy="104" r="7" fill="url(#bn)" stroke="#8d7f63" stroke-width="1.5"/>
+      ${lab(56, 101, 56, 38, 'leg bones (cannon)')}${lab(116, 104, 124, 60, 'hock')}${lab(196, 108, 190, 18, 'bottom round + eye of round')}${lab(250, 62, 300, 14, 'rump', 'start')}${lab(337, 104, 352, 76, 'ball joint', 'end')}
+      ${lab(60, 124, 30, 160, 'tendon: hook goes here, above the hock', 'start')}${lab(140, 140, 112, 206, 'shank: stew or grind', 'middle')}${lab(232, 186, 236, 206, 'sirloin tip', 'end')}${lab(306, 128, 350, 190, 'silver skin + fat: trim', 'end')}</svg>`;
+    const flParts = `<svg viewBox="0 0 320 400" role="img" aria-hidden="true">${GRAD}<rect width="320" height="400" rx="10" fill="#26231f"/>
+      <path d="M80 28 C120 18 180 22 206 40 C214 70 196 110 174 150 C168 176 150 200 140 222 C138 250 136 270 136 292 L118 292 C114 262 106 236 96 214 C82 190 76 150 74 110 C72 80 72 50 80 28 Z" fill="url(#mtA)" opacity=".92"/>
+      <g stroke="#f3e1da" stroke-width="1.4" fill="none" opacity=".6"><path d="M96 60 C120 90 140 120 150 150"/><path d="M180 60 C166 100 158 130 152 160"/><path d="M100 200 C112 230 120 256 124 288"/></g>
+      <path d="M88 34 L196 42 L158 132 L140 132 Z" fill="url(#bn)" opacity=".9" stroke="#8d7f63" stroke-width="1"/><path d="M118 38 L150 128" stroke="#a89878" stroke-width="3"/>
+      <path d="M146 130 C160 136 160 150 150 160 L126 212 C120 220 108 216 110 206 L134 150 C134 140 138 132 146 130 Z" fill="url(#bn)" stroke="#8d7f63" stroke-width="1"/>
+      <path d="M104 204 C96 206 96 222 108 224" fill="url(#bn)" stroke="#8d7f63" stroke-width="1"/>
+      <path d="M118 216 L128 216 L134 290 L124 290 Z" fill="url(#bn)" stroke="#8d7f63" stroke-width="1"/><path d="M110 214 L116 214 L120 270 L116 270 Z" fill="url(#bn)" opacity=".85"/>
+      <rect x="120" y="290" width="18" height="14" rx="3" fill="url(#bn)" stroke="#8d7f63"/>
+      <path d="M124 304 L134 304 L136 352 L126 352 Z" fill="url(#bn)" stroke="#8d7f63" stroke-width="1"/>
+      <path d="M118 302 C118 320 120 336 122 352" stroke="url(#tnd)" stroke-width="5" fill="none" stroke-linecap="round"/>
+      <path d="M124 352 L136 352 L146 380 L120 380 Z" fill="#2b2622" stroke="#000" stroke-width="1"/>
+      ${lab(150, 70, 236, 54, 'shoulder blade', 'start')}${lab(150, 90, 312, 112, 'no joint here', 'end')}
+      ${lab(140, 175, 312, 160, 'humerus', 'end')}${lab(102, 214, 30, 200, 'elbow', 'start')}${lab(128, 250, 312, 244, 'radius + ulna', 'end')}
+      ${lab(129, 297, 312, 290, '"knee" (wrist)', 'end')}${lab(130, 330, 236, 330, 'cannon bone', 'start')}${lab(119, 330, 30, 320, 'tendons', 'start')}${lab(133, 372, 236, 376, 'hoof', 'start')}
+      ${lab(96, 110, 30, 92, 'shoulder meat:', 'start')}<text x="33" y="102" font-size="10.5" font-weight="600" fill="#fff" stroke="#1d1a17" stroke-width="3" paint-order="stroke" font-family="system-ui,sans-serif">roasts, stew</text>${lab(112, 240, 30, 262, 'shank: slow-cook', 'start')}</svg>`;
+    const shParts = `<svg viewBox="0 0 360 250" role="img" aria-hidden="true"><defs>
+      <linearGradient id="wd" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8a5a30"/><stop offset="1" stop-color="#6e4422"/></linearGradient>
+      <radialGradient id="vn" cx="55%" cy="45%" r="75%"><stop offset="0" stop-color="#a5465a"/><stop offset=".55" stop-color="#7a2a3d"/><stop offset="1" stop-color="#4f1726"/></radialGradient>
+      <linearGradient id="ft" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f6e2dc"/><stop offset="1" stop-color="#e4b9b3"/></linearGradient>
+      <clipPath id="shC"><path id="shP" d="M18 210 C40 196 70 176 104 150 C130 130 150 116 172 92 C196 66 226 42 262 30 C296 20 330 26 346 46 C356 70 352 108 340 134 C326 156 296 166 262 170 C232 172 206 168 184 170 C150 176 118 188 88 204 C64 214 38 220 18 214 Z"/></clipPath></defs>
+      <rect width="360" height="250" rx="10" fill="url(#wd)"/>
+      <g stroke="#5a3519" stroke-width="1.2" opacity=".5" fill="none"><path d="M0 40 C120 34 240 46 360 38"/><path d="M0 92 C120 98 240 86 360 94"/><path d="M0 150 C120 144 240 156 360 148"/><path d="M0 206 C120 212 240 200 360 208"/></g>
+      <path d="M18 210 C40 196 70 176 104 150 C130 130 150 116 172 92 C196 66 226 42 262 30 C296 20 330 26 346 46 C356 70 352 108 340 134 C326 156 296 166 262 170 C232 172 206 168 184 170 C150 176 118 188 88 204 C64 214 38 220 18 214 Z" fill="url(#vn)" stroke="#3b1019" stroke-width="1.2"/>
+      <g clip-path="url(#shC)">
+        <path d="M262 30 C296 20 330 26 346 46 C356 70 352 108 340 134 C326 156 296 166 262 170 C292 150 316 120 320 86 C322 60 300 42 262 30 Z" fill="url(#ft)" opacity=".92"/>
+        <path d="M172 92 C196 66 226 42 262 30" stroke="url(#ft)" stroke-width="9" fill="none" opacity=".85"/>
+        <path d="M150 122 C200 108 250 102 304 112 L304 160 C250 150 200 150 150 160 Z" fill="#5c1a2b" opacity=".55"/>
+        <path d="M200 70 C230 60 270 60 300 80 L300 104 C260 96 220 98 190 108 Z" fill="#b65468" opacity=".45"/>
+        <path d="M150 120 C200 108 250 102 306 110" stroke="#f1d3cc" stroke-width="5" fill="none" stroke-linecap="round"/>
+        <path d="M150 120 C200 108 250 102 306 110" stroke="#fff" stroke-width="1.6" fill="none" opacity=".8"/>
+        <g stroke="#e9c3bc" stroke-width="1.4" fill="none" opacity=".6"><path d="M28 206 C70 186 110 162 150 140"/><path d="M40 212 C82 198 124 178 168 160"/><path d="M200 128 C230 140 260 146 296 146"/></g>
+        <ellipse cx="320" cy="40" rx="16" ry="10" fill="#2e0b14" opacity=".85"/>
+      </g>
+      <ellipse cx="19" cy="212" rx="5" ry="7" fill="url(#bn)" stroke="#8d7f63"/>
+      ${lab(220, 84, 150, 24, 'blade: shoulder roast')}${lab(320, 40, 334, 16, 'bloodshot: cut away', 'end')}
+      ${lab(170, 116, 20, 92, 'seam over the blade ridge', 'start')}${lab(80, 180, 60, 146, 'front shank: braise')}
+      ${lab(336, 110, 350, 190, 'fat + silver skin: trim', 'end')}${lab(210, 150, 190, 226, 'arm roast + stew meat')}${lab(19, 212, 12, 226, 'cut at the knee', 'start')}</svg>`;
+    const shCard = `<div class="fd-step"><div>${shParts}</div><div><h3>Know the parts: a skinned front shoulder</h3><ul>
+      <li><b>How to tell it from a back leg:</b> the shoulder is <b>flat and wide</b> like a triangle (the flat shoulder blade is under the meat), with no ball joint at the top. A back leg is thick and round, with a ball joint and a big tendon above the hock.</li>
+      <li><b>The white seam</b> across the top lies on the ridge of the shoulder blade. Cut along it, then slide the knife flat along the bone to lift the meat off each side.</li>
+      <li><b>Blade meat</b> (top) and <b>arm meat</b> (middle): roasts, stew meat and burger.</li>
+      <li><b>Fat and silver skin</b> on the outer edge (pink-white, shiny): trim it off.</li>
+      <li><b>Bloodshot meat</b> (dark purple-black, near the wound): cut it away; it spoils faster and tastes bad.</li>
+      <li><b>Front shank</b>: braise it whole or grind it. The thin end is where the leg was cut off at the knee.</li></ul>
+      <div class="fd-tip"><b>Tip:</b> lay your own shoulder on the board the same way and match it to this picture. Use <b>Add my photo</b> on the steps to keep pictures of your own deer.</div></div></div>`;
+    // exploded front shoulder: whole with seams (left), separated cuts (right) - our own drawing
+    const nb = (x, y, n) => `<g><circle cx="${x}" cy="${y}" r="9" fill="#f2a33a" stroke="#1d1a17" stroke-width="1.5"/><text x="${x}" y="${y + 4}" text-anchor="middle" font-size="11" font-weight="800" fill="#1d1a17" font-family="system-ui,sans-serif">${n}</text></g>`;
+    const tg = (x, y, t) => { const w = t.length * 6.3 + 12; return `<g><rect x="${x - w / 2}" y="${y - 9}" width="${w}" height="17" rx="3" fill="#141210" stroke="#fff" stroke-opacity=".35"/><text x="${x}" y="${y + 3.5}" text-anchor="middle" font-size="9.5" font-weight="800" letter-spacing=".4" fill="#fff" font-family="system-ui,sans-serif">${t}</text></g>`; };
+    const hl = (d) => `<path d="${d}" stroke="#fff" stroke-opacity=".28" stroke-width="2" fill="none" stroke-linecap="round"/>`;
+    const shX = `<svg viewBox="0 0 360 330" role="img" aria-hidden="true">${GRAD}<rect width="360" height="330" rx="10" fill="#f4f1ec"/>
+      <path d="M30 30 C70 14 130 16 158 34 C166 70 150 110 140 140 C150 160 150 190 136 210 C128 230 118 250 110 272 L104 300 L86 300 C84 278 80 250 70 228 C50 200 30 170 24 130 C20 90 20 56 30 30 Z" fill="url(#mtA)" stroke="#2a0d0b" stroke-width="1.5"/>
+      <path d="M96 22 C132 22 150 30 158 34 C164 70 150 110 140 140 L120 140 C112 100 104 60 96 22 Z" fill="#a33a33" opacity=".7"/>
+      <path d="M70 228 C90 222 110 218 132 214 C126 236 116 254 110 272 L104 300 L86 300 C84 278 80 250 70 228 Z" fill="#6e1d1a" opacity=".8"/>
+      ${hl('M46 60 C60 80 70 100 74 116')}${hl('M128 40 C136 60 138 80 134 110')}${hl('M50 160 C70 176 90 190 110 200')}${hl('M90 236 C94 256 96 276 96 292')}
+      <path d="M96 22 C104 60 112 100 120 136 M28 120 C60 130 90 138 118 140 M120 142 C126 170 130 190 132 214 M70 228 C90 222 110 218 132 214" stroke="#fff" stroke-width="2.6" stroke-dasharray="6 5" fill="none" stroke-linecap="round"/>
+      <ellipse cx="66" cy="96" rx="22" ry="9" transform="rotate(48 66 96)" fill="none" stroke="#fff" stroke-width="1.6" stroke-dasharray="2 4"/>
+      <circle cx="120" cy="140" r="5.5" fill="#fff" stroke="#8d7f63"/>
+      <path d="M86 300 L104 300 L108 312 C104 322 86 322 82 312 Z" fill="url(#bn)" stroke="#8d7f63"/>
+      <g transform="translate(0 0)">
+        <path d="M188 30 C214 18 250 22 262 34 C266 44 254 56 230 60 C210 62 192 52 188 30 Z" fill="url(#mtB)" stroke="#2a0d0b"/>${hl('M200 36 C220 30 240 32 254 38')}
+        <path d="M276 22 C304 12 340 20 350 40 C354 62 334 78 306 80 C284 80 270 62 276 22 Z" fill="url(#mtA)" stroke="#2a0d0b"/><path d="M282 34 C300 44 322 54 346 52" stroke="#f1dcd5" stroke-width="3" fill="none"/>
+        <path d="M192 84 L262 92 L238 168 L226 168 Z" fill="url(#bn)" stroke="#8d7f63"/><path d="M214 88 L232 164" stroke="#a89878" stroke-width="3"/>
+        <path d="M276 104 C300 92 340 98 350 122 C356 150 340 178 312 184 C288 186 270 168 268 146 C266 126 268 112 276 104 Z" fill="url(#mtA)" stroke="#2a0d0b"/>${hl('M284 120 C300 112 322 114 336 126')}${hl('M282 152 C298 162 318 164 334 156')}
+        <path d="M190 200 C204 190 230 192 240 204 C242 216 226 224 208 222 C196 220 188 212 190 200 Z" fill="#b84a3f" stroke="#2a0d0b"/>
+        <path d="M262 196 C270 190 280 192 282 200 L278 258 C284 266 280 276 270 276 C260 276 256 266 262 258 L266 204 C260 202 258 198 262 196 Z" fill="url(#bn)" stroke="#8d7f63"/>
+        <path d="M300 200 C320 194 344 200 348 214 C346 236 334 260 328 286 L316 286 C312 262 302 236 300 200 Z" fill="#6e1d1a" stroke="#2a0d0b"/>${hl('M312 212 C318 236 322 258 322 280')}
+        <path d="M316 286 L328 286 L332 298 C328 308 316 308 312 298 Z" fill="url(#bn)" stroke="#8d7f63"/>
+      </g>
+      ${tg(226, 72, '2 MOCK TENDER')}${tg(312, 92, '2 FLAT IRON')}${tg(228, 182, 'BLADE BONE')}${tg(312, 196, '4 ARM ROAST')}${tg(214, 236, '3 PETITE TENDER')}${tg(270, 292, 'HUMERUS')}${tg(326, 316, '5 SHANK')}${nb(103, 62, 1)}${nb(44, 74, 3)}${nb(66, 132, 4)}${nb(136, 180, 4)}${nb(98, 222, 5)}
+      <text x="8" y="324" font-size="9" fill="#5a524a" font-family="system-ui,sans-serif">dashes = seams · dots = inside</text></svg>`;
+    const shXCard = `<div class="fd-step"><div>${shX}</div><div><h3>Front shoulder: the cuts, step by step</h3>
+      <p>Left: the whole shoulder, outside up. <b>White dashes</b> = seams to follow. <b>Orange numbers</b> = the order. The dotted oval is on the <b>inside</b>. Right: what you end up with (the tag number tells you which step frees it).</p>
+      <ol class="fd-ol">
+      <li><b>Find the ridge (line 1).</b> Run your fingers over the outside of the blade: you'll feel a hard ridge of bone running from the top down toward the joint. Cut straight down along <b>both sides</b> of the ridge until the knife touches bone.</li>
+      <li><b>Lift the two blade muscles.</b> Keep the blade flat on the bone and slide it under the meat, pulling the meat away with your other hand. Behind the ridge comes the <b>flat iron</b>; in front of it, the <b>mock tender</b>.</li>
+      <li><b>Flip it over (oval 3).</b> On the inside, along the back edge of the blade, there's a small round muscle: the <b>petite tender</b>. Pull it with your fingers and cut the thin membrane holding it.</li>
+      <li><b>Arm roast (lines 4).</b> Find the seam that starts at the joint (white dot) and runs down to the elbow. Pull the big muscle behind the upper bone back with your hand, and cut only where it holds on. It comes off the <b>humerus</b> in one piece.</li>
+      <li><b>Shank (line 5).</b> Cut around the leg just below the elbow and peel the meat down the bone, or leave it on the bone to braise whole.</li></ol>
+      <ul><li><b>Flat iron</b>: has a line of gristle down the middle; cut along both sides of it for two tender steaks.</li><li><b>Mock tender</b>: looks like a tenderloin but it's tough. Braise or grind.</li><li><b>Petite tender</b>: tender. Grill or sear.</li><li><b>Arm roast</b>: roast, stew or jerky. <b>Shank</b>: braise or grind.</li></ul></div></div>`;
+    // how to read the lines: what a seam is and how to follow it
+    const seamSvg = `<svg viewBox="0 0 320 170" role="img" aria-hidden="true">${GRAD}<rect width="320" height="170" rx="10" fill="#f4f1ec"/>
+      <path d="M20 40 C60 24 120 24 156 40 L160 140 C120 152 60 152 22 136 C12 104 12 70 20 40 Z" fill="url(#mtA)" stroke="#2a0d0b"/>
+      <path d="M300 40 C260 24 200 24 166 40 L170 140 C210 152 260 152 298 136 C308 104 308 70 300 40 Z" fill="url(#mtB)" stroke="#2a0d0b" transform="rotate(8 230 90)"/>
+      <path d="M161 38 C164 70 168 110 168 142" stroke="#fff" stroke-width="3" stroke-dasharray="6 5" fill="none"/>
+      <path d="M240 58 L284 46" stroke="#1d1a17" stroke-width="2.4" fill="none"/><path d="M284 46 l-10 -2 l4 8 Z" fill="#1d1a17"/>
+      <path d="M130 108 L172 92 L186 96 L172 102 Z" fill="#c9ced4" stroke="#555"/><path d="M90 124 L132 108" stroke="#3a2a1e" stroke-width="8" stroke-linecap="round"/>
+      ${lab(164, 52, 150, 16, 'seam (thin white skin)', 'end')}${lab(262, 52, 312, 16, 'pull with your hand', 'end')}${lab(176, 98, 312, 150, 'knife tip: short strokes', 'end')}</svg>`;
+    const seamCard = `<div class="fd-step"><div>${seamSvg}</div><div><h3>How to read the cutting lines</h3><ul>
+      <li>Every <b>dashed line</b> in these pictures is a <b>seam</b>: a thin, white, see-through skin between two muscles. You are not cutting through meat; you are opening the gap that is already there.</li>
+      <li><b>Pull</b> the muscle you want away with your free hand. The seam stretches and turns white, so you can see where to cut.</li>
+      <li>Cut with the <b>tip of the knife</b> in short strokes, right on the white. Only cut where it holds; often your fingers can push the muscles apart on their own.</li>
+      <li>When you reach bone, turn the blade so it faces the bone and slide along it, so the meat stays on the piece and not on the bone.</li>
+      <li>The <b>orange numbers</b> show the order. Doing them in order means each muscle is easy to reach.</li></ul></div></div>`;
+    // exploded back leg (hindquarter)
+    const hlO = 'M40 40 C70 14 140 14 166 44 C182 72 176 112 160 140 C148 162 132 178 120 196 C112 222 110 252 108 282 L102 314 L84 314 C86 282 84 242 78 212 C50 192 22 152 20 112 C18 80 24 56 40 40 Z';
+    const hlX = `<svg viewBox="0 0 360 340" role="img" aria-hidden="true">${GRAD}<defs><clipPath id="hlC"><path d="${hlO}"/></clipPath></defs><rect width="360" height="340" rx="10" fill="#f4f1ec"/>
+      <path d="${hlO}" fill="url(#mtA)" stroke="#2a0d0b" stroke-width="1.5"/>
+      <g clip-path="url(#hlC)">
+        <path d="M0 0 L200 0 L200 54 C140 76 80 78 0 66 Z" fill="#8a2722" opacity=".8"/>
+        <path d="M152 60 C142 100 138 140 128 178 L200 178 L200 40 Z" fill="#a33a33" opacity=".75"/>
+        <path d="M0 70 L44 80 C40 120 56 160 80 198 L0 210 Z" fill="#6e1d1a" opacity=".7"/>
+        <path d="M78 208 C96 202 112 198 128 192 L128 340 L0 340 Z" fill="#6e1d1a" opacity=".85"/>
+        <path d="M150 60 L172 46 L170 92 Z" fill="#b84a3f" opacity=".9"/>
+      </g>
+      ${hl('M60 30 C90 22 130 24 150 36')}${hl('M150 100 C156 120 156 140 148 156')}${hl('M70 110 C90 130 104 150 112 170')}${hl('M94 230 C98 256 98 280 96 300')}
+      <path d="M28 66 C70 76 120 74 168 54 M152 62 C142 100 138 140 128 178 M44 80 C40 120 56 160 80 198 M78 208 C96 202 112 198 126 194" stroke="#fff" stroke-width="2.6" stroke-dasharray="6 5" fill="none" stroke-linecap="round"/>
+      <ellipse cx="96" cy="126" rx="30" ry="44" fill="none" stroke="#fff" stroke-width="1.6" stroke-dasharray="2 4"/>
+      <circle cx="104" cy="50" r="5.5" fill="#fff" stroke="#8d7f63"/>
+      <path d="M84 314 L102 314 L108 324 C102 334 84 334 78 324 Z" fill="url(#bn)" stroke="#8d7f63"/>
+      ${nb(70, 74, 1)}${nb(146, 112, 2)}${nb(96, 126, 3)}${nb(46, 150, 4)}${nb(104, 202, 6)}
+      <path d="M194 22 C220 8 262 14 266 38 C266 58 240 66 214 62 C196 58 188 42 194 22 Z" fill="url(#mtB)" stroke="#2a0d0b"/>${hl('M204 28 C222 22 244 24 256 32')}
+      <path d="M278 18 L310 26 L290 66 Z" fill="#b84a3f" stroke="#2a0d0b"/>
+      <path d="M320 16 C344 18 356 44 354 72 C352 98 338 110 324 108 C310 104 304 80 306 54 C308 30 312 18 320 16 Z" fill="url(#mtA)" stroke="#2a0d0b"/>${hl('M318 36 C330 50 336 70 334 92')}
+      <path d="M196 92 C224 80 262 86 272 108 C278 132 262 158 234 160 C210 160 192 144 190 124 C190 108 192 98 196 92 Z" fill="url(#mtA)" stroke="#2a0d0b"/>${hl('M206 106 C224 98 246 100 260 112')}
+      <path d="M286 256 C280 250 284 242 292 244 L340 250 C348 244 358 250 352 260 C358 268 348 274 340 268 L292 272 C284 274 280 266 286 256 Z" fill="url(#bn)" stroke="#8d7f63"/>
+      <path d="M312 130 C334 126 352 140 352 160 C352 190 340 210 324 214 C312 214 306 196 306 170 C306 150 306 136 312 130 Z" fill="url(#mtB)" stroke="#2a0d0b"/>${hl('M318 146 C328 160 332 178 330 198')}
+      <path d="M192 192 C220 182 252 184 270 194 C274 202 262 210 240 212 C220 214 200 210 192 202 Z" fill="#7a2420" stroke="#2a0d0b"/>
+      <path d="M210 244 C232 236 258 240 264 254 C262 276 252 298 246 318 L232 318 C228 296 218 270 210 244 Z" fill="#6e1d1a" stroke="#2a0d0b"/>
+      <path d="M232 318 L246 318 L250 328 C246 336 232 336 228 328 Z" fill="url(#bn)" stroke="#8d7f63"/>
+      ${tg(228, 76, '1 RUMP')}${tg(296, 80, '1 TRI-TIP')}${tg(306, 120, '2 SIRLOIN TIP')}${tg(232, 172, '3 TOP ROUND')}${tg(318, 290, '5 FEMUR')}${tg(322, 230, '4 BOTTOM')}${tg(224, 228, '4 EYE OF ROUND')}${tg(296, 320, '6 SHANK')}
+      <text x="8" y="334" font-size="9" fill="#5a524a" font-family="system-ui,sans-serif">dashes = seams · dots = inside</text></svg>`;
+    const hlXCard = `<div class="fd-step"><div>${hlX}</div><div><h3>Back leg: the cuts, step by step</h3>
+      <p>Left: the whole back leg, outside up, as it lies after you take it off. <b>White dashes</b> = seams. <b>Orange numbers</b> = the order. The dotted oval (3) is on the <b>inside</b> of the leg. White dot = the ball joint. Right: the pieces, numbered by the step that frees them.</p>
+      <ol class="fd-ol">
+      <li><b>Rump and tri-tip (line 1).</b> At the top, by the ball joint, a thick cap of meat sits over the rounds. Pull it up and follow the seam across the top of the leg. The small triangle at the front corner is the <b>tri-tip</b>; it comes off with it or right after.</li>
+      <li><b>Sirloin tip (line 2).</b> On the front of the leg (the knee side) is a football-shaped muscle. Push your thumbs into the seam on each side of it and peel it forward off the bone. Cut only where it holds.</li>
+      <li><b>Top round (oval 3).</b> Turn the leg over. The big flat muscle that covers the inside of the leg is the top round. Lift its edge and peel it off in one piece; the seam is easy to see.</li>
+      <li><b>Bottom round and eye of round (line 4).</b> Back to the outside: what's left on the bone is the bottom round with the long, round <b>eye of round</b> along the back edge. Take them off the bone together, then split them along the seam between them.</li>
+      <li><b>Femur.</b> Now the leg bone is bare. Cut around the knee joint at the bottom of it and lift it out.</li>
+      <li><b>Shank (line 6).</b> Cut the meat off the lower bone for grinding, or keep it on the bone and braise it whole.</li></ol>
+      <ul><li><b>Steaks and roasts</b>: top round, bottom round, sirloin tip, rump.</li><li><b>Eye of round</b>: lean; slice thin for jerky or cook fast and rare.</li><li><b>Tri-tip</b>: small and tender; grill it.</li><li><b>Shank</b>: braise or grind.</li></ul></div></div>`;
+    const hqCard = `<div class="fd-step"><div>${hqParts}</div><div><h3>Know the parts: a skinned hindquarter</h3><ul>
+      <li><b>Leg bones and tendon</b> (left): the gap between them, just above the hock, is where the hook or gambrel goes.</li>
+      <li><b>Shank</b>: the narrow part full of tendons. Slow-cook it or grind it.</li>
+      <li><b>The rounds</b> (the big, dark middle): bottom round and the long eye of round on the back of the leg, top round on the inside, sirloin tip on the front. The thin white lines between them are the <b>seams</b> to follow.</li>
+      <li><b>Rump</b> (top end) and the <b>ball joint</b> where the leg came off the pelvis.</li>
+      <li><b>Silver skin and fat</b> (shiny white-gray layer): trim it all off before cooking; it is tough and tastes strong.</li></ul>
+      <div class="fd-tip"><b>Tip:</b> a clean quarter like this, with no hair, dirt or bloodshot meat, is what you want after skinning. Use <b>Add my photo</b> on the steps to keep pictures of your own deer for reference.</div></div></div>`
+      + `<div class="fd-step"><div>${flParts}</div><div><h3>Know the parts: the front leg</h3><ul>
+      <li><b>Shoulder blade</b> (scapula): a flat bone held to the ribs only by muscle. There is <b>no joint</b>, so the whole front leg comes off by cutting behind the blade, flat against the ribs.</li>
+      <li><b>Humerus</b> and <b>elbow</b>: most of the shoulder meat sits on the blade and the humerus. Roasts, stew meat and burger.</li>
+      <li><b>Forearm</b> (radius and ulna): the front shank. Slow-cook it, or grind it.</li>
+      <li>The <b>"knee"</b> is really the deer's wrist. To hang a front leg, tie a cord tightly just below it (easiest), or push the hook through the gap between the leg bones just above it.</li>
+      <li>Below the knee is only bone, tendon and hide: cut it off at the knee if it's in the way.</li></ul></div></div>`;
+    SECS.push(['bone', 'Bone out the meat', `<p>Each muscle group sits in its own "sleeve" of thin membrane. Follow those seams and the meat separates almost by itself into clean cuts: steaks, roasts, jerky and burger. Boned-out meat cools faster, packs smaller and lighter, and is what most states require you to bring home from CWD areas.</p>` + legend + hqCard + shCard + seamCard + shXCard + hlXCard + [
       step(1, 'Hindquarter: outside', ham(false), [
         'Lay the leg outside up on a clean surface (or work it hanging). The <b>rump</b> is the muscle at the top, above the ball joint; cut it off along its seam.',
         'The <b>bottom round</b> (back of the leg) and the long, round <b>eye of round</b> under it separate along the seams; work them free with your fingers.',
