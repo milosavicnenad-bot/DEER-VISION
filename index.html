@@ -249,6 +249,16 @@ html.night body { background: #000; }
 .ch-table th { color: var(--muted); font-weight: 600; font-size: .78rem; }
 .ch-table td.ok { color: var(--h-moss); font-weight: 600; } .ch-table td.mid { color: var(--h-gold); font-weight: 600; } .ch-table td.bad { color: #c62828; font-weight: 700; }
 #chListen[aria-pressed="true"] { background: #c62828; border-color: #c62828; }
+.ab-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+.ab-grid label { display: grid; gap: 3px; font: 600 .85rem var(--font-body); }
+.ab-grid label span { font: 400 .72rem var(--font-body); color: var(--muted); }
+.ab-grid input { width: 100%; box-sizing: border-box; font-size: 1rem; }
+.ab-bar { display: flex; height: 22px; border-radius: 6px; overflow: hidden; border: 1px solid var(--line); }
+.ab-bar i { display: block; height: 100%; font: 600 10px/22px var(--font-body); color: #fff; text-align: center; overflow: hidden; white-space: nowrap; font-style: normal; }
+.ab-notes { margin: 0; padding-left: 1.1rem; display: grid; gap: 5px; font-size: .88rem; }
+.ab-saved { display: grid; gap: 6px; }
+.ab-row { display: grid; grid-template-columns: minmax(0,1fr) auto auto; gap: 8px; align-items: center; padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); font-size: .85rem; }
+.ab-row b { display: block; font-size: .92rem; } .ab-row button { border: 1px solid var(--line); background: var(--surface); color: var(--fg); border-radius: 6px; padding: 5px 9px; cursor: pointer; font: 600 .8rem var(--font-body); }
 /* Leaflet 1.9.4 (BSD-2-Clause) */
 /* required styles */
 
@@ -1389,6 +1399,7 @@ details.drop > .dropbody { padding: 0 14px 14px; }
     <symbol id="i-rack" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20v-6"/><path d="M12 14c-3 0-6-2-7-6M5 8 3.5 4.5M5 8l3-3M7.3 11.2l-1.8-3.5"/><path d="M12 14c3 0 6-2 7-6M19 8l1.5-3.5M19 8l-3-3M16.7 11.2l1.8-3.5"/></symbol>
     <symbol id="i-tag" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 12.5V4.5a1 1 0 0 1 1-1h8l8 8-9 9z"/><circle cx="8" cy="8" r="1.5"/></symbol>
     <symbol id="i-bow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3c5 2.5 8 6 9 9-1 3-4 6.5-9 9"/><path d="M6 3v18" stroke-dasharray="1.5 1.5"/><path d="M3 12h17.5M18 9.5 20.5 12 18 14.5"/></symbol>
+    <symbol id="i-arrowb" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h15"/><path d="M18 9l3.5 3L18 15z" fill="currentColor"/><path d="M3 12l2.5-3h3L6 12M3 12l2.5 3h3L6 12"/><path d="M12 10.5v3" stroke-width="2.4"/></symbol>
     <symbol id="i-back" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 5.5 8 12l6.5 6.5"/></symbol>
     <symbol id="i-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V5M6.5 10.5 12 5l5.5 5.5"/></symbol>
   </defs>
@@ -1429,6 +1440,7 @@ details.drop > .dropbody { padding: 0 14px 14px; }
       <a class="tile" href="#cams" style="--h: var(--h-slate)"><span class="ic"><svg><use href="#i-cam"/></svg></span><span class="tt">Trail cams</span><span class="td">Add SD-card photos, tag deer, see when they pass and your buck list.</span></a>
       <a class="tile" href="#tags" style="--h: var(--h-gold)"><span class="ic"><svg><use href="#i-tag"/></svg></span><span class="tt">Tags &amp; seasons</span><span class="td">Your tags, what's filled, and countdowns to each opener.</span></a>
       <a class="tile" href="#chrono" style="--h: var(--h-sky)"><span class="ic"><svg><use href="#i-bow"/></svg></span><span class="tt">Arrow speed &amp; string jump</span><span class="td">Your phone hears the shot and the hit: arrow speed, energy, momentum and how far a deer can duck.</span></a>
+      <a class="tile" href="#arrowbuild" style="--h: var(--h-sky)"><span class="ic"><svg><use href="#i-arrowb"/></svg></span><span class="tt">Arrow build</span><span class="td">Total weight, FOC, grains per pound, and speed, energy and momentum for any build.</span></a>
       <a class="tile" href="#shot" style="--h: var(--h-blaze)"><span class="ic"><svg><use href="#i-shot"/></svg></span><span class="tt">Shot distance</span><span class="td">Tree-stand angle, true distance and shot placement.</span></a>
       <a class="tile" href="#buck" style="--h: var(--h-bark)"><span class="ic"><svg><use href="#i-rack"/></svg></span><span class="tt">Buck age &amp; score</span><span class="td">Judge age from the body; gross and net score from measurements.</span></a>
       <a class="tile" href="#dress" style="--h: var(--h-blood)"><span class="ic"><svg><use href="#i-knife"/></svg></span><span class="tt">Field dressing</span><span class="td">Step by step, meat yield and how fast to cool it for today's temperature.</span></a>
@@ -1747,7 +1759,7 @@ details.drop > .dropbody { padding: 0 14px 14px; }
 
     <div class="panel">
       <h2 style="margin:0">1 · Your setup</h2>
-      <div class="row"><label for="chArrow">Arrow weight</label><input type="range" id="chArrow" min="300" max="650" step="5" value="425"><span class="v" id="chArrowV">425 gr</span></div>
+      <div class="row"><label for="chArrow">Arrow weight</label><input type="range" id="chArrow" min="300" max="750" step="5" value="425"><span class="v" id="chArrowV">425 gr</span></div>
       <div class="row"><label for="chDist">Target distance</label><input type="range" id="chDist" min="10" max="60" value="20"><span class="v" id="chDistV">20 yd</span></div>
       <div class="row"><label for="chTemp">Air temperature</label><input type="range" id="chTemp" min="0" max="100" value="60"><span class="v" id="chTempV">60°F</span></div>
       <div class="row"><span class="k">Phone is</span><div class="seg full" id="chWhere"><button type="button" data-w="me" aria-pressed="true">Next to me</button><button type="button" data-w="target" aria-pressed="false">At the target</button></div><span class="v"></span></div>
@@ -1764,6 +1776,7 @@ details.drop > .dropbody { padding: 0 14px 14px; }
     <div class="panel">
       <div class="row"><label for="chSpeed">Arrow speed</label><input type="number" id="chSpeed" min="120" max="450" step="1" class="full" placeholder="fps"><span class="v">fps</span></div>
       <div class="caption">Filled in from your shots (the average), or type a speed from a chronograph or your bow's spec.</div>
+      <a class="btn" href="#arrowbuild" style="justify-self:start;text-decoration:none"><svg style="width:18px;height:18px"><use href="#i-arrowb"/></svg>Try a different arrow build</a>
       <div class="stats">
         <div class="stat"><span class="caption">Kinetic energy</span><span class="big" id="chKE">—</span></div>
         <div class="stat"><span class="caption">Momentum</span><span class="big" id="chMom">—</span></div>
@@ -1777,6 +1790,50 @@ details.drop > .dropbody { padding: 0 14px 14px; }
       <div id="chJump"></div>
       <div class="caption" id="chJumpNote"></div>
     </div>
+  </section>
+
+  <!-- ============ ARROW BUILD ============ -->
+  <section class="view" id="v-arrowbuild" hidden aria-label="Arrow build">
+    <div class="vhead" style="--h: var(--h-sky)"><button class="back" type="button"><svg><use href="#i-back"/></svg>Menu</button><span class="vic"><svg><use href="#i-arrowb"/></svg></span><h2>Arrow build</h2></div>
+    <p class="lead">Put together an arrow part by part and see its total weight, balance (FOC) and what it does to your speed, energy and momentum, before you buy anything.</p>
+    <div class="panel">
+      <h2 style="margin:0">Your bow</h2>
+      <div class="row"><span class="k">Bow</span><div class="seg full" id="abBow"><button type="button" data-v="compound">Compound</button><button type="button" data-v="trad">Traditional</button></div><span class="v"></span></div>
+      <div class="row"><label for="abDraw">Draw weight</label><input type="range" id="abDraw" min="25" max="80" value="60"><span class="v" id="abDrawV">60 lb</span></div>
+    </div>
+    <div class="panel">
+      <h2 style="margin:0">The arrow</h2>
+      <div class="ab-grid">
+        <label>Shaft weight<span>grains per inch (GPI)</span><input type="number" id="abGpi" min="3" max="25" step="0.1" value="9.0"></label>
+        <label>Shaft length<span>inches, end of shaft to nock throat</span><input type="number" id="abLen" min="20" max="34" step="0.25" value="28.5"></label>
+        <label>Broadhead / point<span>grains</span><input type="number" id="abPoint" min="50" max="400" step="5" value="125"></label>
+        <label>Insert / outsert<span>grains</span><input type="number" id="abInsert" min="0" max="150" step="1" value="16"></label>
+        <label>Brass or steel collar / footer<span>grains (0 if none)</span><input type="number" id="abFooter" min="0" max="150" step="1" value="0"></label>
+        <label>Nock (with bushing)<span>grains</span><input type="number" id="abNock" min="0" max="40" step="1" value="10"></label>
+        <label>Number of vanes / feathers<span>count</span><input type="number" id="abFletchN" min="2" max="6" step="1" value="3"></label>
+        <label>Each vane / feather<span>grains</span><input type="number" id="abFletchW" min="0" max="20" step="0.5" value="6"></label>
+        <label>Wrap<span>grains (0 if none)</span><input type="number" id="abWrap" min="0" max="15" step="0.5" value="0"></label>
+      </div>
+      <div class="actions"><button class="btn" type="button" data-preset="vanes">Vanes (≈6 gr each)</button><button class="btn" type="button" data-preset="feathers">Feathers (≈2.5 gr each)</button></div>
+    </div>
+    <div class="panel">
+      <h2 style="margin:0">Results</h2>
+      <div class="stats">
+        <div class="stat"><span class="caption">Total weight</span><span class="big" id="abTotal">—</span></div>
+        <div class="stat"><span class="caption">FOC</span><span class="big" id="abFoc">—</span></div>
+        <div class="stat"><span class="caption">Grains per pound</span><span class="big" id="abGpp">—</span></div>
+      </div>
+      <div id="abBar" class="ab-bar"></div>
+      <div class="stats">
+        <div class="stat"><span class="caption">Est. speed</span><span class="big" id="abSpeed">—</span></div>
+        <div class="stat"><span class="caption">Kinetic energy</span><span class="big" id="abKE">—</span></div>
+        <div class="stat"><span class="caption">Momentum</span><span class="big" id="abMom">—</span></div>
+      </div>
+      <div class="caption" id="abSpeedSrc"></div>
+      <ul class="ab-notes" id="abNotes"></ul>
+      <div class="actions"><button class="btn primary" id="abUse" type="button">Use this weight in Arrow speed</button><button class="btn" id="abSave" type="button">Save this build</button></div>
+    </div>
+    <div class="panel"><h2 style="margin:0">Saved builds</h2><div id="abSaved" class="ab-saved"></div></div>
   </section>
 
   <!-- ============ MAPS ============ -->
@@ -7168,9 +7225,78 @@ details.drop > .dropbody { padding: 0 14px 14px; }
   })();
 
   // =================================================================
+  // ARROW BUILD (weight, FOC, grains per pound, speed / energy / momentum)
+  // =================================================================
+  const arrowbuild = (() => {
+    const esc = t => String(t == null ? '' : t).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    const F = ['abGpi', 'abLen', 'abPoint', 'abInsert', 'abFooter', 'abNock', 'abFletchN', 'abFletchW', 'abWrap'];
+    let S = store.get('arrowbuild', { bow: 'compound', draw: 60, v: { abGpi: 9, abLen: 28.5, abPoint: 125, abInsert: 16, abFooter: 0, abNock: 10, abFletchN: 3, abFletchW: 6, abWrap: 0 }, saved: [] });
+    const save = () => store.set('arrowbuild', S);
+    const num = id => Math.max(0, +$(id).value || 0);
+    function parts() {
+      const L = Math.max(1, num('abLen'));
+      // component weights and where their weight sits, in inches from the nock throat
+      return { L, list: [
+        ['Shaft', num('abGpi') * L, L / 2, '#5c6f80'],
+        ['Point', num('abPoint'), L + 0.8, '#b3122a'],
+        ['Insert', num('abInsert'), L - 0.5, '#d9530f'],
+        ['Collar', num('abFooter'), L - 1.5, '#8a5a2b'],
+        ['Nock', num('abNock'), 0, '#4f7a34'],
+        ['Fletching', num('abFletchN') * num('abFletchW'), 2.8, '#7b3fd1'],
+        ['Wrap', num('abWrap'), 3.5, '#b7860b'],
+      ] };
+    }
+    // the speed this arrow would leave the bow at, scaled from your measured speed (Arrow speed screen)
+    function speedFor(w) {
+      const ch = store.get('chrono', null), k = S.bow === 'trad' ? 0.36 : 0.43;
+      if (ch && ch.speed && ch.arrow) return { v: ch.speed * Math.pow(ch.arrow / w, k), src: `Scaled from your measured ${Math.round(ch.speed)} fps with a ${ch.arrow} gr arrow (Arrow speed screen).` };
+      return null;
+    }
+    function calc() {
+      F.forEach(id => { S.v[id] = +$(id).value; }); S.draw = +$('abDraw').value; save();
+      $('abDrawV').textContent = S.draw + ' lb';
+      document.querySelectorAll('#abBow button').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === S.bow));
+      const { L, list } = parts(), tot = list.reduce((a, p) => a + p[1], 0);
+      const bp = list.reduce((a, p) => a + p[1] * p[2], 0) / tot, foc = (bp - L / 2) / L * 100, gpp = tot / S.draw;
+      $('abTotal').innerHTML = `${Math.round(tot)}<small>gr</small>`; $('abFoc').innerHTML = `${foc.toFixed(1)}<small>%</small>`; $('abGpp').textContent = gpp.toFixed(1);
+      $('abBar').innerHTML = list.filter(p => p[1] > 0).map(p => `<i style="width:${(100 * p[1] / tot).toFixed(1)}%;background:${p[3]}" title="${p[0]}: ${Math.round(p[1])} gr">${100 * p[1] / tot > 9 ? p[0] : ''}</i>`).join('');
+      const sp = speedFor(tot);
+      if (sp) {
+        const v = sp.v, ke = tot * v * v / 450240, mo = tot * v / 225400;
+        $('abSpeed').innerHTML = `${Math.round(v)}<small>fps</small>`; $('abKE').innerHTML = `${ke.toFixed(0)}<small>ft·lb</small>`; $('abMom').innerHTML = `${mo.toFixed(2)}<small>slug·ft/s</small>`;
+        $('abSpeedSrc').textContent = sp.src + ' Estimates: heavier arrows lose speed but gain a little energy and a lot of momentum.';
+      } else {
+        ['abSpeed', 'abKE', 'abMom'].forEach(id => $(id).textContent = '—');
+        $('abSpeedSrc').innerHTML = 'Measure your arrow speed once on the <a href="#chrono">Arrow speed</a> screen, and this shows speed, energy and momentum for any build.';
+      }
+      const n = [];
+      n.push(foc < 7 ? `<b>FOC ${foc.toFixed(1)}%: low.</b> The arrow may plane or wander with broadheads; a heavier point or insert brings the balance forward.`
+        : foc < 10 ? `<b>FOC ${foc.toFixed(1)}%: a bit low for hunting.</b> Fine for targets; many hunters aim for 10–15%.`
+        : foc < 15 ? `<b>FOC ${foc.toFixed(1)}%: good hunting balance</b> (10–15% is the common range).`
+        : foc < 19 ? `<b>FOC ${foc.toFixed(1)}%: high FOC.</b> Flies stable with broadheads and penetrates well; trajectory drops a little more at long range.`
+        : `<b>FOC ${foc.toFixed(1)}%: extreme FOC.</b> Great penetration on big game; expect more drop past 30 yards and tune carefully.`);
+      if (S.bow === 'compound') n.push(gpp < 5 ? `<b>${gpp.toFixed(1)} grains per pound is below 5:</b> too light. Most compound makers void the warranty under 5 gr/lb, and a light arrow can damage the bow.` : gpp < 6 ? `<b>${gpp.toFixed(1)} gr/lb:</b> light and fast; fine for deer with a good hit, on the low side for penetration.` : gpp <= 8 ? `<b>${gpp.toFixed(1)} gr/lb:</b> a solid hunting weight for whitetails.` : `<b>${gpp.toFixed(1)} gr/lb:</b> heavy and quiet, excellent penetration; more drop at longer range.`);
+      else n.push(gpp < 8 ? `<b>${gpp.toFixed(1)} gr/lb is light for a traditional bow.</b> Many bowyers say at least 8–9 gr/lb; light arrows are noisy and hard on the bow.` : gpp <= 12 ? `<b>${gpp.toFixed(1)} gr/lb:</b> a good traditional hunting weight; quiet, with good penetration.` : `<b>${gpp.toFixed(1)} gr/lb:</b> heavy, very quiet and hard-hitting; keep shots close because of the arc.`);
+      n.push('Spine: a heavier point makes the arrow act weaker (roughly like adding about 3 lb of draw weight per 25 grains). Check the maker’s spine chart when you change the point or length, and bare-shaft or paper tune.');
+      $('abNotes').innerHTML = n.map(x => `<li>${x}</li>`).join('');
+      S._last = { tot, foc, gpp }; 
+    }
+    function renderSaved() {
+      $('abSaved').innerHTML = S.saved.length ? S.saved.map((b, k) => `<div class="ab-row" data-k="${k}"><div><b>${esc(b.name)}</b>${Math.round(b.tot)} gr · FOC ${b.foc.toFixed(1)}% · ${b.v.abPoint} gr head · ${b.v.abGpi} GPI × ${b.v.abLen}"</div><button type="button" data-a="load">Load</button><button type="button" data-a="del">✕</button></div>`).join('') : '<div class="caption">Save builds to compare them, for example "Hunting 125 gr" and "Heavy 175 gr".</div>';
+    }
+    $('v-arrowbuild').addEventListener('input', e => { if (F.includes(e.target.id) || e.target.id === 'abDraw') calc(); });
+    $('abBow').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; S.bow = b.dataset.v; calc(); });
+    $('v-arrowbuild').addEventListener('click', e => { const b = e.target.closest('[data-preset]'); if (!b) return; $('abFletchW').value = b.dataset.preset === 'vanes' ? 6 : 2.5; calc(); });
+    $('abUse').addEventListener('click', () => { const ch = store.get('chrono', { arrow: 425, dist: 20, temp: 60, where: 'me', speed: null, shots: [] }); const w = Math.round(S._last.tot); if (w > 750 || w < 300) { toast('Arrow speed accepts 300–750 grains.'); return; } ch.arrow = w; store.set('chrono', ch); toast(`Arrow speed now uses ${w} gr. Measure this arrow to update its speed.`); });
+    $('abSave').addEventListener('click', () => { const nm = prompt('Name this build', `${Math.round(S._last.tot)} gr, ${num('abPoint')} gr head`); if (!nm) return; S.saved.push({ name: nm.slice(0, 60), tot: S._last.tot, foc: S._last.foc, v: Object.assign({}, S.v) }); save(); renderSaved(); });
+    $('abSaved').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; const k = +b.closest('.ab-row').dataset.k; if (b.dataset.a === 'del') S.saved.splice(k, 1); else { S.v = Object.assign({}, S.saved[k].v); F.forEach(id => { $(id).value = S.v[id]; }); calc(); } save(); renderSaved(); });
+    return { show() { S = store.get('arrowbuild', S); F.forEach(id => { $(id).value = S.v[id]; }); $('abDraw').value = S.draw; calc(); renderSaved(); } };
+  })();
+
+  // =================================================================
   // ROUTER
   // =================================================================
-  const TOOLS = { vision, maps, predict, stats, blood, track, camo, movement, wind, compass, sun: sunmoon, shine, skyline, checklist, fov, guide: {}, mikecon, journal, shot, backup, cams, tags, buck, dress, chrono };
+  const TOOLS = { vision, maps, predict, stats, blood, track, camo, movement, wind, compass, sun: sunmoon, shine, skyline, checklist, fov, guide: {}, mikecon, journal, shot, backup, cams, tags, buck, dress, chrono, arrowbuild };
   let current = 'home';
   function route() {
     const go = (location.hash || '').match(/^#go=(-?[\d.]+),(-?[\d.]+),?(.*)$/);
