@@ -815,6 +815,23 @@ svg.leaflet-image-layer.leaflet-interactive path {
 	}
 
 /* ---- maps ---- */
+.mpsearch { position: relative; }
+.mpsearch .sbox { display: flex; align-items: center; gap: 8px; padding: 0 6px 0 12px; border: 1.5px solid var(--line); border-radius: 12px; background: var(--surface); }
+.mpsearch .sbox:focus-within { border-color: var(--accent); }
+.mpsearch .sbox svg { width: 20px; height: 20px; flex: none; color: var(--muted); }
+.mpsearch input { flex: 1; min-width: 0; border: 0; background: transparent; color: var(--fg); font: 500 1rem var(--font-body); padding: 12px 0; outline: none; -webkit-appearance: none; appearance: none; }
+.mpsearch input::-webkit-search-cancel-button { display: none; }
+.mpsearch #mpQx { width: 36px; height: 36px; flex: none; border: 0; border-radius: 8px; background: transparent; color: var(--muted); font-size: 1.5rem; line-height: 1; cursor: pointer; }
+.sres { position: absolute; left: 0; right: 0; top: calc(100% + 4px); z-index: 1200; max-height: min(60vh, 440px); overflow-y: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,.28); padding: 4px; }
+.sres .sg { padding: 8px 10px 3px; font: 600 .72rem var(--font-body); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.sres button { display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 10px; align-items: center; width: 100%; text-align: left; padding: 9px 10px; border: 0; border-radius: 8px; background: transparent; color: var(--fg); cursor: pointer; font: inherit; }
+.sres button:hover, .sres button.act { background: var(--bg); }
+.sres button svg { width: 22px; height: 22px; color: var(--h-moss); justify-self: center; }
+.sres b { display: block; font-size: .92rem; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sres span.sub { display: block; font-size: .76rem; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sres .smsg { padding: 10px 12px; font-size: .85rem; color: var(--muted); }
+.mp-spin { width: 38px; height: 38px; color: #e0218a; filter: drop-shadow(0 1px 2px rgba(0,0,0,.6)); }
+.mp-spin svg { width: 38px; height: 38px; fill: #fff; stroke-width: 2.2; }
 .mapbar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .mapbar select { flex: 1; min-width: 0; }
 .mapwrap { position: relative; border-radius: 10px; overflow: hidden; border: 1px solid var(--line); }
@@ -1127,6 +1144,9 @@ details.drop > .dropbody { padding: 0 14px 14px; }
     <symbol id="i-list" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
       <path d="M9 6.5h11M9 12h11M9 17.5h11"/><circle cx="4.8" cy="6.5" r="1" fill="currentColor"/><circle cx="4.8" cy="12" r="1" fill="currentColor"/><circle cx="4.8" cy="17.5" r="1" fill="currentColor"/>
     </symbol>
+    <symbol id="i-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.4 15.4 21 21"/>
+    </symbol>
     <symbol id="i-pin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
       <path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.3"/>
     </symbol>
@@ -1284,6 +1304,14 @@ details.drop > .dropbody { padding: 0 14px 14px; }
     <div class="vhead" style="--h: var(--h-moss)"><button class="back" type="button"><svg><use href="#i-back"/></svg>Menu</button><span class="vic"><svg><use href="#i-map"/></svg></span><h2>Maps</h2></div>
     <div class="note maps-off" hidden>Maps load map pictures from mapping services, which pages inside Claude can't do. Open Deer Eyes from your website (your GitHub link) or the installed app to use Maps: topo, satellite and property lines, your stands and sign, tracks, measuring and your scent cone.</div>
     <div class="maps-on" hidden>
+      <div class="mpsearch" role="search">
+        <div class="sbox">
+          <svg aria-hidden="true"><use href="#i-search"/></svg>
+          <input type="search" id="mpQ" placeholder="Search address, town, park, lake, WMA, coordinates…" autocomplete="off" enterkeyhint="search" aria-label="Search the map" aria-controls="mpRes" aria-expanded="false" role="combobox" aria-autocomplete="list">
+          <button type="button" id="mpQx" aria-label="Clear search" hidden>×</button>
+        </div>
+        <div class="sres" id="mpRes" role="listbox" hidden></div>
+      </div>
       <div class="mapbar">
         <label class="k" for="mpArea">Area</label>
         <select id="mpArea"></select>
@@ -4206,6 +4234,184 @@ details.drop > .dropbody { padding: 0 14px 14px; }
     function copyText(t) {
       try { navigator.clipboard.writeText(t).then(() => toast('Copied ' + t), () => toast(t)); } catch (e) { toast(t); }
     }
+
+
+    // ---------- search: addresses, places, public hunting land, coordinates, your own markers ----------
+    const GEO = 'https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer';
+    const NOMI = 'https://nominatim.openstreetmap.org/search';
+    const qEl = $('mpQ'), resEl = $('mpRes');
+    let sTimer = null, sSeq = 0, sItems = [], sAct = -1, sFor = null, sBusy = false, sPin = null, sShape = null, geoDown = false;
+    const norm = t => String(t || '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+    // coordinates: "41.2345, -74.1234", "41.2345 74.1234" (west assumed for NY/NJ), or 41°12'30"N 74°05'15"W
+    function parseCoords(t) {
+      const s = t.trim().toUpperCase().replace(/[′’]/g, "'").replace(/[″”]/g, '"');
+      let m = s.match(/^([NS])?\s*([-+]?\d{1,2}(?:\.\d+)?)\s*°?\s*([NS])?\s*[,;\s]\s*([EW])?\s*([-+]?\d{1,3}(?:\.\d+)?)\s*°?\s*([EW])?$/);
+      let lat, lon;
+      if (m) {
+        const ns = m[1] || m[3], ew = m[4] || m[6];
+        lat = +m[2] * (ns === 'S' ? -1 : 1); lon = +m[5] * (ew === 'W' ? -1 : 1);
+        m = { ew };
+      } else {
+        const dms = /(\d{1,3}(?:\.\d+)?)\s*[°D]?\s*(?:(\d{1,2}(?:\.\d+)?)\s*['M]?\s*)?(?:(\d{1,2}(?:\.\d+)?)\s*["S]?\s*)?([NSEW])/g;
+        const got = {}; let x, n = 0;
+        while ((x = dms.exec(s))) { n++; got[/[NS]/.test(x[4]) ? 'lat' : 'lon'] = (+x[1] + (+x[2] || 0) / 60 + (+x[3] || 0) / 3600) * (/[SW]/.test(x[4]) ? -1 : 1); }
+        if (n !== 2 || got.lat == null || got.lon == null) return null;
+        lat = got.lat; lon = got.lon;
+      }
+      if (m && lat > 0 && lon > 60 && lon < 80 && !m.ew) lon = -lon; // typed without the minus sign
+      if (!(Math.abs(lat) <= 90 && Math.abs(lon) <= 180)) return null;
+      return L.latLng(lat, lon);
+    }
+    const kindIcon = { mine: 'i-pin', land: 'i-map', addr: 'i-pin', place: 'i-locate', coord: 'i-locate', recent: 'i-route' };
+    function rowsHtml(groups) {
+      sItems = []; let h = '';
+      for (const [title, items] of groups) {
+        if (!items.length) continue;
+        h += `<div class="sg">${esc(title)}</div>`;
+        for (const it of items) { h += `<button type="button" role="option" id="sr${sItems.length}" data-i="${sItems.length}"><svg><use href="#${kindIcon[it.kind] || 'i-pin'}"/></svg><div><b>${esc(it.title)}</b>${it.sub ? `<span class="sub">${esc(it.sub)}</span>` : ''}</div></button>`; sItems.push(it); }
+      }
+      return h;
+    }
+    function showRes(html, msg) {
+      sAct = -1;
+      resEl.innerHTML = (html || '') + (msg ? `<div class="smsg">${msg}</div>` : '');
+      resEl.hidden = !resEl.innerHTML; qEl.setAttribute('aria-expanded', !resEl.hidden);
+    }
+    const closeRes = () => { resEl.hidden = true; qEl.setAttribute('aria-expanded', 'false'); qEl.removeAttribute('aria-activedescendant'); };
+    function mineMatches(q) {
+      const n = norm(q); if (!n) return [];
+      const hit = x => norm(`${x.name} ${x.notes || ''} ${(MT[x.type] || [''])[0]} ${x.area}`).includes(n);
+      return DB.markers.filter(hit).slice(0, 5).map(m => ({ kind: 'mine', title: m.name || (MT[m.type] || MT.note)[0], sub: `Your marker · ${(MT[m.type] || MT.note)[0]} · ${m.area}`, ll: L.latLng(m.lat, m.lon), mk: m }))
+        .concat(DB.tracks.filter(t => norm(`${t.name} ${t.area}`).includes(n)).slice(0, 3).map(t => ({ kind: 'mine', title: t.name, sub: `Your track · ${t.area}`, ll: L.latLng(t.pts[0][0], t.pts[0][1]), b: L.latLngBounds(t.pts.map(p => [p[0], p[1]])) })));
+    }
+    // state-owned hunting land by name: NY DEC forests, WMAs and NJ Fish & Wildlife / parks land
+    const nice = t => t === t.toUpperCase() ? t.toLowerCase().replace(/\b([a-z])([a-z']*)/g, (w, f, r) => /^(wma|sp|sf|uf|mua|wmu|nys|dec|ny|nj|ii|iii|iv)$/.test(w) ? w.toUpperCase() : /^(of|the|and|at|on|in)$/.test(w) ? w : f.toUpperCase() + r) .replace(/^./, c => c.toUpperCase()) : t;
+    async function landByName(q) {
+      const term = q.trim().toUpperCase().replace(/'/g, "''").replace(/[%_]/g, ''); if (term.length < 3) return [];
+      const one = async (url, field, sub, extra) => {
+        const p = new URLSearchParams({ where: `UPPER(${field}) LIKE '%${term}%'`, outFields: field + (extra ? ',' + extra : ''), returnGeometry: 'true', outSR: '4326', maxAllowableOffset: '0.0005', resultRecordCount: '12', f: 'json' });
+        const r = await fetch(`${url}/query?${p}`); const j = await r.json(); if (j.error) throw new Error(j.error.message);
+        const by = {};
+        for (const f of j.features || []) {
+          const name = f.attributes[field]; if (!name || !f.geometry || !f.geometry.rings) continue;
+          const rings = f.geometry.rings.map(rg => rg.map(p => [p[1], p[0]])), b = L.latLngBounds([].concat(...rings));
+          if (by[name]) { by[name].b.extend(b); by[name].rings.push(...rings); } else by[name] = { kind: 'land', title: nice(name), sub: typeof sub === 'function' ? sub(f.attributes) : sub, b, rings };
+        }
+        return Object.values(by).map(x => Object.assign(x, { ll: x.b.getCenter() }));
+      };
+      const res = await Promise.allSettled([
+        one(DEC + '/0', 'FACILITY', a => `NY DEC land${a.CATEGORY ? ' · ' + a.CATEGORY : ''}`, 'CATEGORY'),
+        one(DEC + '/2', 'WMA', 'NY Wildlife Management Area'),
+        one(NJL + '/67', 'FEATURE_NAME', a => `NJ state land${a.OWNERSHIP_USE ? ' · ' + a.OWNERSHIP_USE : ''}`, 'OWNERSHIP_USE'),
+      ]);
+      const out = [], seen = {};
+      for (const r of res) if (r.status === 'fulfilled') for (const x of r.value) if (!seen[x.title]) { seen[x.title] = 1; out.push(x); }
+      const n = norm(q); out.sort((a, b) => (norm(b.title).startsWith(n) - norm(a.title).startsWith(n)) || a.title.length - b.title.length);
+      return out.slice(0, 5);
+    }
+    async function esriSuggest(q) {
+      const c = map.getCenter();
+      const p = new URLSearchParams({ text: q, location: `${c.lng.toFixed(4)},${c.lat.toFixed(4)}`, countryCode: 'USA', maxSuggestions: '7', f: 'json' });
+      const r = await fetch(`${GEO}/suggest?${p}`); const j = await r.json(); if (j.error) throw new Error(j.error.message);
+      return (j.suggestions || []).map(s => { const i = s.text.indexOf(','); return { kind: s.isCollection ? 'place' : 'addr', title: i > 0 ? s.text.slice(0, i) : s.text, sub: i > 0 ? s.text.slice(i + 1).trim() : '', text: s.text, magicKey: s.magicKey }; });
+    }
+    async function esriFind(it) {
+      const c = map.getCenter();
+      const p = new URLSearchParams({ SingleLine: it.text, magicKey: it.magicKey || '', location: `${c.lng.toFixed(4)},${c.lat.toFixed(4)}`, outFields: 'Addr_type,Type', maxLocations: '1', outSR: '4326', f: 'json' });
+      const r = await fetch(`${GEO}/findAddressCandidates?${p}`); const j = await r.json(); if (j.error) throw new Error(j.error.message);
+      const k = (j.candidates || [])[0]; if (!k) return null;
+      const e = k.extent, at = (k.attributes && k.attributes.Addr_type) || '';
+      return { ll: L.latLng(k.location.y, k.location.x), b: e && /Locality|Postal|Region|Subregion|Zone|Park|Water|Forest/i.test(at + ' ' + ((k.attributes && k.attributes.Type) || '')) ? L.latLngBounds([e.ymin, e.xmin], [e.ymax, e.xmax]) : null, at };
+    }
+    // backup place search (OpenStreetMap), used only when you press Search, never while typing
+    async function nominatim(q) {
+      const p = new URLSearchParams({ q, format: 'jsonv2', countrycodes: 'us', limit: '6', viewbox: '-79.9,45.1,-73.2,38.85', 'accept-language': 'en' });
+      const r = await fetch(`${NOMI}?${p}`); if (!r.ok) throw new Error(r.status);
+      return (await r.json()).map(x => { const i = x.display_name.indexOf(','); const bb = x.boundingbox && x.boundingbox.map(Number);
+        return { kind: x.addresstype === 'house' || x.category === 'building' ? 'addr' : 'place', title: x.name || x.display_name.slice(0, i > 0 ? i : undefined), sub: x.display_name.slice(i + 1).trim().replace(/, United States$/, ''), ll: L.latLng(+x.lat, +x.lon), b: bb && (bb[1] - bb[0] > 0.004) ? L.latLngBounds([bb[0], bb[2]], [bb[1], bb[3]]) : null }; });
+    }
+    function showRecent() {
+      const rec = store.get('maps.recent', []);
+      if (!rec.length) { showRes('', 'Type an address, town, park, lake, mountain, WMA or state forest name, or coordinates like <b>41.32, -74.18</b>. Your own markers are searched too.'); return; }
+      showRes(rowsHtml([['Recent searches', rec.map(r => ({ kind: 'recent', title: r.title, sub: r.sub, ll: L.latLng(r.lat, r.lon), b: r.b ? L.latLngBounds(r.b) : null, rk: r.kind }))]]));
+    }
+    async function runSearch(q, full) {
+      const seq = ++sSeq; q = q.trim(); sFor = q; sBusy = false;
+      $('mpQx').hidden = !q;
+      if (!q) { showRecent(); return; }
+      const groups = [], c = parseCoords(q);
+      if (c) groups.push(['Coordinates', [{ kind: 'coord', title: `${c.lat.toFixed(5)}, ${c.lng.toFixed(5)}`, sub: 'Go to this spot', ll: c }]]);
+      if (c && full) { pick(groups[0][1][0]); return; }
+      const mine = mineMatches(q); groups.push(['Your markers and tracks', mine]);
+      if (c || q.length < 3) { showRes(rowsHtml(groups), !c && !mine.length ? 'Keep typing…' : ''); return; }
+      if (!navigator.onLine) { showRes(rowsHtml(groups), 'No signal: only coordinates and your own markers can be searched right now.'); return; }
+      showRes(rowsHtml(groups), 'Searching…'); sBusy = true;
+      const [land, geo] = await Promise.allSettled([landByName(q), geoDown && !full ? Promise.reject(new Error('down')) : esriSuggest(q)]);
+      if (seq !== sSeq) return;
+      sBusy = false;
+      let places = geo.status === 'fulfilled' ? geo.value : null;
+      if (geo.status === 'fulfilled') geoDown = false; else if (!geoDown && geo.reason && geo.reason.message !== 'down') geoDown = true;
+      if (!places && full) { try { places = await nominatim(q); } catch (e) { places = null; } if (seq !== sSeq) return; }
+      const lands = land.status === 'fulfilled' ? land.value : [];
+      const landNames = lands.map(x => norm(x.title));
+      groups.push(['Public hunting land', lands]);
+      groups.push(['Places and addresses', (places || []).filter(p => !landNames.includes(norm(p.title)))]);
+      const any = groups.some(g => g[1].length);
+      showRes(rowsHtml(groups), places ? (any ? '' : 'Nothing found. Try adding the town or state, e.g. <b>Bear Swamp Rd, Pittstown NJ</b>.')
+        : (any ? 'Address search is unavailable right now; press <b>Search</b> on your keyboard to try the backup.' : 'Could not reach the address search. Press <b>Search</b> on your keyboard to try again.'));
+    }
+    function clearPick() { if (sPin) { map.removeLayer(sPin); sPin = null; } if (sShape) { map.removeLayer(sShape); sShape = null; } }
+    async function pick(it) {
+      closeRes(); qEl.blur();
+      if (it.kind === 'recent') it = Object.assign({}, it, { kind: it.rk });
+      if (it.magicKey && !it.ll) {
+        showRes('', 'Finding ' + esc(it.title) + '…');
+        try { const f = await esriFind(it); closeRes(); if (!f) { toast('Could not find that place.'); return; } it = Object.assign({}, it, f); }
+        catch (e) { closeRes(); toast('Could not reach the address search. Check your signal.'); return; }
+      }
+      qEl.value = it.title; $('mpQx').hidden = false;
+      if (it.kind === 'mine' && it.mk) {
+        if (!inArea(it.mk)) { DB.cur = 'all'; saveDB(); fillAreas(); drawSaved(); }
+        map.setView(it.ll, Math.max(map.getZoom(), 16), { animate: false }); clearPick();
+        markerLayer.eachLayer(l => { const p = l.getLatLng(); if (Math.abs(p.lat - it.mk.lat) < 1e-9 && Math.abs(p.lng - it.mk.lon) < 1e-9) l.fire('click'); });
+        return;
+      }
+      clearPick();
+      if (it.b && it.b.isValid() && !it.b.getNorthEast().equals(it.b.getSouthWest())) map.fitBounds(it.b, { maxZoom: it.kind === 'land' ? 16 : 15, padding: [20, 20], animate: false });
+      else map.setView(it.ll, it.kind === 'addr' || it.kind === 'coord' ? 17 : 15, { animate: false });
+      if (it.rings) sShape = L.polygon(it.rings, { color: '#e0218a', weight: 3, fill: false, dashArray: '8 6', interactive: false }).addTo(map);
+      if (it.kind !== 'mine') {
+        sPin = L.marker(it.ll, { icon: L.divIcon({ className: '', iconSize: [38, 38], iconAnchor: [19, 36], html: '<div class="mp-spin"><svg><use href="#i-pin"/></svg></div>' }), zIndexOffset: 950, title: it.title, bubblingMouseEvents: false }).addTo(map);
+        sPin.on('click', () => landInfo(it.ll));
+        const r = store.get('maps.recent', []).filter(x => x.title !== it.title);
+        r.unshift({ kind: it.kind, title: it.title, sub: it.sub || '', lat: +it.ll.lat.toFixed(6), lon: +it.ll.lng.toFixed(6), b: it.b && it.b.isValid() ? [[it.b.getSouth(), it.b.getWest()], [it.b.getNorth(), it.b.getEast()]] : null });
+        store.set('maps.recent', r.slice(0, 8));
+      }
+      if (it.kind !== 'place' || !it.b) landInfo(it.ll); // owner, public land and hunting rules for that spot
+      else $('mpInfo').innerHTML = `Showing <b>${esc(it.title)}</b>. Tap the map anywhere for land owner and hunting rules.`;
+    }
+    function setAct(i) {
+      const bs = resEl.querySelectorAll('button[data-i]'); if (!bs.length) return;
+      sAct = (i + bs.length) % bs.length; bs.forEach((b, k) => b.classList.toggle('act', k === sAct));
+      bs[sAct].scrollIntoView({ block: 'nearest' }); qEl.setAttribute('aria-activedescendant', bs[sAct].id);
+    }
+    qEl.addEventListener('input', () => { clearTimeout(sTimer); const q = qEl.value; sTimer = setTimeout(() => runSearch(q, false), q.trim().length < 3 ? 0 : 350); });
+    qEl.addEventListener('focus', () => { if (!qEl.value.trim()) showRecent(); else if (resEl.hidden && resEl.innerHTML) { resEl.hidden = false; qEl.setAttribute('aria-expanded', 'true'); } });
+    qEl.addEventListener('keydown', e => {
+      if (e.key === 'ArrowDown') { e.preventDefault(); setAct(sAct + 1); }
+      else if (e.key === 'ArrowUp') { e.preventDefault(); setAct(sAct - 1); }
+      else if (e.key === 'Escape') { closeRes(); }
+      else if (e.key === 'Enter') {
+        e.preventDefault(); clearTimeout(sTimer);
+        if (sAct >= 0 && sItems[sAct]) pick(sItems[sAct]);
+        else if (!resEl.hidden && sItems.length && sFor === qEl.value.trim() && !sBusy && !/unavailable|Could not reach/.test(resEl.textContent)) pick(sItems[0]);
+        else runSearch(qEl.value, true);
+      }
+    });
+    resEl.addEventListener('mousedown', e => e.preventDefault()); // keep the keyboard open while choosing
+    resEl.addEventListener('click', e => { const b = e.target.closest('button[data-i]'); if (b) pick(sItems[+b.dataset.i]); });
+    $('mpQx').addEventListener('click', () => { qEl.value = ''; $('mpQx').hidden = true; clearPick(); if (map) map.closePopup(); qEl.focus(); showRecent(); });
+    document.addEventListener('pointerdown', e => { if (!e.target.closest('.mpsearch')) closeRes(); });
 
     // ---------- my location ----------
     let me = null, meAcc = 0, meMarker = null, meCircle = null, watchId = null, follow = false, headTimer = null;
