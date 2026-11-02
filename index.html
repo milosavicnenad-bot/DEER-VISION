@@ -278,6 +278,13 @@ html.night body { background: #000; }
 .fd-step .fd-ol { margin: 6px 0 8px; } .fd-step .fd-ol li::marker { color: #e08a1e; font-weight: 800; } .fd-step p { margin: 0 0 6px; font-size: .9rem; }
 .fd-tip { margin-top: 8px; font-size: .84rem; border-left: 3px solid var(--h-moss); padding: 4px 8px; background: color-mix(in srgb, var(--h-moss) 8%, transparent); border-radius: 0 6px 6px 0; }
 .fd-tip.no { border-left-color: #c62828; background: color-mix(in srgb, #c62828 7%, transparent); }
+.fd-chart { overflow: auto; border-radius: 12px; margin: 8px 0; cursor: zoom-in; -webkit-overflow-scrolling: touch; }
+.fd-chart svg { width: 100%; max-width: 760px; height: auto; display: block; border-radius: 12px; }
+.fd-chart.zoom { cursor: zoom-out; }
+.fd-chart.zoom svg { width: 220%; max-width: none; }
+.fd-cuts { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 6px; margin: 8px 0; }
+.fd-cuts div { background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 7px 9px; font-size: .88rem; }
+.fd-cuts b { display: block; }
 .fd-gear { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 6px 14px; margin: 0; padding-left: 1.1rem; font-size: .9rem; }
 .fd-links { display: grid; gap: 8px; }
 .fd-links a { display: grid; gap: 2px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); color: var(--fg); text-decoration: none; }
@@ -1150,7 +1157,7 @@ body.nav-big { overflow: hidden; }
 .bt-guide { gap: 12px; }
 .bt-steps { margin: 0; padding-left: 1.3rem; display: grid; gap: 8px; font-size: .9rem; max-width: 68ch; }
 .bt-steps a { color: var(--moss); }
-.bt-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 8px; }
+.bt-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 8px; }
 .btc { display: grid; gap: 4px; padding: 10px 12px; border: 1px solid var(--line); border-left: 4px solid var(--h-blood); border-radius: 8px; background: var(--bg); font-size: .86rem; }
 .btc > b { font-size: .95rem; }
 .btc .w { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: .84rem; }
@@ -7686,6 +7693,148 @@ details.drop > .dropbody { padding: 0 14px 14px; }
       <li><b>Forearm</b> (radius and ulna): the front shank. Slow-cook it, or grind it.</li>
       <li>The <b>"knee"</b> is really the deer's wrist. To hang a front leg, tie a cord tightly just below it (easiest), or push the hook through the gap between the leg bones just above it.</li>
       <li>Below the knee is only bone, tendon and hide: cut it off at the knee if it's in the way.</li></ul></div></div>`;
+    // whole-deer cuts chart (our own drawing): where each cut sits and what it's good for
+    const dL = (x1, y1, tx, ty, t, a = 'middle') => { x1 += 40; y1 += 24; const w = t.length * 7.3; const lo = a === 'start' ? tx : a === 'end' ? tx - w : tx - w / 2, ex = Math.min(Math.max(x1, lo + 4), lo + w - 4); return `<path d="M${x1} ${y1} L${ex} ${ty}" stroke="#fff" stroke-opacity=".75" stroke-width="1.1"/><circle cx="${x1}" cy="${y1}" r="2.6" fill="#fff"/><text x="${tx + (a === 'start' ? 3 : a === 'end' ? -3 : 0)}" y="${ty + (ty > y1 ? 13 : -4)}" text-anchor="${a}" font-size="13" font-weight="600" fill="#fff" stroke="#1d1a17" stroke-width="3" paint-order="stroke" font-family="system-ui,sans-serif">${t}</text>`; };
+    const dBody = 'M128 120 C150 104 210 100 260 104 C290 106 312 116 318 140 C322 162 314 182 300 192 C280 200 250 196 230 194 C200 196 170 196 150 194 C134 190 124 176 122 160 Z';
+    const dNeck = 'M140 118 C126 100 110 80 98 60 L82 70 C92 96 104 124 124 166 Z';
+    const dLegs = ['M136 186 L134 236 L130 278 L141 278 L146 236 L154 192 Z', 'M156 190 L160 236 L156 278 L167 278 L170 236 L172 192 Z', 'M276 184 C286 206 290 222 282 238 L276 278 L287 278 L294 240 C302 222 300 204 296 186 Z', 'M298 180 C306 204 310 220 302 238 L298 278 L309 278 L314 240 C322 220 320 198 314 176 Z'];
+    const dClip = `<clipPath id="dC"><path d="${dBody}"/><path d="${dNeck}"/>${dLegs.map(d => `<path d="${d}"/>`).join('')}</clipPath>`;
+    const deerChart = (() => {
+  const F = 'Georgia,"Times New Roman",serif';
+  const defs = `<defs>
+  <filter id="pMeat" x="-10%" y="-10%" width="120%" height="120%">
+    <feTurbulence type="fractalNoise" baseFrequency="0.035 0.16" numOctaves="4" seed="7" result="n"/>
+    <feColorMatrix in="n" type="matrix" values="0.9 0 0 0 0.25  0.35 0 0 0 0.02  0.35 0 0 0 0.05  0 0 0 0 1" result="t"/>
+    <feBlend in="SourceGraphic" in2="t" mode="multiply" result="b"/>
+    <feComposite in="b" in2="SourceGraphic" operator="in" result="tex"/>
+    <feGaussianBlur in="SourceAlpha" stdDeviation="4" result="bl"/>
+    <feSpecularLighting in="bl" surfaceScale="5" specularConstant=".55" specularExponent="16" lighting-color="#ffe9e4" result="sp"><fePointLight x="-150" y="-260" z="260"/></feSpecularLighting>
+    <feComposite in="sp" in2="SourceAlpha" operator="in" result="sp2"/>
+    <feComposite in="tex" in2="sp2" operator="arithmetic" k1="0" k2="1" k3=".45" k4="0"/>
+  </filter>
+  <filter id="pGround" x="-5%" y="-5%" width="110%" height="110%">
+    <feTurbulence type="fractalNoise" baseFrequency="0.45" numOctaves="2" seed="3" result="n"/>
+    <feColorMatrix in="n" type="matrix" values="1.3 0 0 0 0.05  0.5 0 0 0 0.0  0.5 0 0 0 0.02  0 0 0 0 1" result="t"/>
+    <feBlend in="SourceGraphic" in2="t" mode="multiply" result="b"/>
+    <feComposite in="b" in2="SourceGraphic" operator="in" result="tex"/>
+    <feGaussianBlur in="SourceAlpha" stdDeviation="5" result="bl"/>
+    <feSpecularLighting in="bl" surfaceScale="4" specularConstant=".4" specularExponent="14" lighting-color="#fff" result="sp"><fePointLight x="-150" y="-260" z="240"/></feSpecularLighting>
+    <feComposite in="sp" in2="SourceAlpha" operator="in" result="sp2"/>
+    <feComposite in="tex" in2="sp2" operator="arithmetic" k1="0" k2="1" k3=".4" k4="0"/>
+  </filter>
+  <filter id="pFur" x="-5%" y="-5%" width="110%" height="110%">
+    <feTurbulence type="fractalNoise" baseFrequency="0.9 0.25" numOctaves="2" seed="11" result="n"/>
+    <feColorMatrix in="n" type="matrix" values="0.5 0 0 0 0.55  0.5 0 0 0 0.5  0.5 0 0 0 0.45  0 0 0 0 1" result="t"/>
+    <feBlend in="SourceGraphic" in2="t" mode="multiply" result="b"/>
+    <feComposite in="b" in2="SourceGraphic" operator="in"/>
+  </filter>
+  <filter id="pSh" x="-20%" y="-20%" width="140%" height="160%"><feGaussianBlur stdDeviation="4"/></filter>
+  <radialGradient id="pM1" cx="40%" cy="35%" r="75%"><stop offset="0" stop-color="#c0353a"/><stop offset=".6" stop-color="#8f1d24"/><stop offset="1" stop-color="#5c0f15"/></radialGradient>
+  <radialGradient id="pM2" cx="40%" cy="35%" r="75%"><stop offset="0" stop-color="#a82a33"/><stop offset=".6" stop-color="#7a1820"/><stop offset="1" stop-color="#4b0c12"/></radialGradient>
+  <linearGradient id="pFat" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fbf3ea"/><stop offset="1" stop-color="#e2cdb8"/></linearGradient>
+  <linearGradient id="pBone" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fbf6ea"/><stop offset="1" stop-color="#d9caa8"/></linearGradient>
+  <linearGradient id="pCoat" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6f4a2c"/><stop offset=".45" stop-color="#9a6b42"/><stop offset=".8" stop-color="#b98c5f"/><stop offset="1" stop-color="#e9dccb"/></linearGradient>
+  <linearGradient id="pLeg" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#7a5434"/><stop offset=".5" stop-color="#a77a50"/><stop offset="1" stop-color="#6b4a2e"/></linearGradient>
+  <linearGradient id="pAnt" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#6b5236"/><stop offset=".6" stop-color="#b59c76"/><stop offset="1" stop-color="#efe3cb"/></linearGradient>
+  <radialGradient id="pBg" cx="50%" cy="40%" r="75%"><stop offset="0" stop-color="#fbf7ef"/><stop offset="1" stop-color="#ece3d2"/></radialGradient>
+  <clipPath id="pBodyC"><path id="pBodyP" d="M140 116 C160 108 200 108 228 110 C252 111 270 116 280 126 C290 140 290 164 282 192 C276 206 262 196 250 194 C236 190 220 188 200 188 C178 188 160 190 150 186 C136 182 128 170 126 160 C118 146 112 136 106 124 C98 110 92 98 84 84 L96 70 C108 82 122 104 140 116 Z"/></clipPath>
+  </defs>`;
+  const sh = (cx, cy, rx, ry) => `<ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="#000" opacity=".22" filter="url(#pSh)"/>`;
+  const meat = (d, g = 'pM1') => `<path d="${d}" fill="url(#${g})" filter="url(#pMeat)"/>`;
+  const fatl = (d, w = 2, o = .8) => `<path d="${d}" stroke="#f6e9e0" stroke-width="${w}" stroke-opacity="${o}" fill="none" stroke-linecap="round"/>`;
+  // ---- cut thumbnails, each drawn in a 130 x 70 box ----
+  const T = {
+    neck: () => sh(65, 62, 54, 7) + `<path d="M14 20 C14 10 116 10 116 20 L116 52 C116 62 14 62 14 52 Z" fill="url(#pM2)" filter="url(#pMeat)"/>` + `<ellipse cx="116" cy="36" rx="12" ry="17" fill="url(#pM1)" filter="url(#pMeat)"/><ellipse cx="116" cy="36" rx="5" ry="6" fill="url(#pBone)"/>` + fatl('M24 22 C50 16 80 16 104 22', 2.5) + fatl('M30 46 C60 50 84 50 104 44', 1.6, .5),
+    roll: () => sh(65, 62, 56, 7) + meat('M10 34 C10 14 30 10 64 10 C100 10 122 14 122 34 C122 54 100 60 64 60 C30 60 10 54 10 34 Z') + fatl('M20 24 C44 18 84 18 112 26', 2) + fatl('M18 44 C50 50 86 50 114 42', 1.5, .6) + [30, 52, 74, 96].map(x => `<path d="M${x} 11 C${x - 6} 24 ${x - 6} 46 ${x} 59" stroke="#efe6d2" stroke-width="2.2" fill="none"/>`).join(''),
+    shank: () => sh(65, 62, 56, 7) + [[38, 36], [92, 34]].map(([x, y]) => `<ellipse cx="${x}" cy="${y + 6}" rx="28" ry="22" fill="#5c0f15"/><ellipse cx="${x}" cy="${y}" rx="28" ry="22" fill="url(#pM1)" filter="url(#pMeat)"/>` + fatl(`M${x - 22} ${y - 6} C${x - 10} ${y - 16} ${x + 12} ${y - 16} ${x + 22} ${y - 4}`, 1.6, .7) + `<ellipse cx="${x + 2}" cy="${y}" rx="9" ry="8" fill="url(#pBone)"/><ellipse cx="${x + 2}" cy="${y}" rx="4.5" ry="4" fill="#b8564a"/>`).join(''),
+    ribs: () => sh(65, 62, 58, 7) + meat('M8 18 C40 12 90 12 122 18 L118 54 C86 60 44 60 12 54 Z', 'pM2') + [18, 36, 54, 72, 90, 108].map(x => `<path d="M${x} 17 L${x + 2} 56" stroke="url(#pBone)" stroke-width="5" stroke-linecap="round"/><ellipse cx="${x + 2}" cy="57" rx="3.5" ry="2.5" fill="#f6efe0"/>`).join('') + fatl('M12 22 C44 16 90 16 120 22', 3, .7),
+    dice: () => sh(65, 62, 56, 7) + [[20, 34], [42, 26], [64, 32], [86, 24], [104, 34], [30, 48], [54, 46], [78, 48], [98, 50], [42, 12], [70, 14], [92, 10]].map(([x, y], i) => `<path d="M${x} ${y + 4} l12 -6 l12 6 l0 12 l-12 6 l-12 -6 Z" fill="${i % 3 ? '#7a1820' : '#8f1d24'}"/><path d="M${x} ${y + 4} l12 -6 l12 6 l-12 6 Z" fill="url(#pM1)" filter="url(#pMeat)"/>`).join(''),
+    strap: () => sh(65, 60, 60, 7) + meat('M6 30 C10 16 40 12 70 13 C100 14 124 18 126 30 C124 44 100 50 70 50 C40 50 10 46 6 30 Z') + `<path d="M14 22 C40 15 96 15 120 24 C100 20 40 20 14 28 Z" fill="#dfe4ea" opacity=".75"/>` + fatl('M18 38 C50 44 92 44 118 36', 1.4, .5),
+    medal: () => sh(65, 62, 56, 7) + [[24, 34], [58, 30], [92, 34], [40, 52], [76, 50]].map(([x, y]) => `<ellipse cx="${x}" cy="${y + 7}" rx="20" ry="13" fill="#5c0f15"/><ellipse cx="${x}" cy="${y}" rx="20" ry="13" fill="url(#pM1)" filter="url(#pMeat)"/>` + fatl(`M${x - 14} ${y - 4} C${x - 6} ${y - 10} ${x + 8} ${y - 10} ${x + 15} ${y - 3}`, 1.2, .6)).join(''),
+    tender: () => sh(65, 60, 58, 6) + meat('M8 26 C30 16 70 16 100 20 C114 22 124 26 124 30 C110 34 70 36 40 34 C24 33 12 30 8 26 Z') + meat('M14 46 C36 38 76 38 104 42 C116 44 122 46 122 50 C108 54 70 56 44 54 C28 53 16 50 14 46 Z', 'pM2') + fatl('M20 24 C50 20 86 20 112 25', 1.2, .5),
+    steak: () => sh(65, 62, 56, 7) + [[38, 34, -8], [88, 32, 6]].map(([x, y, r]) => `<g transform="rotate(${r} ${x} ${y})"><ellipse cx="${x}" cy="${y + 6}" rx="34" ry="22" fill="#5c0f15"/><ellipse cx="${x}" cy="${y}" rx="34" ry="22" fill="url(#pM1)" filter="url(#pMeat)"/>` + fatl(`M${x - 28} ${y - 4} C${x - 14} ${y - 18} ${x + 16} ${y - 18} ${x + 30} ${y - 4}`, 2.4, .8) + fatl(`M${x - 10} ${y + 2} C${x} ${y - 4} ${x + 10} ${y} ${x + 18} ${y + 8}`, 1, .5) + `</g>`).join(''),
+    roast: () => sh(65, 62, 58, 7) + meat('M10 40 C8 18 34 8 66 9 C98 10 124 20 122 40 C120 56 96 62 64 62 C32 62 12 56 10 40 Z', 'pM2') + fatl('M22 22 C46 14 88 14 112 26', 2.4, .75) + fatl('M40 32 C56 40 70 44 92 40', 1.2, .5) + fatl('M30 48 C52 54 86 54 108 46', 1.2, .4),
+    hshank: () => sh(65, 62, 58, 7) + `<path d="M4 34 C4 28 12 26 18 28 L40 30 L40 42 L18 44 C12 46 4 42 4 34 Z" fill="url(#pBone)"/><ellipse cx="8" cy="35" rx="5" ry="7" fill="#efe3c9" stroke="#cdbb95"/>` + meat('M36 24 C56 10 98 8 120 22 C130 34 124 52 104 58 C80 64 54 58 38 46 Z') + fatl('M44 26 C64 16 96 16 114 26', 1.6, .6) + fatl('M50 44 C70 52 94 52 112 44', 1.2, .5),
+    ground: () => sh(65, 62, 58, 7) + `<path d="M8 56 C10 36 30 18 64 16 C98 18 120 36 122 56 Z" fill="#a8323a" filter="url(#pGround)"/>`,
+    jerky: () => sh(65, 62, 56, 7) + [[14, 18, -4], [18, 32, 3], [12, 46, -2]].map(([x, y, r]) => `<path transform="rotate(${r} 65 ${y})" d="M${x} ${y} C${x + 30} ${y - 6} ${x + 70} ${y - 4} ${x + 104} ${y} L${x + 102} ${y + 10} C${x + 70} ${y + 6} ${x + 30} ${y + 6} ${x + 2} ${y + 10} Z" fill="#4a1a14" filter="url(#pMeat)"/>`).join(''),
+  };
+  // ---- the deer (side view, facing left), drawn in its own 300x300 space ----
+  const body = 'M84 58 C96 70 112 90 128 100 C138 106 146 110 154 110 C180 112 210 113 236 110 C252 108 266 106 276 112 C288 118 296 132 296 150 C296 168 290 184 282 196 C272 194 258 192 246 186 C228 192 200 194 170 192 C160 192 152 192 146 190 C138 186 132 178 128 170 C122 156 112 138 100 122 C92 112 86 104 82 98 Z';
+  const head = 'M86 60 C78 54 66 54 56 60 C48 66 38 74 28 82 C22 86 19 90 21 94 C23 99 30 101 38 101 C52 101 66 100 82 98 C88 86 90 72 86 60 Z';
+  const frontN = 'M124 172 C132 170 142 174 146 184 C140 196 137 206 136 214 C137 218 137 214 135 228 C134 238 135 244 136 250 L137 284 L139 297 L126 297 L126 284 L125 250 C124 242 123 234 122 226 C120 210 119 194 122 178 Z';
+  const frontF = 'M142 184 C148 182 154 184 156 190 C158 206 157 222 156 236 L157 284 L159 296 L148 296 L147 284 L146 240 C145 228 143 214 141 200 Z';
+  const hindN = 'M290 170 C292 192 286 210 285 224 C287 232 289 238 286 244 L283 284 L285 297 L272 297 L272 284 L273 246 C273 238 271 230 267 222 C259 210 250 200 240 190 C254 182 272 176 290 170 Z';
+  const hindF = 'M268 176 C270 194 265 210 265 226 L262 284 L264 296 L253 296 L253 284 L255 240 C253 230 249 220 243 210 C237 202 231 196 225 190 Z';
+  const beam = (o, w) => `<g stroke="url(#pAnt)" stroke-linecap="round" fill="none" opacity="${o}">
+      <path d="M78 58 C82 46 96 38 112 36 C124 34 128 26 120 19 C106 11 82 13 60 24" stroke-width="${w}"/>
+      <path d="M106 15 C106 8 107 1 110 -6" stroke-width="${w - 1}"/><path d="M88 13 C87 4 88 -4 92 -11" stroke-width="${w - 1}"/><path d="M70 18 C68 10 68 4 70 -3" stroke-width="${w - 1.4}"/><path d="M84 46 C81 41 80 37 80 31" stroke-width="${w - 1.6}"/></g>`;
+  const ant = `<g transform="translate(-8 2)">${beam(.55, 3.6)}</g>${beam(1, 4.4)}`;
+  const deer = `
+    <ellipse cx="205" cy="298" rx="118" ry="7" fill="#000" opacity=".22" filter="url(#pSh)"/>
+    <path d="${hindF}" fill="#5e4129" filter="url(#pFur)"/><path d="${frontF}" fill="#5e4129" filter="url(#pFur)"/>
+    <path d="${frontN}" fill="url(#pLeg)" filter="url(#pFur)"/><path d="${hindN}" fill="url(#pLeg)" filter="url(#pFur)"/>
+    <path d="${body}" fill="url(#pCoat)" filter="url(#pFur)"/>
+    <path d="M290 120 C298 118 304 126 302 138 C300 148 294 152 290 150 C290 140 290 130 290 120 Z" fill="#7a5434"/><path d="M290 150 C296 146 300 140 302 134 C302 146 297 152 290 150 Z" fill="#f4eee4"/>
+    ${ant}
+    <path d="${head}" fill="url(#pCoat)" filter="url(#pFur)"/>
+    <path d="M84 62 C88 48 98 36 114 32 C112 46 104 58 92 68 Z" fill="#8a6040" stroke="#4a3220" stroke-width=".8"/><path d="M90 62 C96 52 102 44 108 40 C106 50 100 58 93 65 Z" fill="#d9b9a0" opacity=".8"/>
+    <ellipse cx="60" cy="72" rx="4.2" ry="3.4" fill="#140c08"/><circle cx="59" cy="71" r="1.1" fill="#fff"/><path d="M53 76 C58 80 65 80 69 76" stroke="#f0e6d8" stroke-width="1.5" fill="none" opacity=".7"/>
+    <path d="M21 94 C23 99 27 100 30 100 C31 94 29 89 24 87 C22 89 20 91 21 94 Z" fill="#111"/><path d="M30 100 C38 102 46 102 54 100" stroke="#f3ece0" stroke-width="2.5" fill="none"/>
+    ${[[139, 297, 13], [285, 297, 13], [159, 296, 11], [264, 296, 11]].map(([x, y, w]) => `<path d="M${x - 1} ${y - 9} L${x} ${y} L${x - w} ${y} L${x - w + 1} ${y - 9} Z" fill="#17110d"/>`).join('')}
+    <!-- skinned: the cuts as real meat -->
+    <clipPath id="pSkin"><path d="M40 30 L320 30 L320 224 L292 224 C280 212 268 200 254 188 C244 182 234 186 222 181 C210 186 198 180 186 184 C174 180 164 186 152 180 C142 178 134 168 128 158 C120 144 110 130 100 118 C94 110 90 104 86 98 L40 98 Z"/></clipPath><g clip-path="url(#pSkin)">
+    <path d="M90 64 C102 80 118 96 136 106 L142 112 C140 140 138 160 132 174 C124 160 114 140 102 124 C94 114 88 106 84 98 C90 88 92 76 90 64 Z" fill="url(#pM2)" filter="url(#pMeat)"/>
+    <path d="M142 110 C158 112 172 113 186 114 C190 140 186 166 178 190 C166 192 156 192 146 190 C140 186 134 180 131 172 C136 152 140 130 142 110 Z" fill="url(#pM1)" filter="url(#pMeat)"/>
+    <path d="M186 113 C212 114 238 112 262 108 L264 128 C238 130 212 132 186 132 Z" fill="url(#pM1)" filter="url(#pMeat)"/>
+    <path d="M190 113 C214 114 238 112 260 109 L260 114 C238 117 214 118 190 118 Z" fill="#e3e7ec" opacity=".8"/>
+    <path d="M186 132 C212 132 238 130 264 128 L262 188 C240 192 210 194 178 192 C184 170 188 150 186 132 Z" fill="url(#pM2)" filter="url(#pMeat)"/>
+    ${[0, 1, 2, 3, 4, 5, 6].map(i => { const x = 196 + i * 10; return `<path d="M${x + 4} 134 C${x + 2} 152 ${x - 2} 170 ${x - 8} 188" stroke="url(#pBone)" stroke-width="3.6" stroke-opacity=".75" fill="none" stroke-linecap="round"/>`; }).join('')}
+    <path d="M262 108 C274 106 286 112 292 122 C298 136 298 154 295 168 C292 184 288 196 282 202 C270 200 256 194 246 186 C252 160 258 132 262 108 Z" fill="url(#pM1)" filter="url(#pMeat)"/>
+    <path d="M246 186 C256 196 264 206 270 220 C276 222 282 222 286 220 C286 208 290 196 292 182 C284 192 270 196 246 186 Z" fill="url(#pM2)" filter="url(#pMeat)"/>
+    ${fatl('M164 116 C160 136 156 156 150 178', 2.2, .7)}${fatl('M96 76 C108 98 120 120 130 150', 1.6, .45)}${fatl('M104 78 C114 92 126 104 138 112', 1.4, .4)}
+    ${fatl('M186 114 C188 140 186 166 178 190', 1.8, .6)}${fatl('M262 110 C258 136 252 162 246 186', 1.8, .6)}${fatl('M186 132 C212 132 238 130 264 128', 1.6, .55)}
+    ${fatl('M270 118 C278 140 282 166 278 196', 1.8, .55)}${fatl('M286 130 C290 150 290 170 286 188', 1.2, .4)}${fatl('M252 192 C262 202 268 210 272 220', 1.2, .45)}
+    <ellipse cx="226" cy="140" rx="24" ry="4.5" fill="none" stroke="#fff" stroke-width="1.4" stroke-dasharray="2 3" opacity=".9"/></g>
+    <path d="M292 222 C280 212 268 200 254 188 C244 182 234 186 222 181 C210 186 198 180 186 184 C174 180 164 186 152 180 C142 178 134 168 128 158 C120 144 110 130 100 118 C94 110 90 104 86 98" fill="none" stroke="#f1e4cf" stroke-width="2.6" stroke-linecap="round"/><path d="M292 225 C280 215 268 200 254 188 C244 182 234 186 222 181 C210 186 198 180 186 184 C174 180 164 186 152 180 C142 178 134 168 128 158 C120 144 110 130 100 118 C94 110 90 104 86 98" fill="none" stroke="#5a3d25" stroke-width="1" opacity=".5" transform="translate(0 2.5)"/>`;
+  // ---- poster layout ----
+  const L = [['neck', 'NECK ROAST', 'deer', 100, 100], ['roll', 'SHOULDER ROAST', 'deer', 160, 140], ['dice', 'STEW MEAT', 'deer', 118, 140], ['shank', 'FRONT SHANK', 'deer', 130, 210], ['ground', 'GROUND VENISON', 'deer', 150, 170]];
+  const R = [['strap', 'BACKSTRAP', 'deer', 214, 120], ['medal', 'MEDALLIONS', 'deer', 244, 120], ['tender', 'TENDERLOINS', 'deer', 232, 140], ['steak', 'ROUND STEAKS', 'deer', 280, 150], ['roast', 'HIND-LEG ROAST', 'deer', 268, 172]];
+  const B = [['ribs', 'RIBS', 214, 170], ['jerky', 'JERKY', 254, 160], ['hshank', 'HIND SHANK', 278, 212]];
+  const DX = 150, DY = 168, DS = 1.12;
+  const P = (x, y) => [DX + x * DS, DY + y * DS];
+  let out = '';
+  const card = (kind, name, x, y, lx, ly, side) => {
+    const [px, py] = P(lx, ly);
+    const ax = side === 'L' ? x + 136 : side === 'R' ? x - 6 : x + 65, ay = side === 'B' ? y - 8 : y + 46;
+    return `<path d="M${ax} ${ay} L${px} ${py}" stroke="#4a4038" stroke-width="1" fill="none" opacity=".7"/><circle cx="${px}" cy="${py}" r="3" fill="#fff" stroke="#3a3028" stroke-width="1.2"/>`
+      + `<g transform="translate(${x} ${y})">${T[kind]()}</g><text x="${x + 65}" y="${y + 90}" text-anchor="middle" font-family='${F}' font-size="14" font-weight="700" fill="#2d241c" letter-spacing=".5">${name}</text>`;
+  };
+  const lines = [];
+  L.forEach(([k, n, , lx, ly], i) => lines.push(card(k, n, 14, 96 + i * 118, lx, ly, 'L')));
+  R.forEach(([k, n, , lx, ly], i) => lines.push(card(k, n, 496, 96 + i * 118, lx, ly, 'R')));
+  B.forEach(([k, n, lx, ly], i) => lines.push(card(k, n, 125 + i * 130, 676, lx, ly, 'B')));
+  out = `<svg viewBox="0 0 640 790" role="img" aria-label="Venison cuts: where each cut comes from">${defs}<rect width="640" height="790" rx="12" fill="url(#pBg)"/>
+    <text x="320" y="40" text-anchor="middle" font-family='${F}' font-size="30" font-weight="700" fill="#2d241c" letter-spacing="2">VENISON CUTS</text>
+    <text x="320" y="64" text-anchor="middle" font-family='${F}' font-size="15" font-style="italic" fill="#5a4b3c">where every cut comes from on a whitetail</text>
+    <path d="M160 74 L480 74" stroke="#8a7a66" stroke-width="1"/>
+    ${lines.join('')}
+    <g transform="translate(${DX} ${DY}) scale(${DS})">${deer}</g></svg>`;
+      return out;
+    })();
+    const chartBody = `<p>Where every cut comes from on a whitetail, and what it looks like on the table. The dotted oval marks the <b>tenderloins</b>, which lie inside the body under the spine. <i>Tap the picture to zoom.</i></p>
+      <div class="fd-chart" onclick="this.classList.toggle('zoom')">${deerChart}</div>
+      <div class="fd-cuts">
+      <div><b>Backstraps</b><span>the two long muscles on each side of the spine. Best steaks on the deer: cook fast, keep it pink.</span></div>
+      <div><b>Tenderloins</b><span>small, inside the body under the spine. The most tender meat; take them right away so they don't dry out.</span></div>
+      <div><b>Hind legs</b><span>the most meat: steaks, roasts and jerky (see "Back leg: the cuts, step by step").</span></div>
+      <div><b>Shoulders</b><span>roasts, stew and burger (see "Front shoulder: the cuts, step by step").</span></div>
+      <div><b>Neck</b><span>a big roast for slow cooking, or burger.</span></div>
+      <div><b>Ribs and flank</b><span>thin meat between the ribs: burger, or cook the ribs slowly.</span></div>
+      <div><b>Shanks</b><span>all four lower legs above the knee and hock: braise whole (osso buco) or grind.</span></div>
+      <div><b>Heart and liver</b><span>good to eat if they look healthy: firm, even color, no spots or cysts.</span></div>
+      <div><b>Hide, antlers, skull</b><span>tan the hide or donate it; mount the antlers or skull.</span></div></div>
+      <div class="fd-tip no"><b>Don't eat (CWD safety):</b> brain, spinal cord, eyes, spleen, tonsils and lymph nodes. Don't cut through the spine or the skull to get meat, and have your deer tested where CWD is a concern.</div>`;
+    SECS.unshift(['chart', 'Whole deer chart', chartBody]);
     SECS.push(['bone', 'Bone out the meat', `<p>Each muscle group sits in its own "sleeve" of thin membrane. Follow those seams and the meat separates almost by itself into clean cuts: steaks, roasts, jerky and burger. Boned-out meat cools faster, packs smaller and lighter, and is what most states require you to bring home from CWD areas.</p>` + legend + hqCard + shCard + seamCard + shXCard + hlXCard + [
       step(1, 'Hindquarter: outside', ham(false), [
         'Lay the leg outside up on a clean surface (or work it hanging). The <b>rump</b> is the muscle at the top, above the ball joint; cut it off along its seam.',
