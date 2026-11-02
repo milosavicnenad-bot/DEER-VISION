@@ -835,6 +835,8 @@ svg.leaflet-image-layer.leaflet-interactive path {
 .lyrs { display: grid; gap: 6px; }
 .lyr { display: grid; grid-template-columns: 22px 1fr; gap: 10px; align-items: start; padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); cursor: pointer; }
 .lyr input { width: 20px; height: 20px; margin: 2px 0 0; accent-color: var(--accent); }
+.lyr-g { margin: 8px 0 0; font: 600 .78rem var(--font-body); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.lyr-g:first-child { margin-top: 0; }
 .lyr b { display: block; font-size: .9rem; }
 .lyr span { font-size: .76rem; color: var(--muted); }
 .mtypes { display: grid; grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); gap: 6px; }
@@ -3842,10 +3844,60 @@ details.drop > .dropbody { padding: 0 14px 14px; }
       getTileUrl(c) {
         const ts = this.getTileSize(), nw = this._map.unproject(c.scaleBy(ts), c.z), se = this._map.unproject(c.add([1, 1]).scaleBy(ts), c.z);
         const a = L.CRS.EPSG3857.project(nw), b = L.CRS.EPSG3857.project(se);
-        return `${this._url}/export?bbox=${a.x.toFixed(2)},${b.y.toFixed(2)},${b.x.toFixed(2)},${a.y.toFixed(2)}&bboxSR=3857&imageSR=3857&size=${ts.x},${ts.y}&dpi=96&format=png32&transparent=true&f=image&layers=${this.options.layers}`;
+        const bb = `bbox=${a.x.toFixed(2)},${b.y.toFixed(2)},${b.x.toFixed(2)},${a.y.toFixed(2)}&bboxSR=3857&imageSR=3857&size=${ts.x},${ts.y}`;
+        if (this.options.image) return `${this._url}/exportImage?${bb}&format=png&transparent=true&f=image${this.options.rr ? '&renderingRule=' + this.options.rr : ''}`;
+        return `${this._url}/export?${bb}&dpi=96&format=png32&transparent=true&f=image${this.options.layers ? '&layers=' + this.options.layers : ''}`;
       }
     });
     const arc = (url, layers, o) => new ArcTiles(url, Object.assign({ layers, maxZoom: 19, opacity, zIndex: 5 }, o));
+    const imgSrv = (url, rr, o) => new ArcTiles(url, Object.assign({ image: true, rr: rr ? encodeURIComponent(JSON.stringify(rr)) : '', maxZoom: 19, opacity, zIndex: 4 }, o));
+    // several map layers that switch on and off together
+    const grp = (...ls) => { const g = L.layerGroup(ls); g.setOpacity = v => ls.forEach(l => l.setOpacity && l.setOpacity(v)); return g; };
+    const TDEP = 'https://elevation.nationalmap.gov/arcgis/rest/services/3DEPElevation/ImageServer';
+    const NYORTHO = 'https://orthos.its.ny.gov/arcgis/rest/services/wms/Latest/MapServer';
+    const NYNAPP = 'https://orthos.its.ny.gov/arcgis/rest/services/wms/napp/MapServer';
+    const NJORTHO = 'https://maps.nj.gov/arcgis/rest/services/Basemap/Orthos_Natural_2020_NJ_WM/MapServer';
+    const HTOPO = 'https://historical1.arcgis.com/arcgis/rest/services/USA_Historical_Topo_Maps/ImageServer';
+    const NWI = 'https://fwspublicservices.wim.usgs.gov/wetlandsmapservice/rest/services/Wetlands/MapServer';
+    const NLCD = 'https://imagery.geoplatform.gov/iipp/rest/services/Vegetation/USFS_EDW_NLCD_Landcover_CONUS/ImageServer';
+    const LCMS = 'https://imagery.geoplatform.gov/iipp/rest/services/Vegetation/USFS_EDW_LCMS_YearHighestProbabilityFastLoss_CONUS/ImageServer';
+    const DECPARK = 'https://gisservices.dec.ny.gov/arcgis/rest/services/dil/dil_land_assets_parking/MapServer';
+    const DECTRAIL = 'https://gisservices.dec.ny.gov/arcgis/rest/services/dil/dil_trails/MapServer';
+    const NYBLD = 'https://gisservices.its.ny.gov/arcgis/rest/services/BuildingFootprints/FeatureServer/2';
+    const NJBLD = 'https://mapsdep.nj.gov/arcgis/rest/services/Features/Structures/MapServer/8';
+
+    // Safety-zone rings: legal no-shoot distances drawn around each building (approximate, from building outlines)
+    const FT = 0.3048, ringRenderer = L.canvas({ padding: 0.3 });
+    const SafetyRings = L.LayerGroup.extend({
+      onAdd(m) { L.LayerGroup.prototype.onAdd.call(this, m); this._h = () => this._load(); m.on('moveend', this._h); this._load(); },
+      onRemove(m) { m.off('moveend', this._h); L.LayerGroup.prototype.onRemove.call(this, m); },
+      async _load() {
+        const m = this._map; if (!m) return;
+        if (m.getZoom() < 15) { this.clearLayers(); this._box = null; toastOnce('Zoom in closer to see safety-zone rings.'); return; }
+        if (this._box && L.latLngBounds(this._box).contains(m.getBounds())) return;
+        const b = m.getBounds().pad(0.35), key = b.toBBoxString(); this._key = key; this._box = [b.getSouthWest(), b.getNorthEast()];
+        const q = new URLSearchParams({ where: '1=1', geometry: `${b.getWest()},${b.getSouth()},${b.getEast()},${b.getNorth()}`, geometryType: 'esriGeometryEnvelope', inSR: '4326',
+          spatialRel: 'esriSpatialRelIntersects', outFields: 'OBJECTID', returnGeometry: 'true', outSR: '4326', maxAllowableOffset: '0.00003', resultRecordCount: '1500', f: 'json' });
+        const get = u => fetch(`${u}/query?${q}`).then(r => r.json()).then(j => j.features || []).catch(() => []);
+        const [ny, nj] = await Promise.all([get(NYBLD), get(NJBLD)]);
+        if (this._key !== key) return;
+        this.clearLayers();
+        const draw = (feats, gunFt) => {
+          for (const f of feats.slice(0, 1500)) {
+            const rings = f.geometry && f.geometry.rings; if (!rings || !rings[0]) continue;
+            let s = 0, t = 0, n = 0, lo = [1e9, 1e9], hi = [-1e9, -1e9];
+            for (const p of rings[0]) { s += p[0]; t += p[1]; n++; lo = [Math.min(lo[0], p[0]), Math.min(lo[1], p[1])]; hi = [Math.max(hi[0], p[0]), Math.max(hi[1], p[1])]; }
+            const c = L.latLng(t / n, s / n), half = c.distanceTo(L.latLng(hi[1], hi[0])); // building half-size, metres
+            L.circle(c, { renderer: ringRenderer, radius: half + gunFt * FT, color: '#d0112b', weight: 1.2, dashArray: '5 4', fillColor: '#d0112b', fillOpacity: 0.07, interactive: false }).addTo(this);
+            L.circle(c, { renderer: ringRenderer, radius: half + 150 * FT, color: '#ff8a00', weight: 1.4, fill: false, interactive: false }).addTo(this);
+            L.polygon(rings[0].map(p => [p[1], p[0]]), { renderer: ringRenderer, color: '#1d221b', weight: 1, fillColor: '#1d221b', fillOpacity: 0.5, interactive: false }).addTo(this);
+          }
+        };
+        draw(ny, 500); draw(nj, 450);
+      }
+    });
+    let toastShown = {};
+    const toastOnce = m => { if (!toastShown[m]) { toastShown[m] = 1; toast(m); } };
     const NYP = 'https://gisservices.its.ny.gov/arcgis/rest/services/NYS_Tax_Parcels_Public/MapServer';
     const NYS = 'https://gisservices.its.ny.gov/arcgis/rest/services/NYS_Tax_Parcels_State_Owned/MapServer';
     const DEC = 'https://gisservices.dec.ny.gov/arcgis/rest/services/dil/dil_land_activities/MapServer';
@@ -3873,15 +3925,27 @@ details.drop > .dropbody { padding: 0 14px 14px; }
         } catch (e) { /* offline or blocked: leave lines off */ }
       }
     });
+    const GROUPS = [['legal', 'Property, public land and rules'], ['terrain', 'Terrain'], ['photos', 'Aerial photos and old maps'], ['land', 'Land and water'], ['access', 'Access']];
     const OVERS = {
-      nyParcels: ['NY property lines', 'Tax parcels with owners (38 counties incl. Orange, Rockland, Ulster, Putnam). Zoom in close.', () => arc(NYP, 'show:1', { minZoom: 14 })],
-      njParcels: ['NJ property lines', 'Statewide tax parcels. Zoom in close.', () => new NJParcels()],
-      nyState:   ['NY state land', 'All state-owned land: state parks, forests, DEC land', () => arc(NYS, 'show:0', { minZoom: 11 })],
-      nyDec:     ['NY DEC lands and WMAs', 'State forests, wildlife management areas', () => arc(DEC, 'show:0,2', { minZoom: 9 })],
-      nyWmu:     ['NY hunting units (WMUs)', 'Wildlife Management Unit boundaries', () => arc(DEC, 'show:4', { minZoom: 7 })],
-      njDmz:     ['NJ deer zones', 'Deer Management Zone boundaries', () => arc('https://mapsdep.nj.gov/arcgis/rest/services/Features/Environmental_admin/MapServer', 'show:17', { minZoom: 7 })],
-      njState:   ['NJ state land', 'State parks, forests and WMAs (with hunting info)', () => arc(NJL, 'show:67', { minZoom: 9 })],
-      hill:      ['Terrain shading', 'Shows ridges, saddles and benches', () => L.tileLayer(USGS('USGSShadedReliefOnly'), { maxNativeZoom: 16, maxZoom: 19, opacity: 0.4, zIndex: 3, attribution: 'USGS' })],
+      nyParcels: ['NY property lines', 'Tax parcels with owners (38 counties incl. Orange, Rockland, Ulster, Putnam). Zoom in close.', () => arc(NYP, 'show:1', { minZoom: 14 }), 'legal'],
+      njParcels: ['NJ property lines', 'Statewide tax parcels. Zoom in close.', () => new NJParcels(), 'legal'],
+      nyState:   ['NY state land', 'All state-owned land: state parks, forests, DEC land', () => arc(NYS, 'show:0', { minZoom: 11 }), 'legal'],
+      nyDec:     ['NY DEC lands and WMAs', 'State forests, wildlife management areas', () => arc(DEC, 'show:0,2', { minZoom: 9 }), 'legal'],
+      njState:   ['NJ state land', 'State parks, forests and WMAs (with hunting info)', () => arc(NJL, 'show:67', { minZoom: 9 }), 'legal'],
+      safety:    ['Safety zones around buildings', 'Approximate no-shoot rings. Red dashed: firearm (NY 500 ft, NJ 450 ft). Orange: bow (150 ft). Zoom in close.', () => new SafetyRings(), 'legal'],
+      nyWmu:     ['NY hunting units (WMUs)', 'Wildlife Management Unit boundaries', () => arc(DEC, 'show:4', { minZoom: 7 }), 'legal'],
+      njDmz:     ['NJ deer zones', 'Deer Management Zone boundaries', () => arc('https://mapsdep.nj.gov/arcgis/rest/services/Features/Environmental_admin/MapServer', 'show:17', { minZoom: 7 }), 'legal'],
+      lidar:     ['LiDAR terrain (1 m)', 'High-detail shading: benches, saddles, ditches and old roads that regular topo misses', () => imgSrv(TDEP, { rasterFunction: 'Hillshade Multidirectional' }, { opacity: 0.6, zIndex: 3, attribution: 'USGS 3DEP' }), 'terrain'],
+      contours:  ['LiDAR contours (10 ft)', 'Detailed contour lines from lidar. Zoom in close.', () => imgSrv(TDEP, { rasterFunction: 'Preset 10ft Contour Interval' }, { minZoom: 14, zIndex: 6, attribution: 'USGS 3DEP' }), 'terrain'],
+      hill:      ['Terrain shading (basic)', 'Lighter, faster shading for ridges and valleys', () => L.tileLayer(USGS('USGSShadedReliefOnly'), { maxNativeZoom: 16, maxZoom: 19, opacity: 0.4, zIndex: 3, attribution: 'USGS' }), 'terrain'],
+      photos:    ['State aerial photos', 'Sharp state photos: New York 6–12 in (2022–25), New Jersey 1 ft (2020)', () => grp(arc(NYORTHO, '', { minZoom: 12, zIndex: 2, attribution: 'NYS ITS Geospatial Services' }), L.tileLayer(NJORTHO + '/tile/{z}/{y}/{x}', { maxNativeZoom: 20, maxZoom: 19, minZoom: 10, zIndex: 2, opacity, attribution: 'NJ Office of GIS' })), 'photos'],
+      napp:      ['Old aerial photos, NY 1994–98', 'Color-infrared photos: old fields, orchards and logging roads now grown over', () => arc(NYNAPP, '', { minZoom: 11, zIndex: 2, attribution: 'NYS ITS, USGS NAPP' }), 'photos'],
+      histTopo:  ['Old USGS topo maps', 'Historical topographic maps (1880s–2000s): old roads, farms and buildings', () => imgSrv(HTOPO, null, { zIndex: 2, attribution: 'USGS Historical Topographic Map Collection, Esri' }), 'photos'],
+      wetlands:  ['Wetlands', 'Swamps, marshes and wet thickets: bedding cover and travel edges (US Fish & Wildlife)', () => arc(NWI, '', { minZoom: 11, attribution: 'USFWS National Wetlands Inventory' }), 'land'],
+      water:     ['Streams and ponds', 'Detailed creeks, springs, ponds and lakes (USGS)', () => L.tileLayer(USGS('USGSHydroCached'), { maxNativeZoom: 16, maxZoom: 19, zIndex: 6, attribution: 'USGS' }), 'land'],
+      landcover: ['Forest and field types', 'Hardwood, evergreen and mixed forest, shrub, grass, hay and crop fields (national land cover)', () => imgSrv(NLCD, null, { opacity: 0.55, attribution: 'USGS Annual NLCD' }), 'land'],
+      forestLoss:['Timber cuts and forest loss', 'Where and when forest was cut or lost since 1985. Recent cuts grow thick browse and cover (US Forest Service)', () => imgSrv(LCMS, null, { attribution: 'USFS LCMS' }), 'land'],
+      access:    ['Parking, trails and access', 'NY DEC parking areas, roads and trails; NJ state land facilities, trails and WMA parking', () => grp(arc(DECPARK, 'show:0,1', { minZoom: 11 }), arc(DECTRAIL, 'show:0,2', { minZoom: 11 }), arc(NJL, 'show:62,63,88', { minZoom: 11 })), 'access'],
     };
 
     function setBase(k) {
@@ -3898,13 +3962,14 @@ details.drop > .dropbody { padding: 0 14px 14px; }
     }
     function buildLayerPanel() {
       $('mpBase').innerHTML = Object.entries(BASES).map(([k, b]) => `<label class="lyr"><input type="radio" name="mpBase" value="${k}"><div><b>${b[0]}</b><span>${b[1]}</span></div></label>`).join('');
-      $('mpOver').innerHTML = Object.entries(OVERS).map(([k, o]) => `<label class="lyr"><input type="checkbox" value="${k}"${overOn[k] ? ' checked' : ''}><div><b>${o[0]}</b><span>${o[1]}</span></div></label>`).join('');
+      $('mpOver').innerHTML = GROUPS.map(([g, title]) => `<div class="lyr-g">${title}</div>` + Object.entries(OVERS).filter(([, o]) => o[3] === g)
+        .map(([k, o]) => `<label class="lyr"><input type="checkbox" value="${k}"${overOn[k] ? ' checked' : ''}><div><b>${o[0]}</b><span>${o[1]}</span></div></label>`).join('')).join('');
       $('mpBase').addEventListener('change', e => setBase(e.target.value));
       $('mpOver').addEventListener('change', e => setOver(e.target.value, e.target.checked));
       $('mpOpacity').value = Math.round(opacity * 100); $('mpOpacityV').textContent = Math.round(opacity * 100) + '%';
       $('mpOpacity').addEventListener('input', () => {
         opacity = +$('mpOpacity').value / 100; $('mpOpacityV').textContent = Math.round(opacity * 100) + '%'; store.set('maps.opacity', opacity);
-        for (const [k, l] of Object.entries(overLayers)) if (l.setOpacity && k !== 'hill') l.setOpacity(opacity);
+        for (const [k, l] of Object.entries(overLayers)) if (l.setOpacity && !['hill', 'lidar', 'landcover'].includes(k)) l.setOpacity(opacity);
       });
     }
 

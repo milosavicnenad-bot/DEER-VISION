@@ -1,11 +1,12 @@
 // Deer Eyes offline helper: keeps the app and the maps you've viewed working without signal in the woods.
 // Each copy of the app (each website folder) keeps its own saved pages, so two versions can live side by side.
 const SCOPE = self.registration.scope;
-const CACHE = 'deer-eyes-core-v3 ' + SCOPE;
+const CACHE = 'deer-eyes-core-v4 ' + SCOPE;
 const TILES = 'deer-eyes-tiles'; // map pictures are shared between copies
 const CORE = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png'];
 const TILE_HOSTS = ['basemap.nationalmap.gov', 'tile.opentopomap.org', 'a.tile.opentopomap.org', 'b.tile.opentopomap.org', 'c.tile.opentopomap.org', 'tile.openstreetmap.org',
-  'gisservices.its.ny.gov', 'gisservices.dec.ny.gov', 'mapsdep.nj.gov'];
+  'gisservices.its.ny.gov', 'gisservices.dec.ny.gov', 'mapsdep.nj.gov', 'elevation.nationalmap.gov', 'orthos.its.ny.gov', 'maps.nj.gov',
+  'historical1.arcgis.com', 'fwspublicservices.wim.usgs.gov', 'imagery.geoplatform.gov'];
 
 // Map pictures are saved only when the map server allows it (CORS). Pictures without that permission
 // count as ~7 MB each against the phone's storage limit, so those are shown but not saved.
@@ -38,7 +39,7 @@ self.addEventListener('fetch', e => {
   const url = new URL(req.url);
   if (url.hostname.endsWith('open-meteo.com')) return; // live weather always comes from the network
   // map pictures (base maps and property/public-land overlays): saved copy first, so maps work without signal
-  if (TILE_HOSTS.includes(url.hostname) && (url.pathname.includes('/tile/') || url.pathname.endsWith('/export') || /\/\d+\/\d+\/\d+\.png$/.test(url.pathname))) {
+  if (TILE_HOSTS.includes(url.hostname) && (url.pathname.includes('/tile/') || url.pathname.endsWith('/export') || url.pathname.endsWith('/exportImage') || /\/\d+\/\d+\/\d+\.png$/.test(url.pathname))) {
     e.respondWith(caches.open(TILES).then(c => c.match(req.url).then(hit => hit || fetchTile(req, c))));
     return;
   }
