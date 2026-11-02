@@ -1,7 +1,7 @@
 // Deer Eyes offline helper: keeps the app and the maps you've viewed working without signal in the woods.
 // Each copy of the app (each website folder) keeps its own saved pages, so two versions can live side by side.
 const SCOPE = self.registration.scope;
-const CACHE = 'deer-eyes-core-v7 ' + SCOPE;
+const CACHE = 'deer-eyes-core-v8 ' + SCOPE;
 const TILES = 'deer-eyes-tiles'; // map pictures are shared between copies
 const CORE = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png', './maplibre-gl.js', './maplibre-gl.css'];
 const TILE_HOSTS = ['basemap.nationalmap.gov', 'tile.opentopomap.org', 'a.tile.opentopomap.org', 'b.tile.opentopomap.org', 'c.tile.opentopomap.org', 'tile.openstreetmap.org',

@@ -284,6 +284,33 @@ html.night body { background: #000; }
 .fd-legend { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: .78rem; color: var(--muted); }
 .fd-legend i { display: inline-block; width: 22px; height: 0; border-top: 2.5px dashed #c62828; vertical-align: middle; margin-right: 5px; }
 .fd-legend i.bone { border-top: 4px solid #bdb5a6; } .fd-legend i.seam { border-top: 2px dashed #7a5230; } .fd-legend i.move { border-top: 2.5px solid #2f6fae; }
+.fd-cam { margin-top: 8px; justify-self: start; } .fd-cam input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+.fd-photo img { width: 100%; border-radius: 8px; margin-top: 8px; display: block; }
+.fd-phdel { border: 0; background: none; color: var(--muted); font-size: .78rem; cursor: pointer; padding: 4px 0; }
+.fd-hfbtn { justify-self: start; }
+.hf-box { position: fixed; inset: 0; z-index: 3100; background: var(--bg); display: grid; grid-template-rows: auto minmax(0,1fr) auto auto; gap: 8px; padding: max(10px, env(safe-area-inset-top)) 12px max(12px, env(safe-area-inset-bottom)); }
+.hf-top { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.hf-top b { display: block; font: 700 1.1rem var(--font-display); text-transform: uppercase; letter-spacing: .04em; } .hf-top span { font-size: .85rem; color: var(--muted); }
+.hf-body { overflow-y: auto; display: grid; gap: 10px; align-content: start; }
+.hf-body svg { width: 100%; max-height: 40vh; height: auto; background: var(--surface); border-radius: 10px; color: var(--fg); }
+.hf-body h3 { margin: 0; font: 700 1.5rem var(--font-display); text-transform: uppercase; }
+.hf-body ol { margin: 0; padding-left: 1.3rem; display: grid; gap: 8px; font-size: 1.15rem; line-height: 1.45; }
+.hf-photo { width: 100%; max-height: 34vh; object-fit: contain; border-radius: 10px; background: #000; }
+.hf-heard { font-size: .82rem; color: var(--muted); min-height: 1.2em; }
+.hf-nav { display: grid; grid-template-columns: 1fr .8fr .8fr 1.3fr; gap: 8px; }
+.hf-nav .btn { justify-content: center; padding: 16px 6px; font-size: 1.05rem; }
+.kt-hours { display: flex; gap: 6px; overflow-x: auto; }
+.kt-hours span { flex: none; display: grid; justify-items: center; padding: 6px 8px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); font-size: .75rem; color: var(--muted); }
+.kt-hours b { font-size: 1rem; color: var(--fg); }
+.mt-list { display: grid; gap: 6px; }
+.mt-row { display: grid; grid-template-columns: minmax(0,1fr) auto auto; gap: 8px; align-items: center; padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); font-size: .85rem; }
+.mt-row b { display: block; font-size: .95rem; } .mt-row.old { border-color: #c62828; } .mt-row.old .age { color: #c62828; font-weight: 700; }
+.mt-row button { border: 1px solid var(--line); background: var(--surface); color: var(--fg); border-radius: 6px; padding: 6px 10px; cursor: pointer; font: 600 .8rem var(--font-body); }
+.ab-grid label select { width: 100%; box-sizing: border-box; font-size: .95rem; }
+.ab-out { background: color-mix(in srgb, var(--h-sky) 10%, transparent); border-radius: 8px; padding: 10px 12px; font-size: .92rem; display: grid; gap: 4px; }
+.ab-out b.big2 { font: 700 1.5rem var(--font-display); }
+.st-info { display: grid; gap: 10px; } .st-info h3 { margin: 6px 0 0; font: 700 1rem var(--font-display); text-transform: uppercase; letter-spacing: .04em; }
+.st-info ul { margin: 0; padding-left: 1.1rem; display: grid; gap: 5px; font-size: .9rem; }
 /* Leaflet 1.9.4 (BSD-2-Clause) */
 /* required styles */
 
@@ -1021,7 +1048,8 @@ svg.leaflet-image-layer.leaflet-interactive path {
 .nav-dl dt { font-size: .7rem; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
 .nav-dl dd { margin: 0; font-weight: 700; font-size: 1rem; }
 .nav-dl dd.warn { color: #c0392b; }
-.nav-acts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+.nav-acts { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
+#navVoice[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); }
 .nav-acts .btn { padding: 9px 4px; font-size: .85rem; }
 .navcard.big { position: fixed; inset: 0; z-index: 3000; border-radius: 0; border-width: 0; align-content: center; padding: max(16px, env(safe-area-inset-top)) 18px max(16px, env(safe-area-inset-bottom)); }
 .navcard.big .nav-top { grid-template-columns: 1fr; justify-items: center; text-align: center; }
@@ -1430,11 +1458,14 @@ details.drop > .dropbody { padding: 0 14px 14px; }
     <symbol id="i-tag" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 12.5V4.5a1 1 0 0 1 1-1h8l8 8-9 9z"/><circle cx="8" cy="8" r="1.5"/></symbol>
     <symbol id="i-bow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3c5 2.5 8 6 9 9-1 3-4 6.5-9 9"/><path d="M6 3v18" stroke-dasharray="1.5 1.5"/><path d="M3 12h17.5M18 9.5 20.5 12 18 14.5"/></symbol>
     <symbol id="i-arrowb" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h15"/><path d="M18 9l3.5 3L18 15z" fill="currentColor"/><path d="M3 12l2.5-3h3L6 12M3 12l2.5 3h3L6 12"/><path d="M12 10.5v3" stroke-width="2.4"/></symbol>
+    <symbol id="i-speaker" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/></symbol>
+    <symbol id="i-freezer" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2.5" width="14" height="19" rx="2"/><path d="M5 9.5h14M8 5.5v2M8 12.5v3"/></symbol>
     <symbol id="i-back" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 5.5 8 12l6.5 6.5"/></symbol>
     <symbol id="i-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V5M6.5 10.5 12 5l5.5 5.5"/></symbol>
   </defs>
 </svg>
 
+<div class="hf-box" id="hfBox" hidden role="dialog" aria-label="Hands-free steps"><div class="hf-top"><div><b id="hfTitle"></b><span id="hfCount"></span></div><button class="btn" id="hfClose" type="button">Exit</button></div><div class="hf-body" id="hfBody"></div><div class="hf-heard" id="hfHeard"></div><div class="hf-nav"><button class="btn" id="hfBack" type="button">‹ Back</button><button class="btn" id="hfRepeat" type="button">Repeat</button><button class="btn" id="hfMute" type="button" aria-pressed="false">Mute</button><button class="btn primary" id="hfNext" type="button">Next ›</button></div></div>
 <div class="ck-banner" id="ckBanner" hidden role="alert"><b>You're past your check-in time.</b><span>Are you OK?</span><div class="actions"><button class="btn primary" id="ckBannerOk" type="button">I'm OK, I'm out</button><button class="btn" id="ckBannerText" type="button">Text my location</button></div></div>
 <button type="button" id="nightBtn" class="nightbtn" aria-pressed="false" aria-label="Red night mode"><svg><use href="#i-night"/></svg></button>
 <div class="bgc" id="bgWrap" aria-hidden="true"><svg id="bgCompass" viewBox="0 0 1000 1000"></svg></div>
@@ -1474,6 +1505,7 @@ details.drop > .dropbody { padding: 0 14px 14px; }
       <a class="tile" href="#shot" style="--h: var(--h-blaze)"><span class="ic"><svg><use href="#i-shot"/></svg></span><span class="tt">Shot distance</span><span class="td">Tree-stand angle, true distance and shot placement.</span></a>
       <a class="tile" href="#buck" style="--h: var(--h-bark)"><span class="ic"><svg><use href="#i-rack"/></svg></span><span class="tt">Buck age &amp; score</span><span class="td">Judge age from the body; gross and net score from measurements.</span></a>
       <a class="tile" href="#dress" style="--h: var(--h-blood)"><span class="ic"><svg><use href="#i-knife"/></svg></span><span class="tt">Field dressing</span><span class="td">Step by step, meat yield and how fast to cool it for today's temperature.</span></a>
+      <a class="tile" href="#meat" style="--h: var(--h-sky)"><span class="ic"><svg><use href="#i-freezer"/></svg></span><span class="tt">Meat &amp; freezer</span><span class="td">Log every cut, see what's in the freezer, burger and jerky calculators, CWD testing and donating.</span></a>
       <a class="tile" href="#backup" style="--h: var(--h-slate)"><span class="ic"><svg><use href="#i-backup"/></svg></span><span class="tt">Backup &amp; share</span><span class="td">Save all your spots and logs to a file, restore, or swap spots with a partner.</span></a>
       <a class="tile" href="#guide" style="--h: var(--h-bark)"><span class="ic"><svg><use href="#i-guide"/></svg></span><span class="tt">Hunter's guide</span><span class="td">Detergents, UV check, science</span></a>
           <a class="tile mikecon" href="#mikecon"><span class="mk-badge"><svg><use href="#i-mikecon"/></svg></span><span class="mk-text"><span class="mk-name">MIKECON</span></span><span class="mk-arrow" aria-hidden="true">›</span><span class="mk-warn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="currentColor"/><path d="M12 9.5v5M12 17.2v.3" stroke="#a83a06" stroke-width="2.4" stroke-linecap="round"/></svg><span>WARNING: JUST FOR EXPERT<span class="mk-bigs">S</span></span></span></a>
@@ -1756,7 +1788,10 @@ details.drop > .dropbody { padding: 0 14px 14px; }
   <section class="view" id="v-dress" hidden aria-label="Field dressing">
     <div class="vhead" style="--h: var(--h-blood)"><button class="back" type="button"><svg><use href="#i-back"/></svg>Menu</button><span class="vic"><svg><use href="#i-knife"/></svg></span><h2>Field dressing</h2></div>
     <div class="panel" id="fdCool"><h2 style="margin:0">Cool the meat</h2><div id="fdCoolTxt" class="caption">Getting the temperature…</div>
-      <div class="row"><label for="fdTemp">Air temperature</label><input type="range" id="fdTemp" min="0" max="80" value="45"><span class="v" id="fdTempV">45°F</span></div></div>
+      <div class="row"><label for="fdTemp">Air temperature</label><input type="range" id="fdTemp" min="0" max="80" value="45"><span class="v" id="fdTempV">45°F</span></div>
+      <div class="k" style="margin-top:4px">Kill-time timer · can I hang it overnight?</div>
+      <div class="actions"><button class="btn primary" id="kStart" type="button">Start: deer is down now</button><label class="btn" style="gap:6px">Set time <input type="time" id="kTime" style="width:6.5rem"></label><button class="btn" id="kClear" type="button">Clear</button></div>
+      <div id="kOut" style="display:grid;gap:8px"></div></div>
     <nav class="fd-nav" id="fdNav" aria-label="Sections"></nav>
     <div id="fdGuide" class="fd-guide"></div>
     <div class="panel">
@@ -1854,6 +1889,51 @@ details.drop > .dropbody { padding: 0 14px 14px; }
     <div class="panel"><h2 style="margin:0">Saved builds</h2><div id="abSaved" class="ab-saved"></div></div>
   </section>
 
+  <!-- ============ MEAT & FREEZER ============ -->
+  <section class="view" id="v-meat" hidden aria-label="Meat and freezer">
+    <div class="vhead" style="--h: var(--h-sky)"><button class="back" type="button"><svg><use href="#i-back"/></svg>Menu</button><span class="vic"><svg><use href="#i-freezer"/></svg></span><h2>Meat &amp; freezer</h2></div>
+    <div class="panel">
+      <h2 style="margin:0">Log the meat</h2>
+      <div class="caption">As you bag each cut, log it. You'll see how much meat each deer gave and what's still in the freezer.</div>
+      <div class="row"><label for="mtDeer">Deer</label><select id="mtDeer" class="full"></select><span class="v"></span></div>
+      <div class="ab-grid">
+        <label>Cut<select id="mtCut"></select></label>
+        <label>Weight<span>pounds, all packages</span><input type="number" id="mtW" min="0" step="0.1" value="2"></label>
+        <label>Packages<span>how many bags</span><input type="number" id="mtN" min="1" step="1" value="1"></label>
+        <label>Frozen on<span>date</span><input type="date" id="mtDate"></label>
+      </div>
+      <div class="actions"><button class="btn primary" id="mtAdd" type="button">Add to freezer</button></div>
+      <div id="mtDeerSum" class="caption"></div>
+    </div>
+    <div class="panel">
+      <h2 style="margin:0">In the freezer</h2>
+      <div class="stats" id="mtStats"></div>
+      <div class="row"><label for="mtSort">Sort</label><select id="mtSort" class="full"><option value="old">Oldest first (use these first)</option><option value="cut">By cut</option><option value="deer">By deer</option></select><span class="v"></span></div>
+      <div id="mtList" class="mt-list"></div>
+      <div class="caption">Vacuum-sealed venison keeps its best quality for about 9–12 months in the freezer; items past 9 months are marked.</div>
+    </div>
+    <div class="panel">
+      <h2 style="margin:0">Burger: how much fat to add</h2>
+      <div class="caption">Venison is very lean (about 3% fat). Most people grind it with 10–20% fat for burger that holds together and stays juicy.</div>
+      <div class="ab-grid">
+        <label>Venison<span>pounds</span><input type="number" id="gdV" min="0" step="0.5" value="10"></label>
+        <label>Target fat<span>percent of the finished mix</span><input type="number" id="gdF" min="0" max="35" step="1" value="15"></label>
+        <label>Fat source<select id="gdS"><option value="0.85">Pork fatback (≈85% fat)</option><option value="0.7">Beef fat trim (≈70% fat)</option><option value="0.6">Bacon ends (≈60% fat)</option><option value="0.25">Pork butt / shoulder (≈25% fat)</option></select></label>
+      </div>
+      <div class="ab-out" id="gdOut"></div>
+    </div>
+    <div class="panel">
+      <h2 style="margin:0">Jerky and sausage cure &amp; salt</h2>
+      <div class="ab-grid">
+        <label>Meat<span>pounds (after trimming)</span><input type="number" id="jkM" min="0" step="0.5" value="5"></label>
+        <label>Salt<span>percent of meat weight</span><input type="number" id="jkS" min="1" max="3" step="0.25" value="1.75"></label>
+        <label>Use cure #1?<select id="jkC"><option value="1">Yes (jerky, smoked sausage)</option><option value="0">No (fresh sausage, cooked right away)</option></select></label>
+      </div>
+      <div class="ab-out" id="jkOut"></div>
+    </div>
+    <div class="panel" id="mtInfo"></div>
+  </section>
+
   <!-- ============ MAPS ============ -->
   <section class="view" id="v-maps" hidden aria-label="Maps">
     <div class="vhead" style="--h: var(--h-moss)"><button class="back" type="button"><svg><use href="#i-back"/></svg>Menu</button><span class="vic"><svg><use href="#i-map"/></svg></span><h2>Maps</h2></div>
@@ -1900,7 +1980,7 @@ details.drop > .dropbody { padding: 0 14px 14px; }
           <div><dt>On foot</dt><dd id="navWalk">—</dd></div>
           <div><dt>GPS accuracy</dt><dd id="navAcc">—</dd></div>
         </dl>
-        <div class="nav-acts"><button type="button" class="btn" id="navBig">Full screen</button><button type="button" class="btn" id="navMap">Show on map</button><button type="button" class="btn" id="navStop">Stop</button></div>
+        <div class="nav-acts"><button type="button" class="btn" id="navVoice" aria-pressed="false"><svg style="width:18px;height:18px"><use href="#i-speaker"/></svg><span>Voice</span></button><button type="button" class="btn" id="navBig">Full screen</button><button type="button" class="btn" id="navMap">Show on map</button><button type="button" class="btn" id="navStop">Stop</button></div>
       </div>
       <div class="mapinfo" id="mpInfo">Tap the map to see who owns the land and the hunting rules there. Long-press to drop a marker.</div>
       <div class="mtools" role="group" aria-label="Map tools">
@@ -5453,6 +5533,8 @@ details.drop > .dropbody { padding: 0 14px 14px; }
       goTo = ll ? { ll, name, end: ll, trail: trail || null, idx: null } : null;
       if (!goTo && goLine) { map.removeLayer(goLine); goLine = null; }
       if (goTo && watchId == null) startGPS(false);
+      V.started = false; V.mile = null; V.arrived = false; V.cat = '';
+      if (!goTo) { try { window.speechSynthesis && speechSynthesis.cancel(); } catch (e) {} }
       navUI(!!goTo);
       onMove();
     }
@@ -5476,6 +5558,44 @@ details.drop > .dropbody { padding: 0 14px 14px; }
       if (gpsCourse && Date.now() - gpsCourse.t < 15000) return { h: gpsCourse.h, src: 'walk' };
       return null;
     }
+    // ---------- voice navigation: spoken turns and distances, for walking to a spot in the woods ----------
+    let voiceOn = store.get('nav.voice', false);
+    const V = { last: 0, cat: '', catSince: 0, mile: null, arrived: false, started: false };
+    const WORDS = { N: 'north', NNE: 'north north-east', NE: 'north-east', ENE: 'east north-east', E: 'east', ESE: 'east south-east', SE: 'south-east', SSE: 'south south-east', S: 'south', SSW: 'south south-west', SW: 'south-west', WSW: 'west south-west', W: 'west', WNW: 'west north-west', NW: 'north-west', NNW: 'north north-west' };
+    const sayDist = m => { const yd = m * YD; return yd >= 1760 ? `${(yd / 1760).toFixed(1)} miles` : yd >= 50 ? `${Math.round(yd / 10) * 10} yards` : `${Math.max(5, Math.round(yd / 5) * 5)} yards`; };
+    function speak(t, cut) {
+      if (!voiceOn || !window.speechSynthesis) return;
+      try { if (cut) speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(t); u.lang = 'en-US'; u.rate = 1; u.volume = 0.7; speechSynthesis.speak(u); V.last = Date.now(); } catch (e) {}
+    }
+    const turnCat = r => { const a = Math.abs(r); return a <= 15 ? 'straight' : a <= 45 ? (r < 0 ? 'slight left' : 'slight right') : a <= 140 ? (r < 0 ? 'left' : 'right') : 'around'; };
+    const turnText = (cat, r) => cat === 'straight' ? 'Straight ahead' : cat === 'around' ? 'Turn around' : cat.startsWith('slight') ? `Bear ${cat.split(' ')[1]}` : `Turn ${cat}, ${Math.round(Math.abs(r) / 10) * 10} degrees`;
+    const MILES = [800, 500, 300, 200, 150, 100, 75, 50, 25];
+    function voiceCue(dEnd, b, hd, r, arrived) {
+      if (!voiceOn) return;
+      const now = Date.now(), yd = dEnd * YD;
+      if (arrived) { if (!V.arrived) { V.arrived = true; speak(`You have arrived at ${goTo.name}. Look around for your mark.`, true); } return; }
+      if (yd > 40) V.arrived = false;
+      if (!V.started) { V.started = true; V.mile = MILES.find(x => x < yd) || 0; speak(`Navigating to ${goTo.name}. ${sayDist(dEnd)}. ${hd ? turnText(turnCat(r), r) : 'Head ' + WORDS[cardinal(b)]}.`, true); V.cat = hd ? turnCat(r) : ''; V.catSince = now; return; }
+      // distance milestones
+      const ms = MILES.find(x => yd <= x && (V.mile == null || x < V.mile));
+      if (ms && yd < ms) { V.mile = ms; speak(`${ms} yards to go. ${hd ? turnText(turnCat(r), r) : 'Head ' + WORDS[cardinal(b)]}.`); return; }
+      if (hd) {
+        const cat = turnCat(r);
+        if (cat !== V.cat) { V.cat = cat; V.catSince = now; return; }
+        // a turn that has held for 3 seconds, at most every 6 seconds
+        if (cat !== 'straight' && now - V.catSince > 3000 && now - V.last > 6000 && V.spoken !== cat + Math.round(now / 20000)) { V.spoken = cat + Math.round(now / 20000); speak(turnText(cat, r)); return; }
+      }
+      // reminder every 40 seconds
+      if (now - V.last > 40000) speak(`${hd ? turnText(turnCat(r), r) : 'Head ' + WORDS[cardinal(b)]}. ${sayDist(dEnd)}.`);
+    }
+    function setVoice(on) {
+      voiceOn = on; store.set('nav.voice', on);
+      $('navVoice').setAttribute('aria-pressed', on); $('navVoice').lastChild.textContent = on ? 'Voice on' : 'Voice';
+      if (!window.speechSynthesis) { toast('This phone has no voice output in the browser.'); return; }
+      if (on) { V.started = false; V.mile = null; V.arrived = false; toast('Voice on. Earbuds keep it quiet in the woods.'); } else { try { speechSynthesis.cancel(); } catch (e) {} }
+    }
+    $('navVoice').addEventListener('click', () => setVoice(!voiceOn));
+
     function updateNav() {
       if (!goTo) return;
       const card = $('mpNav');
@@ -5515,6 +5635,7 @@ details.drop > .dropbody { padding: 0 14px 14px; }
         if (meAcc > 25) say += '. GPS is weak right now; distances may jump.';
       }
       $('navSay').textContent = say;
+      voiceCue(dEnd, b, hd, hd ? ((((b - hd.h) % 360) + 540) % 360 - 180) : 0, dEnd <= near);
     }
     async function keepAwake(on) {
       try {
@@ -6932,7 +7053,7 @@ details.drop > .dropbody { padding: 0 14px 14px; }
       try { if (navigator.canShare && navigator.canShare({ files: [file] })) { await navigator.share({ files: [file], title }); return; } } catch (e) { if (e && e.name === 'AbortError') return; }
       download(file); toast('Saved to your Downloads folder.');
     }
-    const fullBackup = async () => { let photos = []; try { photos = await idb.all(); } catch (e) {} return fileOf({ app: 'Deer Eyes', kind: 'backup', v: 1, made: new Date().toISOString(), data: dump(), cams: photos }, `deer-eyes-backup-${stamp()}.json`); };
+    const fullBackup = async () => { let photos = [], steps = []; try { photos = await idb.all(); } catch (e) {} try { steps = await idb.stepAll(); } catch (e) {} return fileOf({ app: 'Deer Eyes', kind: 'backup', v: 1, made: new Date().toISOString(), data: dump(), cams: photos, steps }, `deer-eyes-backup-${stamp()}.json`); };
     function summary() {
       const g = k => store.get(k, []);
       const m = g('maps.markers'), t = g('maps.tracks'), j = g('journal'), a = g('maps.areas');
@@ -6959,6 +7080,7 @@ details.drop > .dropbody { padding: 0 14px 14px; }
         for (const k of allKeys()) localStorage.removeItem(k);
         for (const [k, v] of Object.entries(o.data)) localStorage.setItem(PREFIX + k, v);
         if (Array.isArray(o.cams)) { try { await idb.clear(); for (const r of o.cams) await idb.put(r); } catch (er) {} }
+        if (Array.isArray(o.steps)) { try { await idb.stepClear(); for (const r of o.steps) await idb.stepPut(r); } catch (er) {} }
         toast('Restored. Reloading…'); setTimeout(() => location.reload(), 900);
       } catch (er) { toast('Could not read that file.'); }
     });
@@ -6986,13 +7108,17 @@ details.drop > .dropbody { padding: 0 14px 14px; }
   // =================================================================
   const idb = (() => {
     let dbp = null;
-    const open = () => dbp || (dbp = new Promise((res, rej) => { const r = indexedDB.open('deereyes', 1); r.onupgradeneeded = () => r.result.createObjectStore('cams', { keyPath: 'id' }); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); }));
-    const tx = async (mode, fn) => { const db = await open(); return new Promise((res, rej) => { const t = db.transaction('cams', mode), st = t.objectStore('cams'), out = fn(st); t.oncomplete = () => res(out && out.result !== undefined ? out.result : out); t.onerror = () => rej(t.error); }); };
+    const open = () => dbp || (dbp = new Promise((res, rej) => { const r = indexedDB.open('deereyes', 2); r.onupgradeneeded = () => { const db = r.result; if (!db.objectStoreNames.contains('cams')) db.createObjectStore('cams', { keyPath: 'id' }); if (!db.objectStoreNames.contains('steps')) db.createObjectStore('steps', { keyPath: 'id' }); }; r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); }));
+    const tx = async (mode, fn, name = 'cams') => { const db = await open(); return new Promise((res, rej) => { const t = db.transaction(name, mode), st = t.objectStore(name), out = fn(st); t.oncomplete = () => res(out && out.result !== undefined ? out.result : out); t.onerror = () => rej(t.error); }); };
     return {
       all: () => tx('readonly', st => st.getAll()),
       put: rec => tx('readwrite', st => { st.put(rec); }),
       del: id => tx('readwrite', st => { st.delete(id); }),
       clear: () => tx('readwrite', st => { st.clear(); }),
+      stepAll: () => tx('readonly', st => st.getAll(), 'steps'),
+      stepPut: rec => tx('readwrite', st => { st.put(rec); }, 'steps'),
+      stepDel: id => tx('readwrite', st => { st.delete(id); }, 'steps'),
+      stepClear: () => tx('readwrite', st => { st.clear(); }, 'steps'),
     };
   })();
 
@@ -7255,7 +7381,8 @@ details.drop > .dropbody { padding: 0 14px 14px; }
     }
 
     // ------------------------- content -------------------------
-    const step = (n, title, svg, items, tip, warn) => `<div class="fd-step">${svg}<div><h3><i>${n}</i>${title}</h3><ol>${items.map(t => `<li>${t}</li>`).join('')}</ol>${tip ? `<div class="fd-tip"><b>Tip:</b> ${tip}</div>` : ''}${warn ? `<div class="fd-tip no"><b>Avoid:</b> ${warn}</div>` : ''}</div></div>`;
+    const REG = []; let regG = -1;
+    const step = (n, title, svg, items, tip, warn) => { if (n === 1) { regG++; REG[regG] = []; } const sid = `g${regG}s${n}`; REG[regG].push({ sid, n, title, svg, items, tip, warn }); return `<div class="fd-step" data-sid="${sid}">${svg}<div><h3><i>${n}</i>${title}</h3><ol>${items.map(t => `<li>${t}</li>`).join('')}</ol>${tip ? `<div class="fd-tip"><b>Tip:</b> ${tip}</div>` : ''}${warn ? `<div class="fd-tip no"><b>Avoid:</b> ${warn}</div>` : ''}<div class="fd-photo" data-ph="${sid}"></div><label class="btn fd-cam"><svg style="width:18px;height:18px"><use href="#i-cam"/></svg><span>Add my photo</span><input type="file" accept="image/*" capture="environment" data-sid="${sid}"></label></div></div>` };
     const legend = `<div class="fd-legend"><span><i></i>cut here</span><span><i class="move"></i>pull / direction</span><span><i class="bone"></i>bone</span><span><i class="seam"></i>muscle seams</span></div>`;
     const SECS = [];
     SECS.push(['gear', 'Gear & safety', `<p>Lay everything out before you start; it goes faster and cleaner.</p>
@@ -7425,6 +7552,101 @@ details.drop > .dropbody { padding: 0 14px 14px; }
     $('fdNav').innerHTML = SECS.map(([id, t]) => `<a href="#dress" data-go="fd-${id}">${t}</a>`).join('');
     $('fdGuide').innerHTML = SECS.map(([id, t, body]) => `<section class="panel fd-sec" id="fd-${id}"><h2 style="margin:0">${t}</h2>${body}</section>`).join('');
     $('fdNav').addEventListener('click', e => { const a = e.target.closest('[data-go]'); if (!a) return; e.preventDefault(); $(a.dataset.go).scrollIntoView({ behavior: 'smooth', block: 'start' }); });
+    // ---- your own photos on each step (saved on this phone) ----
+    const photoMap = {};
+    async function loadPhotos() {
+      let all = []; try { all = await idb.stepAll(); } catch (e) {}
+      all.forEach(r => { photoMap[r.id] = r.img; });
+      document.querySelectorAll('.fd-photo').forEach(el => { const img = photoMap[el.dataset.ph]; el.innerHTML = img ? `<img src="${img}" alt="My photo of this step"><button type="button" class="fd-phdel" data-del="${el.dataset.ph}">Remove photo</button>` : ''; });
+    }
+    $('fdGuide').addEventListener('change', async e => {
+      const inp = e.target.closest('input[type=file][data-sid]'); if (!inp || !inp.files[0]) return;
+      try {
+        const bm = await createImageBitmap(inp.files[0]), w = Math.min(900, bm.width), h = Math.round(bm.height * w / bm.width), c = document.createElement('canvas'); c.width = w; c.height = h;
+        c.getContext('2d').drawImage(bm, 0, 0, w, h);
+        await idb.stepPut({ id: inp.dataset.sid, img: c.toDataURL('image/jpeg', 0.78), t: Date.now() }); inp.value = '';
+        await loadPhotos(); toast('Photo added to this step.');
+      } catch (er) { toast('Could not add that photo.'); }
+    });
+    $('fdGuide').addEventListener('click', async e => { const b = e.target.closest('[data-del]'); if (!b) return; await idb.stepDel(b.dataset.del); delete photoMap[b.dataset.del]; loadPhotos(); });
+    // ---- hands-free mode: one big step at a time, read aloud; say "next", "back", "repeat" ----
+    const GROUPS = { field: 0, hang: 1, gutless: 2, bone: 3 };
+    for (const [id, g] of Object.entries(GROUPS)) { const sec = $('fd-' + id); if (sec) sec.querySelector('h2').insertAdjacentHTML('afterend', `<button type="button" class="btn primary fd-hfbtn" data-hf="${g}"><svg style="width:18px;height:18px"><use href="#i-speaker"/></svg>Hands-free mode: read aloud, voice "next"</button>`); }
+    let HF = null, hfRec = null, hfWake = null;
+    const plain = h => String(h).replace(/<[^>]+>/g, '').replace(/&amp;/g, '&').replace(/’/g, "'");
+    function hfSpeak() {
+      if (!HF || !window.speechSynthesis) return;
+      const st = REG[HF.g][HF.k];
+      try { speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(`Step ${st.n}. ${plain(st.title)}. ${st.items.map(plain).join(' ')} ${st.tip ? 'Tip: ' + plain(st.tip) : ''} ${st.warn ? 'Avoid: ' + plain(st.warn) : ''}`); u.lang = 'en-US'; u.rate = 0.95; speechSynthesis.speak(u); } catch (e) {}
+    }
+    function hfRender() {
+      const steps = REG[HF.g], st = steps[HF.k];
+      $('hfCount').textContent = `Step ${HF.k + 1} of ${steps.length}`;
+      $('hfBody').innerHTML = `${photoMap[st.sid] ? `<img class="hf-photo" src="${photoMap[st.sid]}" alt="">` : ''}${st.svg}<h3>${st.title}</h3><ol>${st.items.map(t => `<li>${t}</li>`).join('')}</ol>${st.tip ? `<div class="fd-tip"><b>Tip:</b> ${st.tip}</div>` : ''}${st.warn ? `<div class="fd-tip no"><b>Avoid:</b> ${st.warn}</div>` : ''}`;
+      $('hfBody').scrollTop = 0; $('hfBack').disabled = HF.k === 0; $('hfNext').textContent = HF.k === steps.length - 1 ? 'Finish' : 'Next ›';
+      if (HF.read) hfSpeak();
+    }
+    function hfGo(d) { if (!HF) return; const n = REG[HF.g].length; if (HF.k + d >= n) { hfClose(); toast('All steps done.'); return; } HF.k = Math.max(0, HF.k + d); hfRender(); }
+    function hfListen() {
+      const SR = window.SpeechRecognition || window.webkitSpeechRecognition; if (!SR) return false;
+      hfRec = new SR(); hfRec.lang = 'en-US'; hfRec.continuous = true; hfRec.interimResults = false;
+      hfRec.onresult = e => { for (let k = e.resultIndex; k < e.results.length; k++) { if (!e.results[k].isFinal) continue; const t = e.results[k][0].transcript.toLowerCase(); $('hfHeard').textContent = `Heard: "${t.trim()}"`;
+        if (/\b(next|forward|done|ok next)\b/.test(t)) hfGo(1); else if (/\b(back|previous|go back)\b/.test(t)) hfGo(-1); else if (/\b(repeat|again|read)\b/.test(t)) hfSpeak(); else if (/\b(stop|quiet|pause|silence)\b/.test(t)) { try { speechSynthesis.cancel(); } catch (er) {} } else if (/\b(exit|close|finish)\b/.test(t)) hfClose(); } };
+      hfRec.onend = () => { if (HF && hfRec) { try { hfRec.start(); } catch (er) {} } };
+      hfRec.onerror = e => { if (e.error === 'not-allowed') { $('hfHeard').textContent = 'Microphone blocked: tap the arrows instead.'; hfRec = null; } };
+      try { hfRec.start(); return true; } catch (er) { return false; }
+    }
+    async function hfOpen(g) {
+      HF = { g, k: 0, read: true };
+      $('hfTitle').textContent = $('fd-' + Object.keys(GROUPS)[g]).querySelector('h2').textContent;
+      $('hfBox').hidden = false; document.body.classList.add('nav-big');
+      try { if (navigator.wakeLock) hfWake = await navigator.wakeLock.request('screen'); } catch (e) {}
+      const ok = hfListen();
+      $('hfHeard').textContent = ok ? 'Say "next", "back", "repeat", "stop" or "exit". Or tap the buttons with a knuckle.' : 'Voice commands need Chrome with speech recognition; tap the buttons instead.';
+      hfRender();
+    }
+    function hfClose() {
+      const r = hfRec; hfRec = null; try { r && r.stop(); } catch (e) {} try { speechSynthesis.cancel(); } catch (e) {} try { hfWake && hfWake.release(); } catch (e) {}
+      HF = null; $('hfBox').hidden = true; document.body.classList.remove('nav-big');
+    }
+    $('fdGuide').addEventListener('click', e => { const b = e.target.closest('[data-hf]'); if (b) hfOpen(+b.dataset.hf); });
+    $('hfNext').addEventListener('click', () => hfGo(1)); $('hfBack').addEventListener('click', () => hfGo(-1));
+    $('hfRepeat').addEventListener('click', hfSpeak); $('hfClose').addEventListener('click', hfClose);
+    $('hfMute').addEventListener('click', () => { HF.read = !HF.read; $('hfMute').setAttribute('aria-pressed', !HF.read); $('hfMute').textContent = HF.read ? 'Mute' : 'Unmute'; if (!HF.read) try { speechSynthesis.cancel(); } catch (e) {} });
+
+    // ---- kill-time timer and "can I hang it overnight?" from the hourly forecast ----
+    let killT = null;
+    const hm2 = d => d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+    async function hangCheck() {
+      const k = store.get('dress.kill', null);
+      $('kStart').textContent = k ? 'Reset kill time to now' : 'Start: deer is down now';
+      if (!k) { $('kOut').innerHTML = '<span class="caption">Tap when the deer is down (or set the time) to get a cooling deadline and the overnight answer.</span>'; return; }
+      let j = null;
+      try { const r = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${k.lat}&longitude=${k.lon}&hourly=temperature_2m&temperature_unit=fahrenheit&timezone=auto&past_days=1&forecast_days=2`); j = await r.json(); } catch (e) { j = null; }
+      const now = Date.now(), since = now - k.t;
+      const hrs = j && j.hourly ? j.hourly.time.map((t, i) => [new Date(t).getTime(), j.hourly.temperature_2m[i]]).filter(x => x[0] >= now - 36e5) : [];
+      const tNow = hrs.length ? hrs[0][1] : +$('fdTemp').value;
+      const avg3 = hrs.length ? hrs.slice(0, 3).reduce((a, x) => a + x[1], 0) / Math.min(3, hrs.length) : tNow;
+      const budget = avg3 >= 60 ? 3 : avg3 >= 50 ? 6 : avg3 > 40 ? 12 : null;
+      const tom = new Date(); tom.setDate(tom.getDate() + (tom.getHours() >= 9 ? 1 : 0)); tom.setHours(8, 0, 0, 0);
+      const eve = new Date(); eve.setHours(18, 0, 0, 0); if (new Date().getHours() < 9) eve.setDate(eve.getDate() - 1);
+      const night = hrs.filter(x => x[0] >= Math.max(eve.getTime(), now - 36e5) && x[0] < tom.getTime());
+      const nMax = night.length ? Math.max(...night.map(x => x[1])) : null, nMin = night.length ? Math.min(...night.map(x => x[1])) : null;
+      const fmtH = ms => { const m = Math.max(0, Math.round(ms / 6e4)); return `${Math.floor(m / 60)} h ${m % 60} min`; };
+      let h = `<div class="stats"><div class="stat"><span class="caption">Down since</span><span class="big" style="font-size:1.4rem">${hm2(new Date(k.t))}</span></div><div class="stat"><span class="caption">Time since</span><span class="big" style="font-size:1.4rem">${fmtH(since)}</span></div><div class="stat"><span class="caption">Now</span><span class="big" style="font-size:1.4rem">${Math.round(tNow)}°F</span></div></div>`;
+      if (budget) { const left = k.t + budget * 36e5 - now; h += `<div class="fd-tip ${left < 36e5 ? 'no' : ''}"><b>${left > 0 ? `Get it cold (below 40°F) by ${hm2(new Date(k.t + budget * 36e5))}: ${fmtH(left)} left.` : 'Past the safe window: get it on ice now.'}</b> At about ${Math.round(avg3)}°F, aim to have the meat chilling within about ${budget} hours of the kill.</div>`; }
+      else h += `<div class="fd-tip"><b>Cold enough (${Math.round(avg3)}°F):</b> the air is cooling the meat. Keep the cavity open and the deer in the shade.</div>`;
+      if (nMax != null) h += `<div class="fd-tip ${nMax > 45 ? 'no' : ''}"><b>Hang overnight? ${nMax <= 40 ? 'Yes.' : nMax <= 45 ? 'Borderline.' : 'No.'}</b> Tonight until 8 am the forecast is ${Math.round(nMin) === Math.round(nMax) ? 'about ' + Math.round(nMin) : Math.round(nMin) + '–' + Math.round(nMax)}°F. ${nMax <= 40 ? 'It stays at or below 40°F, so it can hang skin-on in the shade until morning.' : nMax <= 45 ? 'Only a few degrees above 40°F: hang it only if you can get it into a cooler early, or put ice bags in the cavity.' : 'Too warm to hang: skin and quarter it tonight and put the meat on ice or in a fridge.'}${nMin != null && nMin < 28 ? ' It will freeze hard overnight: skin it first or cover it so it doesn’t freeze solid.' : ''}</div>`
+        + `<div class="kt-hours">${hrs.filter((x, i) => i % 2 === 0).slice(0, 9).map(x => `<span><b>${Math.round(x[1])}°</b>${new Date(x[0]).toLocaleTimeString([], { hour: 'numeric' })}</span>`).join('')}</div><div class="caption">Hourly forecast for where the deer went down (Open-Meteo). General food-safety guidance: keep meat below 40°F.</div>`;
+      else h += '<div class="caption">No forecast right now (no signal?). Use the air-temperature slider above.</div>';
+      $('kOut').innerHTML = h;
+    }
+    $('kStart').addEventListener('click', () => {
+      const set = (lat, lon) => { store.set('dress.kill', { t: Date.now(), lat, lon }); hangCheck(); };
+      if (navigator.geolocation) navigator.geolocation.getCurrentPosition(p => set(+p.coords.latitude.toFixed(3), +p.coords.longitude.toFixed(3)), () => set(LOC.lat, LOC.lon), { timeout: 8000, maximumAge: 300000 }); else set(LOC.lat, LOC.lon);
+    });
+    $('kTime').addEventListener('change', () => { const v = $('kTime').value; if (!v) return; const [hh, mm] = v.split(':').map(Number), d = new Date(); d.setHours(hh, mm, 0, 0); if (d.getTime() > Date.now()) d.setDate(d.getDate() - 1); const k = store.get('dress.kill', null) || { lat: LOC.lat, lon: LOC.lon }; k.t = d.getTime(); store.set('dress.kill', k); hangCheck(); });
+    $('kClear').addEventListener('click', () => { store.set('dress.kill', null); hangCheck(); });
 
     function cool() {
       const t = +$('fdTemp').value; $('fdTempV').textContent = t + '°F';
@@ -7447,7 +7669,7 @@ details.drop > .dropbody { padding: 0 14px 14px; }
       $('fdBurger').textContent = `~${Math.round(w * 0.45 * 0.4)} lb`;
     }
     $('fdW').addEventListener('input', meat); meat();
-    return { show() { fetchTemp(); meat(); } };
+    return { show() { fetchTemp(); meat(); loadPhotos(); hangCheck(); clearInterval(killT); killT = setInterval(() => { if (current === 'dress' && store.get('dress.kill', null)) hangCheck(); }, 60000); }, hide() { if (HF && !document.hidden) hfClose(); } };
   })();
 
   // =================================================================
@@ -7621,9 +7843,89 @@ details.drop > .dropbody { padding: 0 14px 14px; }
   })();
 
   // =================================================================
+  // MEAT & FREEZER (log, burger fat, cure & salt, CWD testing, donating)
+  // =================================================================
+  const meatlog = (() => {
+    const esc = t => String(t == null ? '' : t).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    const CUTS = ['Backstrap', 'Tenderloin', 'Top round', 'Bottom round', 'Eye of round', 'Sirloin tip', 'Rump', 'Shoulder roast', 'Neck roast', 'Stew meat', 'Burger', 'Jerky meat', 'Sausage', 'Ribs', 'Heart', 'Liver', 'Other'];
+    let M = store.get('meat', { items: [], deer: [] });
+    const save = () => store.set('meat', M);
+    const iso = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+    $('mtCut').innerHTML = CUTS.map(c => `<option>${c}</option>`).join('');
+    function deerList() {
+      // harvests from the Hunt journal, plus any deer added here
+      const J = store.get('journal', []).filter(e => e.harvest).map(e => ({ id: 'j' + e.id, name: `${new Date(e.t0).toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' })}: ${e.harvest.sex}${e.harvest.sex === 'Buck' && e.harvest.pts ? ' ' + e.harvest.pts + ' pt' : ''} · ${e.stand.name}` }));
+      return J.concat(M.deer);
+    }
+    function fillDeer() {
+      const D = deerList(), cur = $('mtDeer').value || store.get('meat.lastDeer', '');
+      $('mtDeer').innerHTML = D.map(d => `<option value="${d.id}">${esc(d.name)}</option>`).join('') + '<option value="new">+ Add a deer…</option>';
+      if (D.some(d => d.id === cur)) $('mtDeer').value = cur; else if (D[0]) $('mtDeer').value = D[0].id;
+    }
+    $('mtDeer').addEventListener('change', () => {
+      if ($('mtDeer').value !== 'new') { store.set('meat.lastDeer', $('mtDeer').value); render(); return; }
+      const n = prompt('Name this deer (e.g. "8-pt buck, Nov 14")'); if (!n) { fillDeer(); return; }
+      const d = { id: 'm' + uid(), name: n.slice(0, 60) }; M.deer.push(d); save(); store.set('meat.lastDeer', d.id); fillDeer(); $('mtDeer').value = d.id; render();
+    });
+    $('mtDate').value = iso(new Date());
+    $('mtAdd').addEventListener('click', () => {
+      const deer = $('mtDeer').value; if (!deer || deer === 'new') { toast('Pick or add a deer first.'); return; }
+      const w = Math.max(0, +$('mtW').value || 0), n = Math.max(1, Math.round(+$('mtN').value || 1));
+      M.items.push({ id: uid(), deer, cut: $('mtCut').value, w, n, left: n, date: $('mtDate').value || iso(new Date()) }); save(); render();
+      toast(`${$('mtCut').value}: ${n} package${n > 1 ? 's' : ''}, ${w} lb added.`);
+    });
+    const months = d => (Date.now() - new Date(d + 'T12:00').getTime()) / (30.44 * 864e5);
+    function render() {
+      const D = deerList(), dn = id => (D.find(d => d.id === id) || { name: 'Deer' }).name;
+      const cur = $('mtDeer').value, mine = M.items.filter(i => i.deer === cur);
+      $('mtDeerSum').innerHTML = mine.length ? `This deer so far: <b>${mine.reduce((a, i) => a + i.w, 0).toFixed(1)} lb</b> in ${mine.reduce((a, i) => a + i.n, 0)} packages (${[...new Set(mine.map(i => i.cut))].join(', ')}).` : '';
+      const inF = M.items.filter(i => i.left > 0), lb = inF.reduce((a, i) => a + i.w * i.left / i.n, 0), old = inF.filter(i => months(i.date) > 9).length;
+      $('mtStats').innerHTML = `<div class="stat"><span class="caption">Packages</span><span class="big">${inF.reduce((a, i) => a + i.left, 0)}</span></div><div class="stat"><span class="caption">Meat</span><span class="big">${lb.toFixed(1)}<small>lb</small></span></div><div class="stat"><span class="caption">Over 9 months</span><span class="big" style="${old ? 'color:#c62828' : ''}">${old}</span></div>`;
+      const so = $('mtSort').value, L = inF.slice().sort((a, b) => so === 'cut' ? a.cut.localeCompare(b.cut) : so === 'deer' ? dn(a.deer).localeCompare(dn(b.deer)) || a.date.localeCompare(b.date) : a.date.localeCompare(b.date));
+      $('mtList').innerHTML = L.length ? L.map(i => { const mo = months(i.date); return `<div class="mt-row${mo > 9 ? ' old' : ''}" data-id="${i.id}"><div><b>${esc(i.cut)} · ${i.left} of ${i.n}</b>${(i.w * i.left / i.n).toFixed(1)} lb · ${esc(dn(i.deer))} · <span class="age">${mo < 1 ? 'this month' : Math.floor(mo) + ' mo'}</span></div><button type="button" data-a="use">Use 1</button><button type="button" data-a="del" aria-label="Delete">✕</button></div>`; }).join('') : '<div class="caption">Nothing logged in the freezer yet.</div>';
+    }
+    $('mtSort').addEventListener('change', render);
+    $('mtList').addEventListener('click', e => {
+      const b = e.target.closest('button'); if (!b) return; const it = M.items.find(i => i.id === b.closest('.mt-row').dataset.id); if (!it) return;
+      if (b.dataset.a === 'use') { it.left = Math.max(0, it.left - 1); toast(`Enjoy the ${it.cut.toLowerCase()}.`); }
+      else if (confirm(`Remove ${it.cut} from the log?`)) M.items = M.items.filter(i => i !== it);
+      save(); render();
+    });
+    // burger fat: (venison fat + added fat) / total = target
+    function grind() {
+      const V = Math.max(0, +$('gdV').value || 0), f = Math.min(0.35, Math.max(0, (+$('gdF').value || 0) / 100)), fs = +$('gdS').value, fv = 0.03;
+      if (f <= fv) { $('gdOut').innerHTML = 'No fat needed: venison is already about 3% fat.'; return; }
+      if (fs <= f) { $('gdOut').innerHTML = `That source is only ${Math.round(fs * 100)}% fat, so it can't bring the mix up to ${Math.round(f * 100)}%. Pick a fattier source.`; return; }
+      const x = V * (f - fv) / (fs - f);
+      $('gdOut').innerHTML = `<div>Add <b class="big2">${x.toFixed(1)} lb</b> of ${$('gdS').selectedOptions[0].text.split(' (')[0].toLowerCase()}</div><div>Total mix ${(V + x).toFixed(1)} lb at about ${Math.round(f * 100)}% fat. Grind cold (meat and fat nearly frozen), coarse first, then fine.</div>`;
+    }
+    ['gdV', 'gdF', 'gdS'].forEach(id => $(id).addEventListener('input', grind));
+    function jerky() {
+      const lb = Math.max(0, +$('jkM').value || 0), g = lb * 453.6, saltPct = Math.max(0, +$('jkS').value || 0), cure = $('jkC').value === '1';
+      const salt = g * saltPct / 100, cureTsp = lb / 5;
+      $('jkOut').innerHTML = `<div>Salt: <b class="big2">${Math.round(salt)} g</b> (about ${(salt / 6).toFixed(1)} tsp of fine salt)</div>`
+        + (cure ? `<div>Cure #1 (pink curing salt, 6.25% nitrite): <b class="big2">${cureTsp.toFixed(1)} level tsp</b> (${(lb * 453.6 * 0.0025).toFixed(1)} g), the standard 1 level teaspoon per 5 lb of meat. Weigh it if you can; never more.</div>` : '<div>Without cure, cook or freeze the sausage right away; don’t smoke or dry it low and slow.</div>')
+        + `<div class="caption">Food safety (USDA): heat jerky meat to 160°F before or after drying, then dry at 130–140°F until it bends and cracks without breaking. Venison can carry parasites and bacteria: always reach 160°F. Cure #1 is not table salt; keep it labeled and away from kids.</div>`;
+    }
+    ['jkM', 'jkS', 'jkC'].forEach(id => $(id).addEventListener('input', jerky));
+    $('mtInfo').innerHTML = `<h2 style="margin:0">CWD testing &amp; donating venison</h2><div class="st-info">
+      <h3>Get your deer tested for CWD</h3>
+      <ul><li><b>New York:</b> in fall 2026 DEC is asking hunters who take deer in the towns of Columbia, German Flatts, Litchfield, Warren and Winfield (Herkimer County) and Richfield (Otsego County) to drop the head in a <b>DEC head bin</b> (bucks: antlers may be removed first). Results come after the season; heads entered also go into a drawing for a lifetime license. To keep the head, or elsewhere in the state, call DEC at <a href="tel:13158666330">315-866-6330 ext. 132</a> to ask about testing.</li>
+      <li><b>Cornell Wildlife Health Lab</b> has a how-to video for collecting a sample yourself: <a href="https://youtu.be/BliJtVBITYw" target="_blank" rel="noopener">CWD sample submission for hunters</a>; questions: <a href="mailto:cwhl@cornell.edu">cwhl@cornell.edu</a>, 607-253-3900.</li>
+      <li><b>New Jersey:</b> Fish &amp; Wildlife monitors the herd; see <a href="https://www.nj.gov/dep/fgw/pdf/hunting/cwd_hunters_guide.pdf" target="_blank" rel="noopener">Keep NJ CWD Free: a guide for hunters</a> for testing and contacts.</li>
+      <li><b>Hunting out of state?</b> New Jersey doesn’t allow whole deer carcasses or uncaped heads in from any other state: only boned-out meat, cleaned skull caps, hides, shed antlers and clean upper canine teeth. New York has similar rules: <a href="https://dec.ny.gov/nature/animals-fish-plants/wildlife-health/animal-diseases/chronic-wasting-disease" target="_blank" rel="noopener">NY DEC CWD page</a>.</li></ul>
+      <h3>Donate venison to people who need it</h3>
+      <ul><li><b>New York:</b> DEC and Feeding New York State pay the processing: you drop the deer at a cooperating processor at no cost to you. Find processors and rules: <a href="https://dec.ny.gov/things-to-do/hunting/deer-bear/processing-preparing-donating-meat" target="_blank" rel="noopener">DEC: processing and donating meat</a>. Deer taken with a bow or non-lead ammunition are preferred.</li>
+      <li><b>New Jersey:</b> <a href="https://www.huntershelpingthehungry.org" target="_blank" rel="noopener">Hunters Helping the Hungry</a> works through participating butchers. Call the butcher before you bring the deer (some don’t take donations during the six-day firearm season); processing fees may be covered by grants depending on the year.</li></ul>
+      <div class="caption">Checked November 2026. Programs and test locations change each season; check the official pages.</div></div>`;
+    return { show() { M = store.get('meat', M); fillDeer(); render(); grind(); jerky(); } };
+  })();
+
+  // =================================================================
   // ROUTER
   // =================================================================
-  const TOOLS = { vision, maps, predict, stats, blood, track, camo, movement, wind, compass, sun: sunmoon, shine, skyline, checklist, fov, guide: {}, mikecon, journal, shot, backup, cams, tags, buck, dress, chrono, arrowbuild };
+  const TOOLS = { vision, maps, predict, stats, blood, track, camo, movement, wind, compass, sun: sunmoon, shine, skyline, checklist, fov, guide: {}, mikecon, journal, shot, backup, cams, tags, buck, dress, chrono, arrowbuild, meat: meatlog };
   let current = 'home';
   function route() {
     const go = (location.hash || '').match(/^#go=(-?[\d.]+),(-?[\d.]+),?(.*)$/);
