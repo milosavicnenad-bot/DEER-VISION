@@ -259,6 +259,11 @@ html.night body { background: #000; }
 .ab-saved { display: grid; gap: 6px; }
 .ab-row { display: grid; grid-template-columns: minmax(0,1fr) auto auto; gap: 8px; align-items: center; padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); font-size: .85rem; }
 .ab-row b { display: block; font-size: .92rem; } .ab-row button { border: 1px solid var(--line); background: var(--surface); color: var(--fg); border-radius: 6px; padding: 5px 9px; cursor: pointer; font: 600 .8rem var(--font-body); }
+.dg-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+.dg { border: 1px solid var(--line); border-radius: 8px; padding: 8px; background: var(--bg); display: grid; gap: 4px; align-content: start; }
+.dg svg { width: 100%; height: auto; color: var(--fg); }
+.dg b { font-size: .88rem; } .dg span { font-size: .76rem; color: var(--muted); line-height: 1.35; }
+.dg-grid.wide { grid-template-columns: 1fr; }
 /* Leaflet 1.9.4 (BSD-2-Clause) */
 /* required styles */
 
@@ -1029,6 +1034,11 @@ body.nav-big { overflow: hidden; }
 .gd-panel { border-top: 1px dashed var(--line); padding-top: 10px; display: grid; gap: 10px; }
 .gd-tips { margin: 0; padding-left: 1.1rem; display: grid; gap: 4px; font-size: .82rem; color: var(--muted); }
 .grid-n { font: 800 11px/16px system-ui, sans-serif; color: #3e2723; text-align: center; text-shadow: 0 0 3px #fff, 0 0 3px #fff; }
+.gps-chip { position: absolute; left: 10px; top: 86px; z-index: 1002; display: flex; align-items: center; gap: 6px; padding: 5px 9px; border-radius: 99px; border: 1px solid rgba(0,0,0,.2); background: #fff; color: #1d221b; font: 700 12px system-ui, sans-serif; box-shadow: 0 1px 4px rgba(0,0,0,.25); cursor: pointer; }
+.gps-chip i { width: 9px; height: 9px; border-radius: 50%; background: #9e9e9e; }
+.gps-chip.good i { background: #2e7d32; } .gps-chip.ok i { background: #f9a825; } .gps-chip.bad i { background: #c62828; } .gps-chip.bad { color: #b71c1c; }
+.gps-avg { position: absolute; left: 10px; right: 64px; bottom: 30px; z-index: 1003; background: rgba(255,255,255,.96); color: #1d221b; border-radius: 10px; padding: 10px; display: grid; gap: 8px; box-shadow: 0 2px 10px rgba(0,0,0,.3); font-size: .88rem; }
+.gps-avg .btn { padding: 6px 10px; font-size: .85rem; }
 .mapinfo { font-size: .85rem; color: var(--muted); min-height: 1.3em; }
 .mapinfo b { color: var(--fg); }
 .mtools { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 5px; }
@@ -1729,6 +1739,7 @@ details.drop > .dropbody { padding: 0 14px 14px; }
       <div class="row"><label for="fdTemp">Air temperature</label><input type="range" id="fdTemp" min="0" max="80" value="45"><span class="v" id="fdTempV">45°F</span></div></div>
     <div class="panel">
       <h2 style="margin:0">Step by step</h2>
+      <div class="dg-grid" id="fdPics"></div>
       <ol class="fd-steps">
         <li><b>Make sure it's dead and tag it.</b> Approach from behind; touch the eye with a stick. Fill out or report your tag the way your state requires before you move it.</li>
         <li><b>Gloves on.</b> Wear long rubber or nitrile gloves. Have a sharp knife, paper towels, a bag for heart and liver, and water if you can.</li>
@@ -1744,6 +1755,32 @@ details.drop > .dropbody { padding: 0 14px 14px; }
       </ol>
       <div class="warn"><b>Chronic wasting disease (CWD):</b> if you hunt in another state, many states, including New York, don't allow whole carcasses back in. Bring deboned meat, cleaned skull caps and hides, and check the rules where you hunt. Don't eat meat from a deer that acted sick.</div>
     </div>
+    <div class="panel">
+      <h2 style="margin:0">Quartering (deer hanging from a tree)</h2>
+      <div class="caption">Hang the deer by its hind legs from a gambrel on a strong limb, about head height, so you can work standing up. This works with or without field dressing first (the "gutless" method: everything comes off the outside, then you open the belly only to reach the tenderloins).</div>
+      <div class="dg-grid" id="qtPics"></div>
+      <ol class="fd-steps">
+        <li><b>Hang it.</b> Cut a slit between the bone and the big tendon above each hock, slide the gambrel through, and hoist the deer until its head is just off the ground. Tie the rope off well.</li>
+        <li><b>Skin it from the top down.</b> Cut around both hind legs below the hocks, then down the inside of each hind leg to the crotch and down the belly. Peel the hide down toward the head, using the knife only where it sticks. Cut around the front legs at the knees and pull them out of the hide.</li>
+        <li><b>Front shoulders.</b> Pull the front leg out away from the body and cut in the gap behind the shoulder blade, against the ribs. There's no joint holding it on: keep cutting close to the ribs and the whole shoulder comes free.</li>
+        <li><b>Backstraps.</b> Make a long cut on each side of the spine from the hips down to the neck, then a second cut along the top of the ribs. Peel each backstrap off the bone in one long piece, working your knife against the ribs and spine.</li>
+        <li><b>Hindquarters.</b> Cut along the pelvis from the top and the inside until you reach the ball joint at the hip. Bend the leg to pop the joint, cut around it, and the hindquarter comes off. Do one side, then the other, while it still hangs from the gambrel (or saw off at the hock).</li>
+        <li><b>Tenderloins, neck and trim.</b> Reach inside (or open the belly) for the two tenderloins under the spine. Take the neck meat and trim the ribs and flank for burger.</li>
+      </ol>
+    </div>
+
+    <div class="panel">
+      <h2 style="margin:0">Bone out the meat</h2>
+      <div class="caption">Boned-out meat cools faster, packs out lighter, and is what you bring home if you hunt where whole carcasses aren't allowed back. Follow the natural seams (the thin white membranes) between muscles; you hardly need to cut meat at all.</div>
+      <div class="dg-grid" id="boPics"></div>
+      <ol class="fd-steps">
+        <li><b>Hindquarter:</b> lay it outside down. Follow the seams to separate the big muscle groups: <b>top round</b> (inside), <b>bottom round</b> and <b>eye of round</b> (back of the leg), <b>sirloin tip</b> (front, over the knee), and the <b>rump</b> at the top. Then cut the meat off the leg bone (femur). The shank (below the knee) is for stew or burger.</li>
+        <li><b>Shoulder:</b> cut the meat off the shoulder blade on both sides and off the leg bones. Mostly roasts, stew and burger.</li>
+        <li><b>Clean as you go:</b> trim off fat, silver skin and any bloodshot meat. Deer fat tastes strong; don't keep it.</li>
+        <li><b>Keep it cold and clean:</b> put the meat in clean game bags or bags in a cooler with ice, not touching water. Label each bag (backstrap, round, shoulder, burger).</li>
+      </ol>
+    </div>
+
     <div class="panel">
       <h2 style="margin:0">Weight and meat</h2>
       <div class="row"><label for="fdW">Dressed weight</label><input type="range" id="fdW" min="40" max="250" value="120"><span class="v" id="fdWV">120 lb</span></div>
@@ -1864,6 +1901,8 @@ details.drop > .dropbody { padding: 0 14px 14px; }
           <button type="button" id="mp3dBtn" class="b3d" aria-pressed="false" aria-label="Show 3D terrain view">3D</button>
         </div>
         <div class="crosshair" id="mpCross" hidden aria-hidden="true"></div>
+        <button type="button" class="gps-chip" id="gpsChip" hidden aria-label="GPS accuracy and tips"></button>
+        <div class="gps-avg" id="gpsAvg" hidden><div id="gpsAvgTxt"></div><div class="ch-meter"><i id="gpsAvgBar"></i></div><div class="actions"><button class="btn" id="gpsAvgNow" type="button">Use it now</button><button class="btn" id="gpsAvgCancel" type="button">Cancel</button></div></div>
       </div>
       <div class="navcard" id="mpNav" hidden aria-live="polite">
         <div class="nav-top">
@@ -5273,15 +5312,89 @@ details.drop > .dropbody { padding: 0 14px 14px; }
       return L.divIcon({ className: '', iconSize: [60, 60], iconAnchor: [30, 30],
         html: `<div class="me-wrap">${h == null ? '' : `<div class="me-cone" style="transform:rotate(${Math.round(h)}deg)"></div>`}<div class="me-dot"></div></div>` });
     }
+    // ---------- better GPS: smoothing filter, jump rejection, averaging for precise marks ----------
+    // A simple Kalman filter: when you stand still it keeps averaging and the position settles; when you walk it follows.
+    const KF = { x: null, y: null, P: 0, t: 0, lat0: 0, bad: 0, raw: null, rawAcc: 0, approx: 0 };
+    const M_LAT = 111320, mLon = lat => 111320 * Math.cos(lat * Math.PI / 180);
+    function kfUpdate(lat, lon, acc, ts) {
+      KF.raw = L.latLng(lat, lon); KF.rawAcc = acc;
+      if (acc > 1000) KF.approx++; else KF.approx = 0; // "approximate location" permission gives readings of 1-3 km
+      if (KF.x == null || ts - KF.t > 60000 || acc > 500) { KF.lat0 = lat; KF.x = 0; KF.y = 0; KF.P = acc * acc; KF.t = ts; KF.lon0 = lon; KF.bad = 0; return { ll: L.latLng(lat, lon), acc }; }
+      const zx = (lon - KF.lon0) * mLon(KF.lat0), zy = (lat - KF.lat0) * M_LAT, dt = Math.max(0.2, (ts - KF.t) / 1000);
+      const Pp = KF.P + 2.2 * dt; // walking pace allowance (about 1.5 m/s)
+      const dist = Math.hypot(zx - KF.x, zy - KF.y);
+      // reject a reading that jumps farther than you could have walked, given both accuracies
+      if (dist > 3 * Math.sqrt(Pp + acc * acc) && dist / dt > 4) {
+        if (KF.bad < 3) { KF.bad++; return null; }
+        KF.lat0 = lat; KF.lon0 = lon; KF.x = 0; KF.y = 0; KF.P = acc * acc; KF.t = ts; KF.bad = 0; return { ll: L.latLng(lat, lon), acc }; // it really moved
+      }
+      KF.bad = 0;
+      const K = Pp / (Pp + acc * acc);
+      KF.x += K * (zx - KF.x); KF.y += K * (zy - KF.y); KF.P = (1 - K) * Pp; KF.t = ts;
+      // honest accuracy: averaging removes jitter but not the slow drift from trees and ridges
+      const shown = Math.max(Math.sqrt(KF.P), acc * 0.5, 2);
+      return { ll: L.latLng(KF.lat0 + KF.y / M_LAT, KF.lon0 + KF.x / mLon(KF.lat0)), acc: shown };
+    }
+    function gpsChip() {
+      const el = $('gpsChip'); if (!el) return;
+      if (watchId == null || !me) { el.hidden = watchId == null; el.className = 'gps-chip'; el.innerHTML = watchId == null ? '' : '<i></i>GPS…'; return; }
+      const yd = Math.round(meAcc * YD), q = KF.approx >= 2 ? 'bad' : meAcc <= 5 ? 'good' : meAcc <= 12 ? 'ok' : 'bad';
+      el.hidden = false; el.className = 'gps-chip ' + q; el.innerHTML = `<i></i>${KF.approx >= 2 ? 'Approximate only!' : `GPS ±${yd} yd`}`;
+    }
+    function gpsHelp() {
+      const box = document.createElement('div'); box.className = 'pop';
+      const raw = KF.rawAcc ? Math.round(KF.rawAcc * YD) : null;
+      box.innerHTML = `<h4>GPS accuracy</h4><div>${me ? `Now about <b>±${Math.round(meAcc * YD)} yd</b> (phone reports ±${raw} yd per reading; the app smooths and averages them).` : 'Waiting for a signal.'}</div>`
+        + (KF.approx >= 2 ? `<div class="ai-warn">Chrome only has <b>approximate</b> location (off by a mile or more). Fix: Android Settings → Apps → Chrome → Permissions → Location → turn on <b>Use precise location</b>.</div>` : '')
+        + `<div class="sec"><b>For the best fix</b><ul class="gd-tips"><li>Android Settings → Location → <b>Google Location Accuracy</b>: on. Also allow Chrome <b>precise</b> location.</li><li>Give the GPS a minute after you turn it on, ideally in an opening, before marking important spots.</li><li>Hold the phone up and away from your body; don't keep it in a chest pocket under a jacket.</li><li>To mark a stand, blood or your truck, stand still and use <b>Save where I'm standing</b>: it averages for 20 seconds.</li><li>Under thick evergreens and in deep hollows, accuracy drops. Tapping the map where you are is often more exact than GPS there.</li><li>Newer phones with dual-frequency GPS (L1 + L5) are much better in the woods.</li></ul></div>`;
+      L.popup({ maxWidth: 270 }).setLatLng(me || map.getCenter()).setContent(box).openOn(map);
+    }
+    // average your position for a few seconds while you stand still, for spots you want to find again exactly
+    let avgRun = null;
+    function precise(sec, label) {
+      return new Promise(res => {
+        if (avgRun) { avgRun.done(null); }
+        if (watchId == null) startGPS(false);
+        const pts = [], t0 = Date.now(); let timer;
+        const finish = ok => {
+          clearInterval(timer); $('gpsAvg').hidden = true; avgRun = null;
+          if (!ok) return res(null);
+          if (!pts.length) return res(me ? { ll: me, acc: meAcc, n: 0 } : null);
+          // drop stray readings: anything far from the median of the others
+          const med = arr => { const q = arr.slice().sort((x, y) => x - y); return q[q.length >> 1]; };
+          const mla = med(pts.map(q => q[0])), mlo = med(pts.map(q => q[1])), dd = pts.map(q => L.latLng(q[0], q[1]).distanceTo([mla, mlo])), md = Math.max(3, med(dd));
+          const use = pts.length >= 4 ? pts.filter((q, k) => dd[k] <= 3 * md) : pts;
+          let sw = 0, la = 0, lo = 0, best = Infinity;
+          for (const [a, b, c] of use) { const w = 1 / (c * c); sw += w; la += a * w; lo += b * w; best = Math.min(best, c); }
+          res({ ll: L.latLng(la / sw, lo / sw), acc: Math.max(2, best * 0.6, Math.sqrt(1 / sw)), n: use.length });
+        };
+        avgRun = { add: (lat, lon, acc) => { if (acc < 60) pts.push([lat, lon, acc]); }, done: finish, pts };
+        $('gpsAvg').hidden = false;
+        const tick = () => {
+          const left = Math.max(0, sec - (Date.now() - t0) / 1000);
+          $('gpsAvgTxt').innerHTML = `${esc(label)}: stand still… <b>${Math.ceil(left)} s</b> · ${pts.length} readings${pts.length ? ` · ±${Math.round(Math.min(...pts.map(p => p[2])) * 0.6 * YD)} yd` : ''}`;
+          $('gpsAvgBar').style.width = (100 * (1 - left / sec)) + '%';
+          if (left <= 0) finish(true);
+        };
+        tick(); timer = setInterval(tick, 250);
+      });
+    }
+    $('gpsAvgNow').addEventListener('click', () => avgRun && avgRun.done(true));
+    $('gpsAvgCancel').addEventListener('click', () => avgRun && avgRun.done(false));
+    $('gpsChip').addEventListener('click', gpsHelp);
+
     function startGPS(center) {
       if (!navigator.geolocation) { toast('Location is not available in this browser.'); return; }
       compass.listen();
       if (watchId == null) {
         watchId = navigator.geolocation.watchPosition(p => {
-          const nme = L.latLng(p.coords.latitude, p.coords.longitude);
+          if (avgRun) avgRun.add(p.coords.latitude, p.coords.longitude, p.coords.accuracy);
+          const f = kfUpdate(p.coords.latitude, p.coords.longitude, p.coords.accuracy, p.timestamp || Date.now());
+          if (!f) return; // a jump: ignore this reading
+          const nme = f.ll;
           if (typeof p.coords.heading === 'number' && !isNaN(p.coords.heading) && (p.coords.speed || 0) > 0.4) gpsCourse = { h: p.coords.heading, t: Date.now() };
           else if (me && me.distanceTo(nme) > Math.max(4, p.coords.accuracy * 0.6)) gpsCourse = { h: bearing(me, nme), t: Date.now() };
-          me = nme; meAcc = p.coords.accuracy; addCrumb(meAcc); gridWalk();
+          me = nme; meAcc = f.acc; addCrumb(meAcc); gridWalk(); gpsChip();
           if (!meMarker) { meMarker = L.marker(me, { icon: meIcon(), interactive: false, zIndexOffset: 1000 }).addTo(map); meCircle = L.circle(me, { radius: meAcc, color: '#2f8cff', weight: 1, fillOpacity: 0.1, interactive: false }).addTo(map); }
           else { meMarker.setLatLng(me); meCircle.setLatLng(me).setRadius(meAcc); }
           if (follow) { map.setView(me, Math.max(map.getZoom(), 16)); follow = false; }
@@ -5291,7 +5404,7 @@ details.drop > .dropbody { padding: 0 14px 14px; }
           if (e.code === 1) { toast('Location access was blocked. Allow it in Chrome site settings.'); stopGPS(); }
           else if (!me) $('mpInfo').innerHTML = 'Waiting for a GPS signal…';
         },
-        { enableHighAccuracy: true, maximumAge: 2000, timeout: 20000 });
+        { enableHighAccuracy: true, maximumAge: 0, timeout: 20000 });
         headTimer = setInterval(() => { if (meMarker) meMarker.setIcon(meIcon()); }, 500);
       }
       $('mpLocBtn').setAttribute('aria-pressed', true);
@@ -5301,7 +5414,7 @@ details.drop > .dropbody { padding: 0 14px 14px; }
       if (watchId != null) navigator.geolocation.clearWatch(watchId);
       watchId = null; clearInterval(headTimer);
       if (meMarker) { map.removeLayer(meMarker); map.removeLayer(meCircle); meMarker = meCircle = null; }
-      me = null; $('mpLocBtn').setAttribute('aria-pressed', false); onMove();
+      me = null; KF.x = null; $('mpLocBtn').setAttribute('aria-pressed', false); onMove(); gpsChip();
     }
 
     // ---------- saved markers and tracks on the map ----------
@@ -5442,10 +5555,11 @@ details.drop > .dropbody { padding: 0 14px 14px; }
     $('mpWalkBack').addEventListener('click', () => { setTool(null); walkBack(); });
     $('mpClearTrail').addEventListener('click', clearTrail);
     $('mpInfo').addEventListener('click', e => { if (e.target.id === 'mpBackLink') { e.preventDefault(); walkBack(); } });
-    $('mpPinMeBtn').addEventListener('click', () => {
-      if (!me) { startGPS(false); toast('Getting your GPS position… tap again in a moment.'); return; }
-      if (meAcc > 30) toast(`GPS is only good to ±${Math.round(meAcc * YD)} yd here; saving anyway.`);
-      const t = new Date(), m = { id: uid(), area: newArea(), t: Date.now(), type: 'note', name: `My spot ${t.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}`, notes: `Saved where I stood (±${Math.round(meAcc * YD)} yd)`, lat: +me.lat.toFixed(6), lon: +me.lng.toFixed(6) };
+    $('mpPinMeBtn').addEventListener('click', async () => {
+      const r = await precise(20, 'Saving where you stand'); if (!r) { if (!me) toast('No GPS signal yet. Try again in an opening.'); return; }
+      const here = r.ll, acc = r.acc;
+      if (acc > 30) toast(`GPS is only good to ±${Math.round(acc * YD)} yd here; saved anyway. Drag the marker if you know better.`);
+      const t = new Date(), m = { id: uid(), area: newArea(), t: Date.now(), type: 'note', name: `My spot ${t.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}`, notes: `Saved where I stood (±${Math.round(acc * YD)} yd, ${r.n} GPS readings averaged)`, lat: +here.lat.toFixed(6), lon: +here.lng.toFixed(6) };
       DB.markers.push(m); saveDB(); drawSaved();
       toast('Spot saved. Tap it later and choose "Navigate here" to come back.');
     });
@@ -5980,7 +6094,7 @@ details.drop > .dropbody { padding: 0 14px 14px; }
       BT.push(t); btActive = t.id; saveBT(); renderBlood(); startGPS(true); keepAwake(true);
       $('btInfo').innerHTML = 'First, mark the <b>hit site</b> (where the deer stood when you shot): tap <b>Hit site here</b> or tap that spot on the map.';
     });
-    $('btHitHere').addEventListener('click', () => bloodHere('hit'));
+    $('btHitHere').addEventListener('click', async () => { if (!curBT()) return; const r = await precise(12, 'Marking the hit site'); if (r) addBlood(r.ll, r.acc, 'hit'); });
     $('btHere').addEventListener('click', () => { const t = curBT(); bloodHere(t && t.pts.length ? 'blood' : 'hit'); });
     $('btLost').addEventListener('click', () => bloodHere('lost'));
     $('btFound').addEventListener('click', () => { bloodHere('found'); if (me) toast('Deer found! Tag it before you move it. Tap the green pin for the easiest drag route to your truck.'); });
@@ -6146,9 +6260,9 @@ details.drop > .dropbody { padding: 0 14px 14px; }
       else DB.markers.push(Object.assign({ id: uid(), area: newArea(), t: Date.now() }, rec));
       saveDB(); cancelAdd(); setTool(null); drawSaved(); toast(editing ? 'Marker updated' : 'Marker saved');
     });
-    $('mpHere').addEventListener('click', () => {
-      if (!me) { startGPS(false); toast('Getting your location… press again in a moment.'); return; }
-      if (pending) { pending.setLatLng(me); map.panTo(me); }
+    $('mpHere').addEventListener('click', async () => {
+      const r = await precise(10, 'Placing the marker where you stand'); if (!r) return;
+      if (pending) { pending.setLatLng(r.ll); map.panTo(r.ll); toast(`Placed (±${Math.round(r.acc * YD)} yd).`); }
     });
     $('mpCancel').addEventListener('click', () => { cancelAdd(); setTool(null); });
 
@@ -7099,6 +7213,57 @@ details.drop > .dropbody { padding: 0 14px 14px; }
   // =================================================================
   const dress = (() => {
     let got = false;
+    // ---- schematic drawings (simple line art; red dashed lines are cuts) ----
+    const CUT = 'stroke="#c62828" stroke-width="2.4" stroke-dasharray="6 4" fill="none" stroke-linecap="round"';
+    const ARW = '<defs><marker id="dgA" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0L10 5L0 10z" fill="#2f6fae"/></marker></defs>';
+    const num = (x, y, n) => `<circle cx="${x}" cy="${y}" r="8" fill="#c62828"/><text x="${x}" y="${y + 3.5}" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">${n}</text>`;
+    const lbl = (x, y, t, a = 'middle') => `<text x="${x}" y="${y}" text-anchor="${a}" font-size="9" fill="currentColor" fill-opacity=".8">${t}</text>`;
+    // deer on its back, seen from above (head to the right)
+    const belly = extra => `<svg viewBox="0 0 240 168" aria-hidden="true">${ARW}<g fill="currentColor" fill-opacity=".08" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <ellipse cx="118" cy="75" rx="70" ry="30"/><path d="M186 70 Q200 66 212 70 L212 80 Q200 84 186 80" /><ellipse cx="222" cy="75" rx="14" ry="9"/>
+      <path d="M160 50 L172 14 M160 100 L172 136 M80 52 L60 14 M80 98 L60 136" fill="none" stroke-width="5"/><path d="M48 72 L36 70" fill="none"/></g>${extra}</svg>`;
+    // deer on its side
+    const side = extra => `<svg viewBox="0 0 240 152" aria-hidden="true">${ARW}<g fill="currentColor" fill-opacity=".08" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <ellipse cx="115" cy="62" rx="66" ry="26"/><path d="M172 50 Q186 30 194 20 L204 26 Q196 42 182 64"/><ellipse cx="206" cy="20" rx="13" ry="8"/>
+      <path d="M78 84 L74 122 M98 86 L96 122 M146 84 L148 122 M160 82 L166 122" fill="none" stroke-width="5"/></g>${extra}</svg>`;
+    // deer hanging head-down by its hind legs from a gambrel on a limb
+    const hang = (extra, view) => `<svg viewBox="0 0 170 240" aria-hidden="true">${ARW}
+      <path d="M10 10 Q85 4 160 12" stroke="#8a5a2b" stroke-width="7" fill="none" stroke-linecap="round"/><path d="M85 9 L85 30" stroke="currentColor" stroke-width="1.6"/>
+      <path d="M50 32 L120 32" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+      <g fill="currentColor" fill-opacity=".08" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M56 33 L66 80 M114 33 L104 80" fill="none" stroke-width="7"/>
+      <path d="M62 78 Q85 66 108 78 Q118 120 108 168 Q85 182 62 168 Q52 120 62 78Z"/>
+      <path d="M76 176 L74 196 L96 196 L94 176"/><ellipse cx="85" cy="212" rx="11" ry="17"/>
+      <path d="M66 160 L54 222 M104 160 L116 222" fill="none" stroke-width="5"/></g>
+      ${view ? lbl(85, 236, view) : ''}${extra}</svg>`;
+    // hindquarter (outside view), with the natural muscle groups
+    const ham = `<svg viewBox="0 0 240 172" aria-hidden="true">
+      <g stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M40 30 Q120 10 190 30 Q215 70 196 110 Q170 140 140 146 L120 150 Q90 140 72 118 Q38 80 40 30Z" fill="currentColor" fill-opacity=".06"/>
+      <path d="M120 150 L126 166" stroke-width="6" stroke-linecap="round"/></g>
+      <g stroke="#7a5230" stroke-width="1.6" stroke-dasharray="4 3" fill="none"><path d="M62 52 Q120 44 186 52"/><path d="M120 52 Q122 100 120 146"/><path d="M120 92 Q90 96 70 112"/><path d="M150 118 Q170 108 196 104"/></g>
+      <path d="M95 34 L136 140" stroke="#bdbdbd" stroke-width="5" stroke-linecap="round" opacity=".7"/>
+      ${lbl(120, 40, 'Rump')}${lbl(86, 82, 'Top round')}${lbl(90, 128, 'Eye of round')}${lbl(158, 82, 'Bottom round')}${lbl(172, 136, 'Sirloin tip')}${lbl(136, 158, 'shank', 'start')}${lbl(8, 164, 'gray line: femur (bone)', 'start')}</svg>`;
+    const card = (svg, t, s) => `<div class="dg">${svg}<b>${t}</b><span>${s}</span></div>`;
+    $('fdPics').innerHTML = [
+      card(belly(`<path d="M130 152 L205 152" stroke="#2f6fae" stroke-width="2" marker-end="url(#dgA)"/>${lbl(96, 156, 'head uphill', 'end')}`), '1 · On its back', 'Belly up, head uphill. Brace it with your knees or a log.'),
+      card(belly(`<path d="M64 75 L168 75" ${CUT}/>${num(64, 58, 1)}<path d="M100 75 L130 75" stroke="#2f6fae" stroke-width="2" marker-end="url(#dgA)"/>${lbl(120, 162, 'skin only: blade up, between two fingers')}`), '2 · Open the belly', 'From just in front of the pelvis to the breastbone. Shallow: don\'t cut the guts.'),
+      card(belly(`<circle cx="46" cy="75" r="9" ${CUT}/>${num(46, 52, 2)}<path d="M50 75 L64 75" ${CUT}/>${lbl(8, 162, 'core around the anus', 'start')}`), '3 · Free the rear', 'Cut around the anus deep enough to free it (or split the pelvis).'),
+      card(belly(`<path d="M150 49 Q138 75 150 101" ${CUT}/><path d="M174 75 L206 75" ${CUT}/>${num(144, 40, 3)}${num(206, 58, 4)}${lbl(140, 162, 'diaphragm')}${lbl(212, 162, 'windpipe')}`), '4 · Chest and windpipe', 'Cut the diaphragm against the ribs all around; reach up and cut the windpipe.'),
+      card(side(`<ellipse cx="118" cy="106" rx="30" ry="14" fill="#b3122a" fill-opacity=".25" stroke="#b3122a" stroke-width="1.5"/><path d="M118 86 L118 130" stroke="#2f6fae" stroke-width="2.4" marker-end="url(#dgA)"/>${lbl(160, 142, 'roll it out downhill')}`), '5 · Pull and roll out', 'Pull the windpipe toward the tail; roll the deer so everything slides out.'),
+      card(side(`<path d="M80 74 L150 74" stroke="#8a5a2b" stroke-width="4" stroke-linecap="round"/><path d="M60 40 Q50 30 40 34 M170 40 Q182 30 192 34" stroke="#2f6fae" stroke-width="1.6" fill="none" marker-end="url(#dgA)"/>${lbl(115, 136, 'stick props the cavity open')}${lbl(115, 148, 'shade, air, off the ground')}`), '6 · Drain and cool', 'Tip it belly-down to drain, wipe out, prop open with a stick.'),
+    ].join('');
+    $('qtPics').innerHTML = [
+      card(hang(`<path d="M50 32 L56 33 M120 32 L114 33" stroke="#c62828" stroke-width="2"/>${lbl(150, 48, 'gambrel', 'end')}${lbl(150, 24, 'strong limb', 'end')}`), '1 · Hang it', 'Gambrel through the hocks, head just off the ground.'),
+      card(hang(`<path d="M60 52 L60 46 M110 52 L110 46" ${CUT}/><path d="M64 56 L74 90 L85 100 L96 90 L106 56" ${CUT}/><path d="M85 100 L85 172" ${CUT}/><path d="M48 205 l12 0 M110 205 l12 0" ${CUT}/>${num(30, 60, 1)}${lbl(85, 236, 'peel the hide down')}<path d="M140 90 L140 140" stroke="#2f6fae" stroke-width="2" marker-end="url(#dgA)"/>`), '2 · Skin top down', 'Around the hocks, down the inside of the legs and belly; peel it down.'),
+      card(hang(`<path d="M60 128 Q46 150 58 172 Q76 182 84 162 Q86 140 72 126 Z" ${CUT}/>${num(36, 140, 3)}${lbl(85, 236, 'side view')}`, ''), '3 · Front shoulders', 'No joint: cut between the shoulder blade and the ribs.'),
+      card(hang(`<path d="M78 80 L78 172 M92 80 L92 172" ${CUT}/><path d="M70 80 L70 172 M100 80 L100 172" stroke="#c62828" stroke-width="1.2" stroke-dasharray="2 4"/>${num(85, 128, 4)}${lbl(85, 236, 'back view: both sides of the spine')}`), '4 · Backstraps', 'Along each side of the spine, hips to neck; peel off in one piece.'),
+      card(hang(`<path d="M60 34 Q48 70 64 100 Q86 110 104 100 Q122 70 110 34" ${CUT}/><circle cx="72" cy="96" r="5" fill="none" stroke="#c62828" stroke-width="2"/><circle cx="98" cy="96" r="5" fill="none" stroke="#c62828" stroke-width="2"/>${num(140, 80, 5)}${lbl(140, 104, 'ball joint', 'middle')}`), '5 · Hindquarters', 'Cut along the pelvis to the ball joint, pop it, cut around it.'),
+      card(hang(`<path d="M80 100 L80 150 M90 100 L90 150" stroke="#b3122a" stroke-width="5" stroke-linecap="round" opacity=".7"/><path d="M76 176 L94 176 L94 196 L76 196" ${CUT}/>${num(130, 125, 6)}${lbl(85, 236, 'inside: tenderloins under the spine')}`), '6 · Tenderloins, neck, trim', 'Tenderloins from inside, then the neck and rib/flank trim.'),
+    ].join('');
+    $('boPics').innerHTML = card(ham, 'Hindquarter, outside view', 'Dashed brown lines: the natural seams between muscle groups. Separate along them, then cut the meat off the femur. Not to scale.')
+      + card(`<svg viewBox="0 0 240 170" aria-hidden="true"><g stroke="currentColor" stroke-width="2" fill="currentColor" fill-opacity=".06" stroke-linejoin="round"><path d="M30 60 Q120 30 210 60 L210 100 Q120 120 30 100 Z"/></g><path d="M30 80 L210 80" stroke="#bdbdbd" stroke-width="5" opacity=".7"/>${lbl(120, 74, 'backstrap (loin)')}${lbl(120, 100, 'silver skin: peel it off')}<path d="M40 64 Q120 44 200 64" stroke="#7a5230" stroke-dasharray="4 3" stroke-width="1.6" fill="none"/>${lbl(120, 140, 'cut into steaks across the grain')}<path d="M80 120 L80 156 M120 120 L120 156 M160 120 L160 156" stroke="#c62828" stroke-dasharray="4 3" stroke-width="2"/></svg>`, 'Backstrap', 'Trim the silver skin, then slice into steaks across the grain, or keep whole for roasts.')
+      + card(`<svg viewBox="0 0 240 170" aria-hidden="true"><g stroke="currentColor" stroke-width="2" fill="currentColor" fill-opacity=".06" stroke-linejoin="round"><path d="M60 20 Q140 10 190 40 Q170 90 130 110 L118 160 L104 160 L100 110 Q70 80 60 20Z"/></g><path d="M80 30 Q130 30 170 44 L120 100Z" fill="none" stroke="#bdbdbd" stroke-width="3" opacity=".8"/><path d="M111 105 L111 158" stroke="#bdbdbd" stroke-width="5" opacity=".7"/>${lbl(186, 80, 'shoulder blade', 'end')}${lbl(150, 140, 'leg bones', 'start')}<path d="M70 40 Q100 70 110 100" stroke="#c62828" stroke-dasharray="4 3" stroke-width="2" fill="none"/></svg>`, 'Shoulder', 'Cut the meat off both sides of the shoulder blade and off the leg bones: roasts, stew, burger.');
+
     function cool() {
       const t = +$('fdTemp').value; $('fdTempV').textContent = t + '°F';
       $('fdCoolTxt').innerHTML = t >= 60 ? `<b style="color:#b3261e">${t}°F is warm.</b> Field dress right away, get the hide off and the meat on ice within 2–3 hours. Bags of ice in the cavity or quarters in a cooler. Don't hang it overnight.`
