@@ -361,6 +361,18 @@ html.night body { background: #000; }
 .nav-final .nf-big { font: 700 1.6rem var(--font-display); }
 .nav-final img { width: 100%; max-height: 160px; object-fit: cover; border-radius: 8px; }
 .mp-label.perm { background: rgba(255,255,255,.9); border: 0; box-shadow: 0 1px 3px rgba(0,0,0,.3); font-weight: 700; }
+.trk-kit { display: grid; gap: 6px; }
+.trk-kit-i { display: flex; gap: 10px; align-items: flex-start; padding: 8px 10px; border: 1px solid var(--line); border-radius: 10px; background: var(--bg); cursor: pointer; }
+.trk-kit-i input { width: 20px; height: 20px; margin-top: 2px; flex: none; accent-color: var(--accent); }
+.trk-kit-i b { display: block; font-size: .92rem; } .trk-kit-i small { color: var(--muted); font-size: .82rem; }
+.trk-kit-i:has(input:checked) { border-color: #2e7d32; } .trk-kit-i:has(input:checked) b { text-decoration: line-through; opacity: .7; }
+.trk-now, .trk-tips { margin: 0; padding-left: 1.2rem; display: grid; gap: 6px; font-size: .9rem; }
+.trk-tools { display: grid; gap: 8px; }
+.trk-tool { display: flex; gap: 12px; align-items: center; padding: 10px 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--bg); color: var(--fg); text-decoration: none; }
+.trk-tool .ic { width: 40px; height: 40px; border-radius: 10px; display: grid; place-items: center; background: color-mix(in srgb, var(--h) 18%, transparent); color: var(--h); flex: none; }
+.trk-tool .ic svg { width: 22px; height: 22px; }
+.trk-tool b { display: block; } .trk-tool small { color: var(--muted); font-size: .82rem; }
+#trkShotHost #shotBlock { display: grid; gap: 8px; }
 .kt-hours { display: flex; gap: 6px; overflow-x: auto; }
 .kt-hours span { flex: none; display: grid; justify-items: center; padding: 6px 8px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); font-size: .75rem; color: var(--muted); }
 .kt-hours b { font-size: 1rem; color: var(--fg); }
@@ -1574,8 +1586,7 @@ details.drop > .dropbody { padding: 0 14px 14px; }
       <a class="tile hero" href="#maps" style="--h: var(--h-moss)"><span class="ic"><svg><use href="#i-map"/></svg></span><span class="tt">Maps</span><span class="td">Topo, satellite and property lines, with your stands, sign, tracks, measuring and scent cone.</span></a>
       <a class="tile hero ai" href="#spots" style="--h: #7b3fd1"><span class="ic"><svg><use href="#i-ai"/></svg></span><span class="tt">AI hunt spots</span><span class="td">Where to hunt around you right now: food, water, cover, funnels, saddles, benches and bedding, with today's wind. Tap a spot to see why.</span></a>
       <a class="tile hero" href="#predict" style="--h: var(--h-gold)"><span class="ic"><svg><use href="#i-predict"/></svg></span><span class="tt">Deer movement</span><span class="td">When deer are most likely on their feet: best days, best hours and why.</span></a>
-      <a class="tile hero" href="#blood" style="--h: var(--h-blood)"><span class="ic"><svg><use href="#i-blood"/></svg></span><span class="tt">Blood trail</span><span class="td">Make blood stand out on leaves and ground when tracking a hit deer.</span></a>
-      <a class="tile hero" href="#track" style="--h: var(--h-bark)"><span class="ic"><svg><use href="#i-track"/></svg></span><span class="tt">Track finder</span><span class="td">Bring out faint hoofprints in mud, dirt and snow, and measure their size.</span></a>
+      <a class="tile hero" href="#tracking" style="--h: var(--h-blood)"><span class="ic"><svg><use href="#i-blood"/></svg></span><span class="tt">Deer tracking</span><span class="td">After the shot: what you hit (check your arrow with a photo), when to start tracking, blood pins and search grid, blood camera and track finder.</span></a>
       <a class="tile hero" href="#journal" style="--h: var(--h-bark)"><span class="ic"><svg><use href="#i-journal"/></svg></span><span class="tt">Hunt journal</span><span class="td">Log each sit in two taps, see which stand to hunt on today's wind, last-light alarm and harvest reporting.</span></a>
       <a class="tile" href="#camo" style="--h: var(--h-moss)"><span class="ic"><svg><use href="#i-camo"/></svg></span><span class="tt">Camo check</span><span class="td">Score how well you blend in</span></a>
       <a class="tile" href="#movement" style="--h: var(--h-gold)"><span class="ic"><svg><use href="#i-move"/></svg></span><span class="tt">Movement</span><span class="td">See what motion gives away</span></a>
@@ -1878,14 +1889,8 @@ details.drop > .dropbody { padding: 0 14px 14px; }
     <div class="vhead" style="--h: var(--h-blood)"><button class="back" type="button"><svg><use href="#i-back"/></svg>Menu</button><span class="vic"><svg><use href="#i-knife"/></svg></span><h2>Field dressing</h2></div>
     <div class="panel" id="fdCool"><h2 style="margin:0">Cool the meat</h2><div id="fdCoolTxt" class="caption">Getting the temperature…</div>
       <div class="row"><label for="fdTemp">Air temperature</label><input type="range" id="fdTemp" min="0" max="80" value="45"><span class="v" id="fdTempV">45°F</span></div>
-      <div class="k" style="margin-top:4px">Shot timer · when to track · can I hang it overnight?</div>
-      <div class="actions"><button class="btn primary" id="kStart" type="button">Start: deer is down now</button><label class="btn" style="gap:6px">Set time <input type="time" id="kTime" style="width:6.5rem"></label><button class="btn" id="kClear" type="button">Clear</button></div>
-      <div class="k" style="margin-top:6px">Where did the arrow hit?</div>
-      <div class="kt-hit" id="kHit" role="group" aria-label="Where did the arrow hit"></div>
-      <details class="kt-signs"><summary>How to tell where you hit</summary><div id="kSigns"></div></details>
-      <div class="actions"><label class="btn" for="kPhoto" style="gap:6px"><svg style="width:18px;height:18px"><use href="#i-cam"/></svg>Check my arrow (photo)</label><input type="file" id="kPhoto" accept="image/*" capture="environment" hidden></div>
-      <div id="kArrow" style="display:grid;gap:8px"></div>
-      <div id="kOut" style="display:grid;gap:8px"></div></div>
+
+      <a class="btn" href="#tracking" id="fdTrkLink" style="justify-self:start">Shot timer, meat-cooling deadline and "hang overnight?" are in Deer tracking ›</a></div>
     <nav class="fd-nav" id="fdNav" aria-label="Sections"></nav>
     <div id="fdGuide" class="fd-guide"></div>
     <div class="panel">
@@ -2378,9 +2383,51 @@ details.drop > .dropbody { padding: 0 14px 14px; }
     <p class="caption" style="margin:0;text-align:center">MIKECON is 100% for fun and 0% science. Real hunting decisions: practice, know your range, and get closer.</p>
   </section>
 
+  <!-- ============ DEER TRACKING (hub) ============ -->
+  <section class="view" id="v-tracking" hidden aria-label="Deer tracking">
+    <div class="vhead" style="--h: var(--h-blood)"><button class="back" type="button"><svg><use href="#i-back"/></svg>Menu</button><span class="vic"><svg><use href="#i-blood"/></svg></span><h2>Deer tracking</h2></div>
+    <p class="lead">Everything for after the shot, in order: what you hit, when to go, and the tools to find your deer.</p>
+    <div class="panel"><h2 style="margin:0">1 · Right after the shot</h2>
+      <ul class="trk-now"><li>Watch the deer as far as you can and <b>listen</b>: a crash, a cough, running water, then quiet.</li><li>Note the last spot you saw it (a tree, a rock) and where it stood when you shot.</li><li>Stay put. Tap <b>Start: I just shot</b>, pick where it hit, and check your arrow.</li></ul>
+      <div id="trkShotHost">
+      <div id="shotBlock">
+      <div class="k" style="margin-top:4px">Shot timer · when to track · can I hang it overnight?</div>
+      <div class="actions"><button class="btn primary" id="kStart" type="button">Start: deer is down now</button><label class="btn" style="gap:6px">Set time <input type="time" id="kTime" style="width:6.5rem"></label><button class="btn" id="kClear" type="button">Clear</button></div>
+      <div class="k" style="margin-top:6px">Where did the arrow hit?</div>
+      <div class="kt-hit" id="kHit" role="group" aria-label="Where did the arrow hit"></div>
+      <details class="kt-signs"><summary>How to tell where you hit</summary><div id="kSigns"></div></details>
+      <div class="actions"><label class="btn" for="kPhoto" style="gap:6px"><svg style="width:18px;height:18px"><use href="#i-cam"/></svg>Check my arrow (photo)</label><input type="file" id="kPhoto" accept="image/*" capture="environment" hidden></div>
+      <div id="kArrow" style="display:grid;gap:8px"></div>
+      <div id="kOut" style="display:grid;gap:8px"></div>
+      </div>
+      </div></div>
+    <div class="panel"><h2 style="margin:0">2 · Tracking tools</h2>
+      <div class="trk-tools">
+        <a class="trk-tool" href="#bloodmap"><span class="ic" style="--h: var(--h-blood)"><svg><use href="#i-pinadd"/></svg></span><span><b>Blood pins and search grid</b><small>Pin the hit site and every drop on the map. Lost blood? The grid shows where to search.</small></span></a>
+        <a class="trk-tool" href="#blood"><span class="ic" style="--h: var(--h-blood)"><svg><use href="#i-blood"/></svg></span><span><b>Blood trail camera</b><small>Makes blood stand out on brown leaves and dirt.</small></span></a>
+        <a class="trk-tool" href="#track"><span class="ic" style="--h: var(--h-bark)"><svg><use href="#i-track"/></svg></span><span><b>Track finder</b><small>Brings out faint hoofprints in mud, dirt and snow.</small></span></a>
+        <a class="trk-tool" href="#maps"><span class="ic" style="--h: var(--h-moss)"><svg><use href="#i-map"/></svg></span><span><b>Map and navigation</b><small>Pin the shot spot and last-seen spot, then walk back to them exactly.</small></span></a>
+      </div></div>
+    <div class="panel"><h2 style="margin:0">3 · Tracking kit</h2>
+      <div class="caption">Keep these in your pack all season. Tick them off as you pack; the app remembers.</div>
+      <div class="trk-kit" id="trkKit"><label class="trk-kit-i"><input type="checkbox" data-kit="h2o2"><span><b>Hydrogen peroxide (3%) in a small spray bottle</b><small>Spray a dark spot: if it fizzes and foams white, it is almost surely blood, even when it has dried brown or black. Settles "blood or mud?" in a second.</small></span></label><label class="trk-kit-i"><input type="checkbox" data-kit="light"><span><b>Bright white flashlight or headlamp, plus spare batteries</b><small>White light makes wet blood shine at night. Colored "blood-tracking" lights help some people; test yours on known blood before you rely on it.</small></span></label><label class="trk-kit-i"><input type="checkbox" data-kit="flag"><span><b>Flagging tape or toilet paper</b><small>Mark every blood spot so you can look back and see the line the deer is taking. Take flagging back out when you are done.</small></span></label><label class="trk-kit-i"><input type="checkbox" data-kit="phone"><span><b>Phone with offline maps and a power bank</b><small>Download the area in Maps before you go. Drop blood pins as you track; GPS and the screen drain the battery fast.</small></span></label><label class="trk-kit-i"><input type="checkbox" data-kit="bino"><span><b>Binoculars</b><small>Glass ahead before every step. The deer may be lying just ahead, or still alive and bedded.</small></span></label><label class="trk-kit-i"><input type="checkbox" data-kit="partner"><span><b>A partner (and a whistle or radio)</b><small>One person stays on the last blood while the other looks ahead or circles. Two sets of eyes find more blood.</small></span></label><label class="trk-kit-i"><input type="checkbox" data-kit="knife"><span><b>Knife, gloves, tag and a pen or zip tie</b><small>So you can tag and field dress where you find it. Check your state's tagging rules.</small></span></label><label class="trk-kit-i"><input type="checkbox" data-kit="drag"><span><b>Drag rope or harness (or a game cart)</b><small>A rope with a handle around the neck and front legs makes dragging much easier.</small></span></label><label class="trk-kit-i"><input type="checkbox" data-kit="water"><span><b>Water, snack and an extra layer</b><small>A long track at night gets cold. You think better when you are not thirsty.</small></span></label><label class="trk-kit-i"><input type="checkbox" data-kit="tacks"><span><b>Reflective trail tacks</b><small>Mark the way back to the truck in the dark. A flashlight finds them from far away.</small></span></label><label class="trk-kit-i"><input type="checkbox" data-kit="shears"><span><b>Small pruning shears</b><small>Thick brush and greenbrier slow you down; clip a path instead of fighting through.</small></span></label><label class="trk-kit-i"><input type="checkbox" data-kit="orange"><span><b>Blaze orange hat or vest</b><small>Other hunters may be in the woods, especially in gun season. Check your state's blaze orange rules for after-dark tracking.</small></span></label><label class="trk-kit-i"><input type="checkbox" data-kit="glow"><span><b>Optional: forensic blood-glow spray (luminol type)</b><small>Makes blood glow in total darkness. Pricey and short-lived; a backup when the trail is very faint.</small></span></label></div>
+      <div class="actions"><span class="caption" id="trkKitN"></span><button class="btn" id="trkKitReset" type="button">Uncheck all</button></div></div>
+    <div class="panel"><h2 style="margin:0">4 · Tracking tips</h2>
+      <ul class="trk-tips">
+        <li><b>Mark first, then follow.</b> Pin the shot spot and the first blood before you move on. If you lose the trail, go back to the last pin.</li>
+        <li><b>Go slow and quiet,</b> one person on the blood, one looking ahead. Look at knee height on brush and on both sides of the trail.</li>
+        <li><b>Blood dries and darkens fast.</b> Dried blood looks brown or black; wet blood shines in a flashlight.</li>
+        <li><b>Trail ran out?</b> Start a search grid from the last blood. Check the nearest water, thick cover and downhill first: hurt deer often go there.</li>
+        <li><b>If you jump a bedded deer, stop.</b> Back out quietly and give it more time.</li>
+        <li><b>At night,</b> a bright white light shows blood best. Carry a spare battery and mark your truck on the map.</li>
+        <li><b>Tracking dogs:</b> a leashed blood-tracking dog can find deer people can't. New York licenses leashed tracking-dog handlers; check your state's rules. United Blood Trackers lists volunteer dog handlers.</li>
+      </ul>
+      <div class="actions"><a class="btn" href="https://unitedbloodtrackers.org" target="_blank" rel="noopener">United Blood Trackers</a></div></div>
+  </section>
+
   <!-- ============ BLOOD TRAIL ============ -->
   <section class="view" id="v-blood" hidden aria-label="Blood trail">
-    <div class="vhead" style="--h: var(--h-blood)"><button class="back" type="button"><svg><use href="#i-back"/></svg>Menu</button><span class="vic"><svg><use href="#i-blood"/></svg></span><h2>Blood trail</h2></div>
+    <div class="vhead" style="--h: var(--h-blood)"><button class="back" type="button"><svg><use href="#i-back"/></svg>Deer tracking</button><span class="vic"><svg><use href="#i-blood"/></svg></span><h2>Blood trail</h2></div>
     <p class="lead">Point the camera at the ground along the trail. Possible blood is shown bright red and ringed; everything else turns gray, so drops on brown leaves are easier to spot.</p>
     <a class="btn primary bt-link" href="#bloodmap"><svg style="width:20px;height:20px"><use href="#i-pinadd"/></svg>Pin blood spots on the map</a>
     <div class="actions">
@@ -2466,7 +2513,7 @@ details.drop > .dropbody { padding: 0 14px 14px; }
 
   <!-- ============ TRACK FINDER ============ -->
   <section class="view" id="v-track" hidden aria-label="Track finder">
-    <div class="vhead" style="--h: var(--h-bark)"><button class="back" type="button"><svg><use href="#i-back"/></svg>Menu</button><span class="vic"><svg><use href="#i-track"/></svg></span><h2>Track finder</h2></div>
+    <div class="vhead" style="--h: var(--h-bark)"><button class="back" type="button"><svg><use href="#i-back"/></svg>Deer tracking</button><span class="vic"><svg><use href="#i-track"/></svg></span><h2>Track finder</h2></div>
     <p class="lead">Tracks are shallow dents, so what you see is their shadows. Hold a flashlight low to the ground, almost flat, shining across the track, and point the camera straight down. The views below make those shadows stronger.</p>
     <div class="actions">
       <button class="btn primary live-only" id="tkLive" type="button" aria-pressed="false" hidden>Live camera</button>
@@ -8836,7 +8883,10 @@ details.drop > .dropbody { padding: 0 14px 14px; }
       $('fdBurger').textContent = `~${Math.round(w * 0.45 * 0.4)} lb`;
     }
     $('fdW').addEventListener('input', meat); meat();
-    return { show() { fetchTemp(); meat(); loadPhotos(); hitUI(); hangCheck(); clearInterval(killT); killT = setInterval(() => { if (current === 'dress' && store.get('dress.kill', null)) hangCheck(); }, 60000); }, hide() { if (HF && !document.hidden) hfClose(); } };
+    const shotHome = () => { const sb = $('shotBlock'), link = $('fdTrkLink'); if (sb && link && sb.parentNode !== link.parentNode) link.parentNode.insertBefore(sb, link); };
+    const startKill = () => { clearInterval(killT); killT = setInterval(() => { if ((current === 'dress' || current === 'tracking') && store.get('dress.kill', null)) hangCheck(); }, 60000); };
+    return { trackShow() { fetchTemp(); hitUI(); hangCheck(); startKill(); },
+      show() { fetchTemp(); meat(); loadPhotos(); hitUI(); hangCheck(); startKill(); }, hide() { if (HF && !document.hidden) hfClose(); } };
   })();
 
   // =================================================================
@@ -9092,7 +9142,16 @@ details.drop > .dropbody { padding: 0 14px 14px; }
   // =================================================================
   // ROUTER
   // =================================================================
-  const TOOLS = { vision, maps, predict, stats, blood, track, camo, movement, wind, compass, sun: sunmoon, shine, skyline, checklist, fov, guide: {}, mikecon, journal, shot, backup, cams, tags, buck, dress, chrono, arrowbuild, meat: meatlog };
+  const TOOLS = { vision, maps, predict, stats, blood, track, camo, movement, wind, compass, sun: sunmoon, shine, skyline, checklist, fov, guide: {}, mikecon, journal, shot, backup, cams, tags, buck, dress, chrono, arrowbuild, meat: meatlog, tracking: { show: () => { dress.trackShow(); trkKit(); }, hide: () => {} } };
+  function trkKit() {
+    const st = store.get('track.kit', {}), box = $('trkKit'), boxes = [...box.querySelectorAll('[data-kit]')];
+    const upd = () => { const n = boxes.filter(b => b.checked).length; $('trkKitN').textContent = n === boxes.length ? 'All packed. Good hunting.' : `${n} of ${boxes.length} packed`; };
+    boxes.forEach(b => { b.checked = !!st[b.dataset.kit]; });
+    if (!box.dataset.wired) { box.dataset.wired = 1;
+      box.addEventListener('change', e => { const b = e.target.closest('[data-kit]'); if (!b) return; const s2 = store.get('track.kit', {}); s2[b.dataset.kit] = b.checked; store.set('track.kit', s2); upd(); });
+      $('trkKitReset').addEventListener('click', () => { store.set('track.kit', {}); boxes.forEach(b => { b.checked = false; }); upd(); }); }
+    upd();
+  }
   let current = 'home';
   function route() {
     const go = (location.hash || '').match(/^#go=(-?[\d.]+),(-?[\d.]+),?(.*)$/);
@@ -9110,7 +9169,8 @@ details.drop > .dropbody { padding: 0 14px 14px; }
     if (next === 'predict') journal.hint();
     window.scrollTo(0, 0);
   }
-  document.querySelectorAll('.back').forEach(b => b.addEventListener('click', () => { location.hash = ''; }));
+  const PARENT = { blood: 'tracking', track: 'tracking' };
+  document.querySelectorAll('.back').forEach(b => b.addEventListener('click', () => { location.hash = PARENT[current] || ''; }));
   window.addEventListener('hashchange', route);
   document.addEventListener('visibilitychange', () => { if (document.hidden && TOOLS[current] && TOOLS[current].hide) TOOLS[current].hide(); });
 
