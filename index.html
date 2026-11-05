@@ -1278,6 +1278,8 @@ body.nav-big { overflow: hidden; }
 .mk-form label { display: grid; gap: 3px; font-size: .78rem; color: #e7cbb4; }
 .mk-form select, .mk-form input { font: 600 .92rem var(--font-body); padding: 7px 8px; border-radius: 8px; border: 1px solid rgba(255,179,122,.45); background: #1d140e; color: #fff; }
 .mk-form label:first-child { grid-column: 1 / -1; }
+.mk-lol { margin: 0; padding-left: 1.1rem; display: grid; gap: 5px; font-size: .88rem; color: #fff3e6; }
+.mk-boring summary { cursor: pointer; font-size: .8rem; color: #c9a58a; }
 .mk-verdict { padding: 10px 12px; border-radius: 10px; font-weight: 600; }
 .mk-verdict.no { background: rgba(211,47,47,.22); border: 1px solid #ef5350; }
 .mk-verdict.ok { background: rgba(76,175,80,.2); border: 1px solid #66bb6a; }
@@ -2349,7 +2351,19 @@ details.drop > .dropbody { padding: 0 14px 14px; }
           <option value="lastLight">Last minute of legal light</option>
           <option value="custom">Custom shot</option>
         </select></label>
-        <label>Arrow<select id="mkArrow"><option value="red">Carbon Express Maxima Red</option><option value="redsd">Carbon Express Maxima Red SD</option><option value="other">Some other arrow</option></select></label>
+        <label>Arrow<select id="mkArrow">
+          <option value="red">Carbon Express Maxima Red</option>
+          <option value="redsd">Carbon Express Maxima Red SD</option>
+          <option value="rangefind">RANGE FIND (it finds the range by itself)</option>
+          <option value="elk">Elk arrow (too big for deer, and it knows it)</option>
+          <option value="lotr">Lord of the Rings arrow (elf-made, never misses in movies)</option>
+          <option value="heavy">12,000 grain arrow (basically a fence post)</option>
+          <option value="noodle">Cooked spaghetti noodle</option>
+          <option value="grandpa">Grandpa's cedar arrow from 1971</option>
+          <option value="moon">Moon-forged titanium arrow</option>
+          <option value="confidence">Arrow made of pure confidence</option>
+          <option value="other">Some random arrow from the bargain bin</option>
+        </select></label>
         <label>Length<select id="mkLen"></select></label>
         <label>Total weight<select id="mkGr"></select></label>
         <label>Speed (fps)<input type="number" id="mkFps" min="150" max="400" step="1" inputmode="numeric"></label>
@@ -2361,7 +2375,7 @@ details.drop > .dropbody { padding: 0 14px 14px; }
     </details>
     <div class="mk-bar"><span class="mk-stamp" id="mkStamp"></span><button class="btn primary" id="mkReroll" type="button">Read the signs again</button></div>
     <div class="mk-grid" id="mkBody"></div>
-    <p class="caption" style="margin:0;text-align:center">MIKECON is for fun. The "Real physics" card uses real math (drop, flight time, energy, the true moon phase and barometer), but practice at real distances and know your effective range before you ever shoot at a deer.</p>
+    <p class="caption" style="margin:0;text-align:center">MIKECON is 100% for fun and 0% science. Real hunting decisions: practice, know your range, and get closer.</p>
   </section>
 
   <!-- ============ BLOOD TRAIL ============ -->
@@ -4882,44 +4896,77 @@ details.drop > .dropbody { padding: 0 14px 14px; }
       const drop = (-x * Math.sin(th) + y * Math.cos(th)) * -12; // inches below the line of sight
       const v = Math.hypot(vx, vy); return { t, v, drop, ke: gr * v * v / 450240, mom: gr * v / 225400 };
     }
+    const ARROWS = {
+      red: { n: 'Maxima Red', fac: [97, 100], gr: null, tag: 'red band engaged', lines: ['The red band is glowing. Deer can feel it from 3 counties away.', 'Maxima Red detected. MIKECON approves with tears in its eyes.', 'Certified by the Council of Red Bands.'] },
+      redsd: { n: 'Maxima Red SD', fac: [96, 100], gr: null, tag: 'skinny and dangerous', lines: ['Small diameter: slips through wind like gossip through deer camp.', 'So skinny the air does not notice it.'] },
+      rangefind: { n: 'RANGE FIND', fac: [88, 99], gr: null, tag: 'self-aware arrow', lines: ['RANGE FIND has measured the distance, the wind, and your excuses.', 'The arrow ranged the buck, then ranged your truck, then asked for a raise.', 'RANGE FIND says the target is "basically right there, bro".'] },
+      elk: { n: 'Elk arrow', fac: [60, 85], gr: 650, tag: 'overdressed', lines: ['This arrow is overdressed. It came to a deer hunt in an elk tuxedo.', 'The elk arrow keeps asking where the mountains are.', 'It bugles quietly in the quiver.'] },
+      lotr: { n: 'Lord of the Rings arrow', fac: [99, 100], gr: 420, tag: 'elvish precision', lines: ['Elf-made. Hits anything, as long as there is dramatic music playing.', 'Works best while sliding down a staircase on a shield.', 'Only works if you shout something in Elvish first. Mumbling does not count.'] },
+      heavy: { n: '12,000 grain arrow', fac: [3, 22], gr: 12000, tag: 'structural lumber', lines: ['This is not an arrow. This is a fence post with ambitions.', 'Your bow filed a complaint with the union.', 'The arrow left the bow and immediately sat down.', 'Momentum: excellent. Getting there: no.'] },
+      noodle: { n: 'Spaghetti noodle', fac: [1, 9], gr: 30, tag: 'al dente', lines: ['Al dente spine. Fletching: one meatball.', 'The noodle went limp from stage fright.', 'Great for target practice at the dinner table.'] },
+      grandpa: { n: "Grandpa's cedar arrow", fac: [70, 95], gr: 520, tag: 'vintage 1971', lines: ['Smells like Old Spice and stories that get longer every year.', 'It has killed 41 deer. Grandpa says 53.', 'Do not tell Grandpa you shot it.'] },
+      moon: { n: 'Moon-forged arrow', fac: [80, 100], gr: 400, tag: 'space metal', lines: ['Forged on the dark side of the moon by very small astronauts.', 'Gets 3% stronger every full moon and 8% moodier on the new moon.'] },
+      confidence: { n: 'Arrow made of pure confidence', fac: [100, 100], gr: 0, tag: 'invisible', lines: ['Weighs nothing. Believes in everything.', 'Has never missed, because it has never been seen.', 'If it misses, you did not believe hard enough.'] },
+      other: { n: 'bargain-bin arrow', fac: [21, 58], gr: null, tag: 'red band missing', lines: ['MIKECON is suspicious. Where is the red band?', 'This arrow has commitment issues.', 'Spine rating: "kinda".'] },
+    };
+    const LOL = {
+      sky: ['Sorry, the tide is too high today. Arrows get seasick.', 'Your bow has been hit with too many photons. Let it rest in the shade for 11 minutes.', 'Mercury is in retrograde, and so is your release.', 'A cloud shaped like a doe is distracting your arrow.', 'Solar wind detected: your fletching is facing the wrong galaxy.', 'The moon is 0.0003% too close. Recalibrate your elbow.', 'Cosmic rays are tickling your string. Do not laugh during the shot.', 'Low tide in the Atlantic means the earth leans 2 inches to the left. Aim right.'],
+      body: ['Your heart rate is in the "drank three coffees" zone. Breathe like a sleepy bear.', 'Your left eyebrow is twitching at 4.2 Hz. That costs about 7 MIKE-points.', 'Too much confidence detected. The deer can smell it.', 'Your anchor point is excellent but emotionally unavailable.', 'Your release aid is judging you.'],
+      deer: ['The buck has read your hunting journal and is now using your stand.', 'The deer has hired a lawyer.', 'Squirrel interference: level 9. One squirrel is reporting your position.', 'The buck is doing yoga behind the only tree in range.', 'The deer just checked the same wind app as you.'],
+      gear: ['Your camo is 4% too brown for this zip code.', 'Your boots squeaked in a minor key.', 'The rangefinder and the compass are not speaking to each other today.', 'Your bow is fine, but it wants a nickname.', 'Your quiver is holding a grudge.'],
+    };
+    const lolPick = n => { const all = Object.values(LOL).flat(), out = []; while (out.length < n) { const x = P(all); if (!out.includes(x)) out.push(x); } return out; };
+    let mkRunId = 0;
     async function runMission() {
-      const key = $('mkMission').value, m = MISS[key], arrow = $('mkArrow').value, red = arrow !== 'other', sd = arrow === 'redsd';
-      const len = +lenSel.value, gr = +grSel.value, fps = Math.min(400, Math.max(150, +$('mkFps').value || 280)), yd = Math.min(400, Math.max(1, +$('mkYd').value || 20)), ang = Math.max(-80, Math.min(80, +$('mkAng').value || 0));
-      const w = await getWx(), mo = moonNow();
-      const inHg = w ? w.sfc * 0.02953 : 29.92, rho = w ? (w.sfc / 1013.25) * (518.67 / (w.t + 459.67)) : 1;
-      const f = fly(fps, gr, yd, ang, rho, sd), fStd = fly(fps, gr, yd, ang, 1, sd), f0 = fly(fps, gr, yd, 0, rho, sd);
-      const ke0 = gr * fps * fps / 450240, sound = yd * 3 / 1125, react = Math.max(0, f.t - sound), horiz = yd * Math.cos(ang * Math.PI / 180);
+      const myRun = ++mkRunId;
+      const key = $('mkMission').value, m = MISS[key], A = ARROWS[$('mkArrow').value] || ARROWS.other, sd = $('mkArrow').value === 'redsd';
+      const len = +lenSel.value, yd = Math.min(400, Math.max(1, +$('mkYd').value || 20)), ang = Math.max(-80, Math.min(80, +$('mkAng').value || 0));
+      const gr = A.gr === 0 ? 0 : (A.gr || +grSel.value), baseFps = Math.min(400, Math.max(150, +$('mkFps').value || 280));
+      const fps = gr === 0 ? 299792458 * 3.281 : Math.max(20, Math.round(baseFps * Math.sqrt(425 / Math.max(30, gr)))); // same bow energy, heavier = slower
+      const w = await getWx(); if (myRun !== mkRunId) return;
+      const mo = moonNow(), inHg = w ? w.sfc * 0.02953 : 29.92, rho = w ? (w.sfc / 1013.25) * (518.67 / (w.t + 459.67)) : 1;
+      const real = gr === 0 ? null : fly(fps, Math.max(30, gr), yd, ang, rho, sd);
+      const fac = R(A.fac[0], A.fac[1]), mikeScore = Math.max(0, Math.min(100, Math.round(fac * 0.6 + R(0, 40) - (yd > 60 ? 30 : 0) - (gr > 5000 ? 40 : 0))));
+      const presMood = !w ? 'unreadable (the barometer is shy)' : w.trend > 0.2 ? 'rising: deer are hopeful' : w.trend < -0.2 ? 'falling: deer are dramatic' : 'steady: deer are bored';
       const ft = n => n >= 24 ? (n / 12).toFixed(1) + ' ft' : n.toFixed(1) + ' in';
-      const foc = R(8, 14, 1) + (len < 27 ? 2 : len > 30 ? -1.5 : 0) + (gr > 500 ? 3 : 0);
-      const presMood = !w ? 'no signal' : w.trend > 0.8 ? 'rising fast' : w.trend > 0.2 ? 'rising' : w.trend < -0.8 ? 'falling fast' : w.trend < -0.2 ? 'falling' : 'steady';
+      // the verdict: always ridiculous; long shots at a buck are always denied, for reasons that are not real
       let verdict, vc;
-      if (m.buck || key === 'custom') {
-        if (yd > 60) { verdict = `MIKECON's honest verdict: don't shoot. At ${yd} yards the arrow is in the air ${f.t.toFixed(2)} s. The deer hears the string after ${sound.toFixed(2)} s and has ${react.toFixed(2)} s to move before the arrow gets there, and a ${ft(Math.abs(f.drop))} drop leaves no room for a misjudged yard. Get closer. That's the expert move.`; vc = 'no'; }
-        else if (yd > 40) { verdict = `Only if you shoot this distance all year, the deer is calm and broadside, and there's no wind. Otherwise, get closer.`; vc = 'mid'; }
-        else { verdict = `Inside normal bowhunting range. Aim for the vitals, behind the shoulder${ang < -30 ? ', and from up high aim a little higher on the near side so the arrow exits low on the far side' : ''}.`; vc = 'ok'; }
-      } else { verdict = `Target mission. Use your ${Math.round(horiz)} yd pin (angle rule: aim for the level distance${Math.abs(ang) >= 10 ? `, not the ${yd} yd line-of-sight distance` : ''}). On the way the arrow falls about ${ft(Math.abs(f.drop))} below your line of sight; that's what your pin makes up.`; vc = 'ok'; }
+      if (m.buck && yd > 60) { verdict = P([`MIKECON DENIES THE SHOT. At ${yd} yards the buck is technically in a different weather system.`, `DENIED. The buck is ${yd} yards away and has already filed a noise complaint.`, `NO. At ${yd} yards your arrow needs a passport. Sneak closer, ninja.`, `ABORT. Your arrow would arrive next Tuesday. Get closer, MIKECON believes in you.`]); vc = 'no'; }
+      else if (gr > 5000) { verdict = 'MIKECON says: the arrow is too heavy to leave the bow. Your bow is now a very expensive coat hanger.'; vc = 'no'; }
+      else if (gr === 0) { verdict = 'MIKECON says: the arrow arrived before you shot it. Time is now confused. Please do not do that again.'; vc = 'mid'; }
+      else if (A === ARROWS.noodle) { verdict = 'MIKECON says: the noodle flopped 3 feet and is now lunch for a chipmunk.'; vc = 'no'; }
+      else if (m.buck && yd > 40) { verdict = P(['MIKECON says: maybe, if you whisper a compliment to the arrow first.', 'MIKECON says: only if the wind promises to behave. The wind has never kept a promise.']); vc = 'mid'; }
+      else if (m.buck) { verdict = P(['MIKECON APPROVES. The stars, the moon and one confused owl all agree.', 'GREEN LIGHT. MIKECON has calculated 4,000 futures and you look great in 3,998 of them.', 'APPROVED. Breathe out, squeeze, and do not think about tacos.']); vc = 'ok'; }
+      else { verdict = P([`TARGET MISSION ACCEPTED. Hold your ${Math.round(yd * Math.cos(ang * Math.PI / 180))} yd pin and think heavy thoughts.`, `MIKECON says: aim at the middle and let the photons do the rest.`, `Steel at ${yd} yd? MIKECON can already hear the DING.`]); vc = 'ok'; }
+      const lol = [P(A.lines), ...lolPick(3)];
+      if (key === 'lastLight') lol.push('Last light detected: your pins are now made of fireflies.');
+      if (key === 'stand') lol.push('Shooting straight down: gravity is on your side for once. Say thank you to gravity.');
+      if (ang > 10) lol.push(`Uphill ${ang}°: the arrow will complain the whole way up.`);
+      if (ang < -10) lol.push(`Downhill ${-ang}°: the arrow is having the time of its life.`);
+      if (mo.ill > 0.9) lol.push('Full moon: the buck is a werewolf now. Aim for the silver lining.');
+      else if (mo.ill < 0.1) lol.push('New moon: the moon is hiding from you too.');
+      if (w && inHg < 29.6) lol.push('Low pressure: the air is lazy today, it will not push back on your arrow.');
+      if (w && inHg > 30.2) lol.push('High pressure: the air is very bossy today.');
+      const boring = real ? `<details class="mk-boring"><summary>Boring real stuff (if you must)</summary>${rows([
+        ['Real arrow drop at ' + yd + ' yd', ft(Math.abs(real.drop))], ['Real flight time', real.t.toFixed(2) + ' s'], ['Speed at target', Math.round(real.v) + ' fps'], ['Energy at target', real.ke.toFixed(1) + ' ft-lb'],
+        ['Real moon phase', mo.nm + ', ' + Math.round(mo.ill * 100) + '% lit'], ['Real barometer', w ? inHg.toFixed(2) + ' inHg' : 'no signal'],
+      ])}<div class="caption" style="color:#d9bfa9">The real effect of the moon on an arrow is zero. The real effect of practice is huge.</div></details>` : '';
       const cards = [
-        card('Mission brief', MISS[key].n, `<div class="mk-verdict ${vc}">${esc2(verdict)}</div>`),
-        card('Real physics', 'no magic here', big(ft(Math.abs(f.drop)), `drop below your line of sight at ${yd} yd`) + rows([
-          ['Flight time', f.t.toFixed(2) + ' s'], ['Speed at target', Math.round(f.v) + ' fps (from ' + fps + ')'], ['Energy at target', f.ke.toFixed(1) + ' ft-lb (at bow ' + ke0.toFixed(1) + ')'],
-          ['Momentum at target', f.mom.toFixed(3) + ' slug·ft/s'], ['Sound reaches the deer', sound.toFixed(2) + ' s'], ['Time the deer has to move', react.toFixed(2) + ' s'],
-          ...(ang ? [['Level distance (aim for this)', horiz.toFixed(0) + ' yd'], ['Drop if it were flat', ft(Math.abs(f0.drop))]] : []),
-        ]) + `<div class="caption" style="color:#d9bfa9">Common guidance for whitetails: at least 40 ft-lb of energy, and a shot inside your practiced effective range.</div>`),
-        card(red ? 'Maxima Red factor' : 'Arrow factor', red ? 'red band engaged' : 'red band missing', big(red ? R(97, 100) + '%' : R(41, 72) + '%', red ? 'MIKECON-approved arrow' : 'MIKECON is skeptical') + rows([
-          ['Red band confidence', red ? P(['absolute', 'unshakable', 'legendary', 'blinding']) : P(['nervous', 'confused', 'asking questions'])],
-          ['Diameter', sd ? 'small (cuts wind and drag)' : arrow === 'red' ? 'standard' : 'unknown, suspicious'],
-          ['Length harmony at ' + len + '"', len >= 27.5 && len <= 29.5 ? 'perfect (' + R(90, 99) + '%)' : len < 27.5 ? 'short and spicy (' + R(70, 88) + '%)' : 'long and wise (' + R(72, 89) + '%)'],
-          ['Grain gravity at ' + gr + ' gr', gr >= 500 ? 'heavy hitter: momentum king' : gr >= 425 ? 'balanced: the hunter’s middle' : 'light and fast: flat but nervous'],
-          ['Front of center (guess)', foc.toFixed(1) + '%'],
-        ]) + meter(red ? 'Maxima Red loyalty' : 'Arrow loyalty', red ? R(92, 100) : R(30, 70))),
-        card('Moon & barometer', 'sky desk', big(Math.round(mo.ill * 100) + '%', mo.nm.toLowerCase() + ' (real)') + rows([
-          ['Barometer (real)', w ? inHg.toFixed(2) + ' inHg at your elevation, ' + presMood : 'no signal: using 29.92'],
-          ['Air density vs. standard', ((rho - 1) * 100).toFixed(1) + '%'],
-          ['Real barometer effect on drop', (Math.abs(f.drop - fStd.drop)).toFixed(2) + ' in at ' + yd + ' yd'],
-          ['Real moon effect on the arrow', '0.00 in (sorry, Moon)'],
-          ['Lunar pull on the buck', R(5, 95) + '% (MIKECON estimate)'],
-          ['Deer mood from pressure', !w ? 'unknown' : w.trend > 0.2 ? 'up and moving after the front' : w.trend < -0.2 ? 'feeding before the weather' : 'normal routine'],
-        ]) + quote(P(['A rising barometer lifts the hunter’s spirit, not the arrow.', 'The moon pulls tides, not Maxima Reds.', 'High pressure, clear head, short shot.', 'Full moon, full quiver, full patience.']))),
+        card('Mission brief', MISS[key].n, `<div class="mk-verdict ${vc}">${esc2(verdict)}</div><ul class="mk-lol">${lol.map(x => `<li>${esc2(x)}</li>`).join('')}</ul>`) ,
+        card(A.n, A.tag, big(fac + '%', 'MIKECON arrow approval') + rows([
+          ['Weight', gr === 0 ? '0 gr (it is a feeling)' : gr.toLocaleString() + ' gr' + (gr > 5000 ? ' (seek medical help)' : '')],
+          ['Speed', gr === 0 ? 'speed of light, roughly' : fps + ' fps' + (fps < 80 ? ' (a jogging squirrel is faster)' : '')],
+          ['Length harmony at ' + len + '"', len >= 27.5 && len <= 29.5 ? 'perfect (' + R(90, 99) + '%)' : len < 27.5 ? 'short and spicy (' + R(60, 88) + '%)' : 'long and wise (' + R(62, 89) + '%)'],
+          ['Arrow mood', P(['eager', 'sleepy', 'heroic', 'hungry', 'slightly offended', 'zen'])],
+          ['Red band energy', /red/.test($('mkArrow').value) ? 'MAXIMUM' : P(['missing', 'borrowed', 'imaginary'])],
+        ]) + meter('MIKE-score for this shot', mikeScore)),
+        card('Moon, tide & barometer', 'very scientific', big(Math.round(mo.ill * 100) + '%', mo.nm.toLowerCase()) + rows([
+          ['Tide level', P(['too high', 'suspiciously low', 'sideways', 'perfect for arrows', 'out to lunch'])],
+          ['Photon load on your bow', R(12, 140) + '%' + (Math.random() < 0.5 ? ' (too many!)' : '')],
+          ['Barometer mood', presMood],
+          ['Lunar pull on your arrow', R(0, 7) + ' grains of moon'],
+          ['Buck horoscope', P(['Scorpio: sneaky', 'Taurus: stubborn', 'Gemini: two bucks, actually', 'Leo: shows off at scrapes', 'Pisces: hangs by the water'])],
+        ]) + quote(P(['A rising barometer lifts the hunter’s spirit, not the arrow.', 'The moon pulls tides, not Maxima Reds.', 'When the tide is high, aim low. Or the other way around.', 'Too many photons? Wear a hat.'])) + boring),
       ];
       $('mkMissionOut').innerHTML = cards.join('');
     }
