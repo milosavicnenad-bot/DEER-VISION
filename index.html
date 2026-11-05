@@ -5253,7 +5253,7 @@ details.drop > .dropbody { padding: 0 14px 14px; }
     // HD: on sharp phone screens, load twice-as-detailed map pictures (more data, much crisper)
     const HD = () => (window.devicePixelRatio || 1) > 1.3 && store.get('maps.hd', true);
     const ESRI = n => `https://server.arcgisonline.com/ArcGIS/rest/services/${n}/MapServer/tile/{z}/{y}/{x}`;
-    const xyz = (url, native, o) => L.tileLayer(url, Object.assign({ maxZoom: 21 }, o, { detectRetina: HD(), maxNativeZoom: HD() ? native - 1 : native }));
+    const xyz = (url, native, o) => L.tileLayer(url, Object.assign({ maxZoom: 21 }, o, { detectRetina: HD(), native, maxNativeZoom: HD() ? native - 1 : native }));
     const ESRI_ATT = 'Esri, Maxar, Earthstar Geographics, USDA, USGS';
     const NY_BB = [[40.47, -79.8], [45.03, -71.8]], NJ_BB = [[38.85, -75.6], [41.37, -73.88]];
     const esriImg = () => xyz(ESRI('World_Imagery'), 19, { zIndex: 0, attribution: ESRI_ATT });
@@ -6039,25 +6039,26 @@ details.drop > .dropbody { padding: 0 14px 14px; }
       if (L.TileLayer.WMS && l instanceof L.TileLayer.WMS) return [];
       const o = l.options; let tiles;
       if (l instanceof ArcTiles) {
-        const bb = 'bbox={bbox-epsg-3857}&bboxSR=3857&imageSR=3857&size=256,256';
-        tiles = [o.image ? `${l._url}/exportImage?${bb}&format=png&transparent=true&f=image${o.rr ? '&renderingRule=' + o.rr : ''}`
-          : `${l._url}/export?${bb}&dpi=96&format=png32&transparent=true&f=image${o.layers ? '&layers=' + o.layers : ''}`];
+        const k = !HD() ? 1 : o.photo ? Math.min(3, Math.max(2, Math.round(window.devicePixelRatio || 2))) : 2, bb = `bbox={bbox-epsg-3857}&bboxSR=3857&imageSR=3857&size=${256 * k},${256 * k}`; // 3D gets the same HD pictures as 2D
+        tiles = [o.image ? `${l._url}/exportImage?${bb}&format=${o.jpg ? 'jpgpng' : 'png'}&transparent=true&f=image${o.rr ? '&renderingRule=' + o.rr : ''}`
+          : `${l._url}/export?${bb}&dpi=${96 * k}&format=${o.photo ? 'jpgpng' : 'png32'}&transparent=true&f=image${o.layers ? '&layers=' + o.layers : ''}`];
       } else {
         const subs = typeof o.subdomains === 'string' ? o.subdomains.split('') : (o.subdomains || ['a']);
         tiles = l._url.includes('{s}') ? subs.map(s => l._url.replace('{s}', s)) : [l._url];
       }
-      return [{ tiles, min: Math.max(0, (o.minZoom || 0) - 1), max: o.maxNativeZoom || 19, op: o.opacity == null ? 1 : o.opacity, z: o.zIndex == null ? 5 : o.zIndex, attr: o.attribution || '' }];
+      const bnd = o.bounds ? (b => [b.getWest(), b.getSouth(), b.getEast(), b.getNorth()])(L.latLngBounds(o.bounds)) : null;
+      return [{ tiles, ts: !(l instanceof ArcTiles) && o.native && HD() ? 128 : 256, bounds: bnd, min: Math.max(0, (o.minZoom || 0) - 1), max: o.native || o.maxNativeZoom || 19, op: o.opacity == null ? 1 : o.opacity, z: o.zIndex == null ? 5 : o.zIndex, attr: o.attribution || '' }];
     }
     function style3d() {
       const src = {}, lay = [];
-      tilesOf(baseLayer).forEach((t, i) => { src['b' + i] = { type: 'raster', tiles: t.tiles, tileSize: 256, maxzoom: t.max, attribution: t.attr }; lay.push({ id: 'b' + i, type: 'raster', source: 'b' + i }); });
+      tilesOf(baseLayer).forEach((t, i) => { src['b' + i] = Object.assign({ type: 'raster', tiles: t.tiles, tileSize: t.ts || 256, maxzoom: t.max, attribution: t.attr }, t.bounds ? { bounds: t.bounds } : {}); lay.push(Object.assign({ id: 'b' + i, type: 'raster', source: 'b' + i, paint: { 'raster-fade-duration': 0 } }, t.min > 0 ? { minzoom: t.min } : {})); });
       src.dem = { type: 'raster-dem', tiles: [DEM], encoding: 'terrarium', tileSize: 256, maxzoom: 15, attribution: 'Elevation: AWS Terrain Tiles (USGS 3DEP, SRTM)' };
       src.hs = Object.assign({}, src.dem);
       lay.push({ id: 'hs', type: 'hillshade', source: 'hs', paint: { 'hillshade-exaggeration': 0.35, 'hillshade-shadow-color': '#2b2b2b' } });
       const ov = [];
       for (const k of Object.keys(OVERS)) if (overOn[k] && overLayers[k]) tilesOf(overLayers[k]).forEach(t => ov.push(t));
       ov.sort((a, b) => a.z - b.z).forEach((t, i) => {
-        src['o' + i] = { type: 'raster', tiles: t.tiles, tileSize: 256, maxzoom: t.max, attribution: t.attr };
+        src['o' + i] = Object.assign({ type: 'raster', tiles: t.tiles, tileSize: t.ts || 256, maxzoom: t.max, attribution: t.attr }, t.bounds ? { bounds: t.bounds } : {});
         lay.push({ id: 'o' + i, type: 'raster', source: 'o' + i, minzoom: t.min, paint: { 'raster-opacity': t.op, 'raster-fade-duration': 0 } });
       });
       const empty = { type: 'geojson', data: { type: 'FeatureCollection', features: [] } };
