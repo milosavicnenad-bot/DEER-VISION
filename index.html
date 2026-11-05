@@ -333,6 +333,34 @@ html.night body { background: #000; }
 @keyframes calfig { from { offset-distance: 0%; } to { offset-distance: 100%; } }
 .cal-check { border: 1px solid var(--line); border-radius: 10px; padding: 10px; display: grid; gap: 8px; background: var(--bg); margin-top: 6px; }
 .cal-big { font: 700 1.6rem var(--font-display); }
+#mpTypes { max-height: 290px; overflow-y: auto; overscroll-behavior: contain; padding-right: 2px; }
+.mtypes .mt-h { grid-column: 1 / -1; font: 700 .72rem var(--font-body); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-top: 6px; }
+#mpTypeQ, #mpListQ { width: 100%; padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); color: var(--fg); font: inherit; }
+.pin-prec { font-size: .85rem; padding: 6px 10px; border-radius: 8px; background: var(--bg); border: 1px solid var(--line); }
+.pin-prec.good { border-color: #2e7d32; } .pin-prec.ok { border-color: #b26a00; } .pin-prec.weak { border-color: #c62828; }
+.pin-nudge { display: flex; gap: 12px; align-items: center; }
+.nudge-pad { display: grid; grid-template-columns: repeat(3, 40px); grid-template-rows: repeat(3, 34px); gap: 3px; }
+.nudge-pad button { border: 1px solid var(--line); background: var(--bg); color: var(--fg); border-radius: 8px; font-size: .9rem; cursor: pointer; }
+.nudge-pad [data-n=N] { grid-column: 2; grid-row: 1; } .nudge-pad [data-n=W] { grid-column: 1; grid-row: 2; } .nudge-pad [data-n=E] { grid-column: 3; grid-row: 2; } .nudge-pad [data-n=S] { grid-column: 2; grid-row: 3; }
+.nudge-side { display: grid; gap: 6px; font-size: .85rem; }
+.nudge-side select { margin-left: 4px; padding: 4px; border-radius: 6px; border: 1px solid var(--line); background: var(--bg); color: var(--fg); }
+.pin-row { display: flex; gap: 8px; align-items: end; flex-wrap: wrap; }
+.pin-row label { display: grid; gap: 3px; font-size: .8rem; color: var(--muted); }
+.pin-row input { width: 90px; padding: 7px; border-radius: 8px; border: 1px solid var(--line); background: var(--bg); color: var(--fg); font: inherit; }
+.pin-winds { display: flex; flex-wrap: wrap; gap: 5px; }
+.pin-winds button { border: 1px solid var(--line); background: var(--bg); color: var(--fg); border-radius: 999px; padding: 5px 10px; font: 600 .8rem var(--font-body); }
+.pin-winds button[aria-pressed="true"] { background: #2f6fae; border-color: #2f6fae; color: #fff; }
+.pin-photo { max-width: 100%; max-height: 220px; border-radius: 10px; border: 1px solid var(--line); object-fit: cover; }
+.pin-listbar { display: flex; gap: 6px; } .pin-listbar select { padding: 6px; border-radius: 8px; border: 1px solid var(--line); background: var(--bg); color: var(--fg); }
+.pin-cats { display: flex; flex-wrap: wrap; gap: 6px; }
+.pin-cats button { border: 1px solid var(--line); background: var(--bg); color: var(--fg); border-radius: 999px; padding: 5px 10px; font: 600 .8rem var(--font-body); opacity: .55; }
+.pin-cats button[aria-pressed="true"] { opacity: 1; border-color: var(--fg); }
+.pop .ppic { width: 100%; max-height: 140px; object-fit: cover; border-radius: 8px; margin-top: 6px; }
+.pop .pcoord { font: 500 .74rem var(--font-mono); color: var(--muted); }
+.nav-final { border: 2px solid #2f8cff; border-radius: 10px; padding: 8px 10px; display: grid; gap: 6px; background: rgba(47,140,255,.08); }
+.nav-final .nf-big { font: 700 1.6rem var(--font-display); }
+.nav-final img { width: 100%; max-height: 160px; object-fit: cover; border-radius: 8px; }
+.mp-label.perm { background: rgba(255,255,255,.9); border: 0; box-shadow: 0 1px 3px rgba(0,0,0,.3); font-weight: 700; }
 .kt-hours { display: flex; gap: 6px; overflow-x: auto; }
 .kt-hours span { flex: none; display: grid; justify-items: center; padding: 6px 8px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); font-size: .75rem; color: var(--muted); }
 .kt-hours b { font-size: 1rem; color: var(--fg); }
@@ -1437,6 +1465,20 @@ details.drop > .dropbody { padding: 0 14px 14px; }
     <symbol id="i-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.4 15.4 21 21"/>
     </symbol>
+    <symbol id="i-acorn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 10c0-3 3-5 7-5s7 2 7 5z"/><path d="M6.5 10c0 5 2.5 9 5.5 10 3-1 5.5-5 5.5-10"/><path d="M12 5V3"/></symbol>
+    <symbol id="i-apple" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7c-2-1.5-6-1-6.5 3-.5 5 3 10 6.5 10s7-5 6.5-10C18 6 14 5.5 12 7z"/><path d="M12 7c0-2 1-3.5 3-4"/></symbol>
+    <symbol id="i-water" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3s-6 7-6 11a6 6 0 0 0 12 0c0-4-6-11-6-11z"/></symbol>
+    <symbol id="i-plot" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20v-9"/><path d="M12 11c0-3 2-5 6-5 0 3-2 5-6 5z"/><path d="M12 14c0-3-2-5-6-5 0 3 2 5 6 5z"/><path d="M4 20h16"/></symbol>
+    <symbol id="i-mineral" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9l8-4 8 4-8 4z"/><path d="M4 9v6l8 4 8-4V9"/><path d="M12 13v6"/></symbol>
+    <symbol id="i-funnel" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5h18l-7 8v6l-4 2v-8z"/></symbol>
+    <symbol id="i-saddle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 18l5-9 5 5 5-8 5 12"/><path d="M10 14h4"/></symbol>
+    <symbol id="i-gate" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4v16M20 4v16M4 8h16M4 16h16M8 8l8 8"/></symbol>
+    <symbol id="i-flag" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4"/><path d="M5 4h11l-2 4 2 4H5"/></symbol>
+    <symbol id="i-house" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-5h4v5"/></symbol>
+    <symbol id="i-corner" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V4h16"/><circle cx="4" cy="4" r="2"/><path d="M9 9h6v6H9z"/></symbol>
+    <symbol id="i-hazard" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l10 18H2z"/><path d="M12 10v5M12 18v.5"/></symbol>
+    <symbol id="i-lick" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6c6 0 10 2 14 6"/><path d="M9 7l-1 4M13 9l1 4M17 12v4"/><path d="M5 20h14"/></symbol>
+    <symbol id="i-drops" viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="8" cy="9" r="2.4"/><circle cx="15" cy="7" r="2.1"/><circle cx="12" cy="13" r="2.4"/><circle cx="17" cy="14" r="2"/><circle cx="8" cy="17" r="2.1"/></symbol>
     <symbol id="i-pin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
       <path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.3"/>
     </symbol>
@@ -2024,6 +2066,7 @@ details.drop > .dropbody { padding: 0 14px 14px; }
             <div class="nav-say" id="navSay"></div>
           </div>
         </div>
+        <div class="nav-final" id="navFinal" hidden></div>
         <dl class="nav-dl">
           <div><dt>Bearing to it</dt><dd id="navBrg">—</dd></div>
           <div><dt>Back bearing</dt><dd id="navBack">—</dd></div>
@@ -2062,9 +2105,25 @@ details.drop > .dropbody { padding: 0 14px 14px; }
       <div class="panel mp" id="mp-add" hidden>
         <h2 style="margin:0" id="mpAddTitle">New marker</h2>
         <div class="caption">Drag the orange pin, or tap the map where it belongs.</div>
+        <input type="search" id="mpTypeQ" placeholder="Find a pin type (oak, scrape, gate…)" aria-label="Find a pin type">
         <div class="mtypes" id="mpTypes"></div>
         <div class="row"><label for="mpName">Name</label><input type="text" id="mpName" class="full" placeholder="e.g. Ridge stand"><span class="v"></span></div>
         <textarea id="mpNotes" rows="2" placeholder="Notes (wind, sign, date seen…)" aria-label="Notes"></textarea>
+        <div class="pin-prec" id="mpPrec"></div>
+        <div class="k">Place it exactly</div>
+        <div class="pin-nudge"><div class="nudge-pad"><button type="button" data-n="N" aria-label="Move north">▲</button><button type="button" data-n="W" aria-label="Move west">◀</button><button type="button" data-n="E" aria-label="Move east">▶</button><button type="button" data-n="S" aria-label="Move south">▼</button></div>
+          <div class="nudge-side"><label>Step <select id="mpStep"><option value="0.3048">1 ft</option><option value="0.9144" selected>1 yd</option><option value="4.572">5 yd</option></select></label><span class="caption" id="mpMoved"></span></div></div>
+        <div class="addrow"><input type="text" id="mpCoord" placeholder="Coordinates: 41.20512, -74.24871 · 41°12'18&quot;N 74°14'55&quot;W · 18T 563850 4561320" aria-label="Coordinates"><button class="btn" id="mpCoordGo" type="button">Place</button></div>
+        <div id="mpSetup" class="pin-setup" hidden>
+          <div class="k">Stand details</div>
+          <div class="pin-row"><label>Height (ft)<input type="number" id="mpHt" min="0" max="40" step="1" inputmode="numeric"></label><label>Faces (°)<input type="number" id="mpFace" min="0" max="359" step="1" inputmode="numeric"></label><button class="btn" id="mpFaceNow" type="button">Use compass</button></div>
+          <div class="caption">Good winds for this setup (wind coming from):</div>
+          <div class="pin-winds" id="mpWinds"></div>
+        </div>
+        <div class="k">Last-yards directions</div>
+        <textarea id="mpFinal" rows="2" placeholder="e.g. From the split rock: 25 paces at 112°, stand is the double-trunk white oak" aria-label="Last-yards directions"></textarea>
+        <div class="actions"><button class="btn" id="mpFinalHere" type="button">From where I stand</button><label class="btn" for="mpPhoto">Add photo</label><input type="file" id="mpPhoto" accept="image/*" capture="environment" hidden><button class="btn" id="mpPhotoDel" type="button" hidden>Remove photo</button></div>
+        <img id="mpPhotoImg" class="pin-photo" alt="Photo of this spot" hidden>
         <div class="actions">
           <button class="btn primary" id="mpSave" type="button">Save marker</button>
           <button class="btn" id="mpHere" type="button">Move to my location</button>
@@ -2149,7 +2208,15 @@ details.drop > .dropbody { padding: 0 14px 14px; }
       </div>
       <div class="panel mp" id="mp-saved" hidden>
         <h2 style="margin:0">Saved markers and tracks</h2>
+        <div class="pin-listbar"><input type="search" id="mpListQ" placeholder="Search your pins" aria-label="Search your pins"><select id="mpSort" aria-label="Sort"><option value="near">Nearest first</option><option value="new">Newest first</option><option value="type">By type</option></select></div>
         <div class="slist" id="mpList"></div>
+        <div class="k">Show on the map</div>
+        <div class="pin-cats" id="mpCats"></div>
+        <label class="lyr"><input type="checkbox" id="mpLabels"><div><b>Always show pin names</b><span>Names stay on the map when you zoom in close (zoom 16+).</span></div></label>
+        <label class="lyr"><input type="checkbox" id="mpRings" checked><div><b>Show GPS accuracy rings</b><span>Dashed circle around pins saved with GPS: the real spot is inside it.</span></div></label>
+        <div class="k">Your pace</div>
+        <div class="row"><label for="mpPace">Paces per 100 ft</label><input type="number" id="mpPace" min="10" max="40" step="0.5" class="full" inputmode="decimal"><span class="v" id="mpPaceV"></span></div>
+        <div class="caption">Count every other step (one pace = two steps) while walking a measured 100 feet on the kind of ground you hunt. Navigation and last-yards directions use your pace.</div>
         <div class="k">Areas</div>
         <div class="caption">Keep separate places apart, for example one area per state or property. New markers go into the area chosen at the top.</div>
         <div class="addrow"><input type="text" id="mpNewArea" placeholder="New area name" aria-label="New area name"><button class="btn" id="mpAddArea" type="button">Add area</button></div>
@@ -4888,19 +4955,84 @@ details.drop > .dropbody { padding: 0 14px 14px; }
 
     // ---------- marker types ----------
     const MT = {
-      stand:    ['Tree stand', 'i-stand', '#d9530f'],
-      blind:    ['Ground blind', 'i-blind', '#8a5a2b'],
-      camera:   ['Trail camera', 'i-cam', '#4d5d6c'],
-      rub:      ['Rub', 'i-rub', '#b7860b'],
-      scrape:   ['Scrape', 'i-scrape', '#7a5230'],
-      bed:      ['Bedding', 'i-bed', '#4f7a34'],
-      food:     ['Food source', 'i-food', '#6b8e23'],
-      trail:    ['Trail / crossing', 'i-track', '#5c4a2c'],
-      sighting: ['Deer sighting', 'i-deer', '#2f6fae'],
-      blood:    ['Blood / recovery', 'i-blood', '#b3122a'],
-      parking:  ['Parking', 'i-parking', '#334155'],
-      note:     ['Note', 'i-pin', '#6d28d9'],
+      // setups
+      stand:    ['Tree stand', 'i-stand', '#d9530f', 'setup'],
+      ladder:   ['Ladder stand', 'i-stand', '#c2410c', 'setup'],
+      saddle:   ['Saddle / climber tree', 'i-stand', '#ea580c', 'setup'],
+      blind:    ['Ground blind', 'i-blind', '#8a5a2b', 'setup'],
+      box:      ['Box blind', 'i-blind', '#6b4423', 'setup'],
+      camera:   ['Trail camera', 'i-cam', '#4d5d6c', 'setup'],
+      cellcam:  ['Cell camera', 'i-cam', '#1f6feb', 'setup'],
+      // deer sign
+      rub:      ['Rub', 'i-rub', '#b7860b', 'sign'],
+      scrape:   ['Scrape', 'i-scrape', '#7a5230', 'sign'],
+      lick:     ['Licking branch', 'i-lick', '#9a6b1a', 'sign'],
+      bed:      ['Bedding', 'i-bed', '#4f7a34', 'sign'],
+      trail:    ['Trail / crossing', 'i-track', '#5c4a2c', 'sign'],
+      droppings:['Droppings', 'i-drops', '#5b4636', 'sign'],
+      shed:     ['Shed antler', 'i-rack', '#a16207', 'sign'],
+      sighting: ['Deer sighting', 'i-deer', '#2f6fae', 'sign'],
+      buck:     ['Buck seen', 'i-rack', '#1d4ed8', 'sign'],
+      doe:      ['Doe seen', 'i-deer', '#60a5fa', 'sign'],
+      // food and water
+      food:     ['Food source', 'i-food', '#6b8e23', 'food'],
+      whiteoak: ['White oak (acorns)', 'i-acorn', '#7c5c1e', 'food'],
+      redoak:   ['Red oak (acorns)', 'i-acorn', '#9b3d1c', 'food'],
+      fruit:    ['Apple / fruit tree', 'i-apple', '#c2410c', 'food'],
+      plot:     ['Food plot', 'i-plot', '#4d7c0f', 'food'],
+      browse:   ['Browse / cutover', 'i-plot', '#65a30d', 'food'],
+      mineral:  ['Mineral / lick', 'i-mineral', '#78716c', 'food'],
+      water:    ['Water', 'i-water', '#0284c7', 'food'],
+      spring:   ['Spring / seep', 'i-water', '#0ea5e9', 'food'],
+      // terrain
+      funnel:   ['Funnel / pinch', 'i-funnel', '#7c3aed', 'terrain'],
+      tsaddle:  ['Saddle (terrain)', 'i-saddle', '#6d28d9', 'terrain'],
+      bench:    ['Bench', 'i-saddle', '#8b5cf6', 'terrain'],
+      xing:     ['Creek / fence crossing', 'i-gate', '#4f46e5', 'terrain'],
+      // access
+      parking:  ['Parking', 'i-parking', '#334155', 'access'],
+      entry:    ['Entry route start', 'i-route', '#0f766e', 'access'],
+      gate:     ['Gate', 'i-gate', '#475569', 'access'],
+      flag:     ['Flagging / trail tack', 'i-flag', '#e11d48', 'access'],
+      landmark: ['Landmark', 'i-pin', '#334155', 'access'],
+      // the hunt
+      shot:     ['Shot from here', 'i-shot', '#b91c1c', 'hunt'],
+      blood:    ['Blood / recovery', 'i-blood', '#b3122a', 'hunt'],
+      recovery: ['Recovery spot', 'i-deer', '#7f1d1d', 'hunt'],
+      gut:      ['Gut pile', 'i-knife', '#57534e', 'hunt'],
+      // safety and lines
+      house:    ['House / no-shoot', 'i-house', '#dc2626', 'safety'],
+      corner:   ['Property corner', 'i-corner', '#0f172a', 'safety'],
+      boundary: ['Posted / boundary', 'i-flag', '#b45309', 'safety'],
+      hazard:   ['Hazard (cliff, hole)', 'i-hazard', '#f59e0b', 'safety'],
+      note:     ['Note', 'i-pin', '#6d28d9', 'safety'],
     };
+    const MTCAT = [['setup', 'Stands, blinds and cameras'], ['sign', 'Deer sign and sightings'], ['food', 'Food and water'], ['terrain', 'Terrain'], ['access', 'Access and landmarks'], ['hunt', 'The hunt'], ['safety', 'Safety, lines and notes']];
+    const hideCats = new Set(store.get('maps.hideCats', []));
+    let pinLabels = store.get('maps.pinLabels', false), pinRings = store.get('maps.pinRings', true);
+    const paceM = () => { const p = +store.get('maps.pace', 0); return p >= 10 && p <= 40 ? 30.48 / p : 1.5; }; // metres per pace (two steps)
+    // UTM (WGS84) both ways, for pin coordinates
+    function toUTM(lat, lon) {
+      const a = 6378137, f = 1 / 298.257223563, e2 = f * (2 - f), k0 = 0.9996, r = Math.PI / 180;
+      const zone = Math.floor((lon + 180) / 6) + 1, l0 = ((zone - 1) * 6 - 180 + 3) * r, ph = lat * r, N = a / Math.sqrt(1 - e2 * Math.sin(ph) ** 2), T = Math.tan(ph) ** 2, ep = e2 / (1 - e2), C = ep * Math.cos(ph) ** 2, A = Math.cos(ph) * (lon * r - l0);
+      const M = a * ((1 - e2 / 4 - 3 * e2 ** 2 / 64 - 5 * e2 ** 3 / 256) * ph - (3 * e2 / 8 + 3 * e2 ** 2 / 32 + 45 * e2 ** 3 / 1024) * Math.sin(2 * ph) + (15 * e2 ** 2 / 256 + 45 * e2 ** 3 / 1024) * Math.sin(4 * ph) - (35 * e2 ** 3 / 3072) * Math.sin(6 * ph));
+      const E = k0 * N * (A + (1 - T + C) * A ** 3 / 6 + (5 - 18 * T + T * T + 72 * C - 58 * ep) * A ** 5 / 120) + 500000;
+      let Nn = k0 * (M + N * Math.tan(ph) * (A * A / 2 + (5 - T + 9 * C + 4 * C * C) * A ** 4 / 24 + (61 - 58 * T + T * T + 600 * C - 330 * ep) * A ** 6 / 720)); if (lat < 0) Nn += 1e7;
+      const band = 'CDEFGHJKLMNPQRSTUVWXX'[Math.floor((lat + 80) / 8)] || 'Z';
+      return { zone, band, E, N: Nn, txt: `${zone}${band} ${Math.round(E)} ${Math.round(Nn)}` };
+    }
+    function fromUTM(zone, band, E, Nn) {
+      const a = 6378137, f = 1 / 298.257223563, e2 = f * (2 - f), k0 = 0.9996, r = Math.PI / 180, ep = e2 / (1 - e2), e1 = (1 - Math.sqrt(1 - e2)) / (1 + Math.sqrt(1 - e2));
+      const x = E - 500000, y = band < 'N' ? Nn - 1e7 : Nn, M = y / k0, mu = M / (a * (1 - e2 / 4 - 3 * e2 ** 2 / 64 - 5 * e2 ** 3 / 256));
+      const p1 = mu + (3 * e1 / 2 - 27 * e1 ** 3 / 32) * Math.sin(2 * mu) + (21 * e1 ** 2 / 16 - 55 * e1 ** 4 / 32) * Math.sin(4 * mu) + (151 * e1 ** 3 / 96) * Math.sin(6 * mu);
+      const N1 = a / Math.sqrt(1 - e2 * Math.sin(p1) ** 2), T1 = Math.tan(p1) ** 2, C1 = ep * Math.cos(p1) ** 2, R1 = a * (1 - e2) / (1 - e2 * Math.sin(p1) ** 2) ** 1.5, D = x / (N1 * k0);
+      const lat = p1 - (N1 * Math.tan(p1) / R1) * (D * D / 2 - (5 + 3 * T1 + 10 * C1 - 4 * C1 * C1 - 9 * ep) * D ** 4 / 24 + (61 + 90 * T1 + 298 * C1 + 45 * T1 * T1 - 252 * ep - 3 * C1 * C1) * D ** 6 / 720);
+      const lon = ((zone - 1) * 6 - 180 + 3) * r + (D - (1 + 2 * T1 + C1) * D ** 3 / 6 + (5 - 2 * C1 + 28 * T1 - 3 * C1 * C1 + 8 * ep + 24 * T1 * T1) * D ** 5 / 120) / Math.cos(p1);
+      return { lat: lat / r, lon: lon / r };
+    }
+    const dms = (v, pos, neg) => { const a = Math.abs(v), d = Math.floor(a), m = Math.floor((a - d) * 60), sec = ((a - d) * 60 - m) * 60; return `${d}°${String(m).padStart(2, '0')}'${sec.toFixed(1).padStart(4, '0')}"${v >= 0 ? pos : neg}`; };
+    const coordTxt = (lat, lon) => `${lat.toFixed(6)}, ${lon.toFixed(6)}<br>${dms(lat, 'N', 'S')} ${dms(lon, 'E', 'W')}<br>UTM ${toUTM(lat, lon).txt}`;
+    const precTxt = m => m.acc ? `±${Math.max(1, Math.round(m.acc * YD))} yd${m.fixes > 1 ? ` · ${m.fixes} GPS visits averaged` : ''}` : 'placed on the map (accuracy unknown)';
     const mkHtml = (type, extra) => { const t = MT[type] || MT.note; return `<div class="mk${extra || ''}" style="--c:${t[2]}"><svg><use href="#${t[1]}"/></svg></div>`; };
     const mkIcon = (type, extra) => L.divIcon({ className: '', html: mkHtml(type, extra), iconSize: [30, 30], iconAnchor: [15, 36], popupAnchor: [0, -34] });
 
@@ -5521,6 +5653,8 @@ details.drop > .dropbody { padding: 0 14px 14px; }
     // coordinates: "41.2345, -74.1234", "41.2345 74.1234" (west assumed for NY/NJ), or 41°12'30"N 74°05'15"W
     function parseCoords(t) {
       const s = t.trim().toUpperCase().replace(/[′’]/g, "'").replace(/[″”]/g, '"');
+      const u = s.match(/^(\d{1,2})\s*([C-HJ-NP-X])\s+(\d{5,7}(?:\.\d+)?)\s*(?:M?E)?\s*[,\s]\s*(\d{6,8}(?:\.\d+)?)\s*(?:M?N)?$/);
+      if (u && +u[1] >= 1 && +u[1] <= 60) { const g = fromUTM(+u[1], u[2], +u[3], +u[4]); if (Math.abs(g.lat) <= 84) return L.latLng(g.lat, g.lon); }
       let m = s.match(/^([NS])?\s*([-+]?\d{1,2}(?:\.\d+)?)\s*°?\s*([NS])?\s*[,;\s]\s*([EW])?\s*([-+]?\d{1,3}(?:\.\d+)?)\s*°?\s*([EW])?$/);
       let lat, lon;
       if (m) {
@@ -5938,9 +6072,12 @@ details.drop > .dropbody { padding: 0 14px 14px; }
     let goTo = null, goLine = null;
     function drawSaved() {
       markerLayer.clearLayers(); trackLayer.clearLayers();
+      const zNow = map ? map.getZoom() : 0, perm = pinLabels && zNow >= 16;
       for (const m of DB.markers.filter(inArea)) {
-        const mk = L.marker([m.lat, m.lon], { icon: mkIcon(m.type), title: m.name || MT[m.type][0] }).addTo(markerLayer);
-        mk.bindTooltip(esc(m.name || (MT[m.type] || MT.note)[0]), { direction: 'top', offset: [0, -34], className: 'mp-label' });
+        const t = MT[m.type] || MT.note; if (hideCats.has(t[3])) continue;
+        if (pinRings && m.acc && zNow >= 16) L.circle([m.lat, m.lon], { radius: m.acc, color: t[2], weight: 1.5, dashArray: '4 4', fillColor: t[2], fillOpacity: 0.08, interactive: false }).addTo(markerLayer);
+        const mk = L.marker([m.lat, m.lon], { icon: mkIcon(m.type), title: m.name || t[0] }).addTo(markerLayer);
+        mk.bindTooltip(esc(m.name || t[0]), { direction: 'top', offset: [0, -34], className: 'mp-label' + (perm ? ' perm' : ''), permanent: perm });
         mk.on('click', () => markerPopup(m, mk));
       }
       for (const t of DB.tracks.filter(inArea)) {
@@ -5954,21 +6091,41 @@ details.drop > .dropbody { padding: 0 14px 14px; }
     }
     function markerPopup(m, mk) {
       const t = MT[m.type] || MT.note, ll = L.latLng(m.lat, m.lon), box = document.createElement('div'); box.className = 'pop';
+      const dMe = me ? me.distanceTo(ll) : null, WD = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
+      const setup = [m.h ? `${m.h} ft up` : '', m.face != null && m.face !== '' ? `faces ${Math.round(m.face)}° ${cardinal(m.face)}` : '', m.winds && m.winds.length ? `good winds: ${m.winds.join(', ')}` : ''].filter(Boolean).join(' · ');
       box.innerHTML = `<h4>${esc(m.name || t[0])}</h4><div class="muted">${esc(t[0])} · ${esc(m.area)} · ${new Date(m.t).toLocaleDateString()}</div>`
         + (m.notes ? `<div class="sec">${esc(m.notes).replace(/\n/g, '<br>')}</div>` : '')
-        + `<div class="sec muted">${m.lat.toFixed(5)}, ${m.lon.toFixed(5)}${me ? ` · ${fmtDist(me.distanceTo(ll))} ${cardinal(bearing(me, ll))} of you` : ''}</div>`
-        + `<div class="acts"><button type="button" data-a="go">Navigate here</button>${m.type === 'blood' ? '<button type="button" data-a="drag">Drag route to truck</button>' : ''}<button type="button" data-a="share">Share</button><button type="button" data-a="scent">Scent cone here</button><button type="button" data-a="edit">Edit</button><button type="button" data-a="del">Delete</button></div>`;
-      box.querySelector('[data-a=go]').onclick = () => { map.closePopup(); setGoTo(ll, m.name || t[0]); };
+        + (setup ? `<div class="sec">${esc(setup)}${m.winds && m.winds.length && typeof WIND !== 'undefined' && WIND.from != null ? ` · today's wind: from ${cardinal(WIND.from)}${m.winds.includes(WD[Math.round(WIND.from / 45) % 8]) ? ' ✓ good' : ' ✗ not listed'}` : ''}</div>` : '')
+        + (m.final ? `<div class="sec"><b>Last yards:</b> ${esc(m.final)}</div>` : '')
+        + `<img class="ppic" alt="" hidden>`
+        + `<div class="sec"><b>Precision:</b> ${esc(precTxt(m))}</div>`
+        + `<div class="sec pcoord">${coordTxt(m.lat, m.lon)}${elevTxt ? elevTxt(ll) : ''}</div>`
+        + (dMe != null ? `<div class="sec muted">${fmtDist(dMe)} ${cardinal(bearing(me, ll))} of you (${Math.round(bearing(me, ll))}°)</div>` : '')
+        + `<div class="acts"><button type="button" data-a="go">Navigate here</button>${m.type === 'blood' ? '<button type="button" data-a="drag">Drag route to truck</button>' : ''}<button type="button" data-a="share">Share</button>${dMe != null && dMe < 60 ? '<button type="button" data-a="refine">Refine here</button>' : ''}<button type="button" data-a="copy">Copy coordinates</button><button type="button" data-a="scent">Scent cone here</button><button type="button" data-a="edit">Edit</button><button type="button" data-a="del">Delete</button></div>`;
+      box.querySelector('[data-a=go]').onclick = () => { map.closePopup(); setGoTo(ll, m.name || t[0]); if (goTo) goTo.pin = m; };
       box.querySelector('[data-a=scent]').onclick = () => { map.closePopup(); scentFrom = ll; setScent(true); };
       box.querySelector('[data-a=share]').onclick = () => shareSpot(ll, m.name || t[0]);
       const dg = box.querySelector('[data-a=drag]'); if (dg) dg.onclick = () => { map.closePopup(); dragRoute(ll); };
       box.querySelector('[data-a=edit]').onclick = () => { map.closePopup(); startAdd(m); };
       const del = box.querySelector('[data-a=del]');
       del.onclick = () => {
-        if (del.dataset.sure) { DB.markers = DB.markers.filter(x => x.id !== m.id); saveDB(); map.closePopup(); drawSaved(); toast('Marker deleted'); }
+        if (del.dataset.sure) { DB.markers = DB.markers.filter(x => x.id !== m.id); if (m.photo) idb.pinDel(m.id).catch(() => {}); saveDB(); map.closePopup(); drawSaved(); toast('Marker deleted'); }
         else { del.dataset.sure = 1; del.textContent = 'Tap again to delete'; }
       };
-      L.popup({ maxWidth: 280, offset: [0, -30] }).setLatLng(ll).setContent(box).openOn(map);
+      const rf = box.querySelector('[data-a=refine]'); if (rf) rf.onclick = async () => { map.closePopup(); await refinePin(m); };
+      box.querySelector('[data-a=copy]').onclick = async () => { const txt = `${m.lat.toFixed(6)}, ${m.lon.toFixed(6)}`; try { await navigator.clipboard.writeText(txt); toast('Copied ' + txt); } catch (e) { toast(txt); } };
+      if (m.photo) pinPhoto(m.id).then(src => { const im = box.querySelector('.ppic'); if (src && im) { im.src = src; im.hidden = false; } });
+      L.popup({ maxWidth: 290, offset: [0, -30] }).setLatLng(ll).setContent(box).openOn(map);
+    }
+    // stand at a pin again and average more GPS readings into it: every visit makes it more exact
+    async function refinePin(m) {
+      const r = await precise(30, `Refining "${m.name || (MT[m.type] || MT.note)[0]}": stand exactly on the spot`); if (!r) return;
+      const a1 = m.acc || 15, a2 = Math.max(1.5, r.acc), w1 = 1 / (a1 * a1), w2 = 1 / (a2 * a2);
+      const moved = L.latLng(m.lat, m.lon).distanceTo(r.ll);
+      if (m.acc && moved > 3 * Math.max(a1, a2)) { toast(`This reading is ${Math.round(moved * YD)} yd from the pin. Are you on the right spot? Pin not changed.`); return; }
+      m.lat = +((m.lat * w1 + r.ll.lat * w2) / (w1 + w2)).toFixed(7); m.lon = +((m.lon * w1 + r.ll.lng * w2) / (w1 + w2)).toFixed(7);
+      m.acc = +Math.max(1, 1 / Math.sqrt(w1 + w2)).toFixed(1); m.fixes = (m.fixes || 1) + 1;
+      saveDB(); drawSaved(); toast(`Pin refined: now ±${Math.max(1, Math.round(m.acc * YD))} yd (moved ${Math.round(moved * YD * 3)} ft).`);
     }
     const trackLen = pts => { let d = 0; for (let i = 1; i < pts.length; i++) d += L.latLng(pts[i - 1]).distanceTo(L.latLng(pts[i])); return d; };
     function trackPopup(t, ll) {
@@ -5990,13 +6147,13 @@ details.drop > .dropbody { padding: 0 14px 14px; }
       if (goTo && watchId == null) startGPS(false);
       V.started = false; V.mile = null; V.arrived = false; V.cat = '';
       if (!goTo) { try { window.speechSynthesis && speechSynthesis.cancel(); } catch (e) {} }
-      navUI(!!goTo);
+      navUI(!!goTo); if (!goTo) $('navFinal').hidden = true;
       onMove();
     }
 
 
     // ---------- navigate on foot to a pin ----------
-    const PACE = 1.5, WOODS = 0.67; // m per pace (two steps); woods walking speed m/s (~1.5 mph)
+    const WOODS = 0.67; // m per pace (two steps); woods walking speed m/s (~1.5 mph)
     let gpsCourse = null, navTimer = null, navArrived = false, navWake = null, navRot = 0, navRing = 0;
     (function buildNavDial() {
       let g = '<g id="navRing">';
@@ -6012,6 +6169,23 @@ details.drop > .dropbody { padding: 0 14px 14px; }
       const h = compass.heading(); if (h != null) return { h, src: 'compass' };
       if (gpsCourse && Date.now() - gpsCourse.t < 15000) return { h: gpsCourse.h, src: 'walk' };
       return null;
+    }
+    // ---------- final approach: the last 50 yards ----------
+    let fbPhoto = { id: null, src: null };
+    function finalBox(dEnd, b) {
+      const el = $('navFinal'), pin = goTo && goTo.pin;
+      if (!goTo || goTo.trail || dEnd > 46) { el.hidden = true; return; }
+      const ft = Math.round(dEnd * 3.281), pc = Math.round(dEnd / paceM()), gps = Math.max(meAcc, 0), pinAcc = pin && pin.acc ? pin.acc : null, unc = Math.sqrt(gps * gps + (pinAcc || 0) ** 2);
+      let h = `<div class="nf-big">${ft < 15 ? 'Right here' : ft + ' ft'} · ${pc} pace${pc === 1 ? '' : 's'} · ${Math.round(b)}°</div>`;
+      h += `<div class="caption">${dEnd <= unc ? `<b>GPS can\u2019t get closer than about ${Math.round(unc * YD)} yd here.</b> From now on, trust your eyes and the directions below.` : `Final approach. GPS ±${Math.round(gps * YD)} yd${pinAcc ? `, pin ±${Math.round(pinAcc * YD)} yd` : ''}: the spot is within about ${Math.round(unc * YD)} yd of the arrow tip.`}</div>`;
+      if (pin && pin.final) h += `<div><b>Last yards:</b> ${esc(pin.final).replace(/\n/g, '<br>')}</div>`;
+      if (pin && pin.h) h += `<div class="caption">Stand: ${pin.h} ft up${pin.face != null ? `, facing ${Math.round(pin.face)}° ${cardinal(pin.face)}` : ''}</div>`;
+      if (pin && pin.photo) {
+        if (fbPhoto.id !== pin.id) { fbPhoto = { id: pin.id, src: null }; pinPhoto(pin.id).then(src => { if (fbPhoto.id === pin.id) { fbPhoto.src = src; finalBox(dEnd, b); } }); }
+        if (fbPhoto.src) h += `<img src="${fbPhoto.src}" alt="Photo of the spot">`;
+      }
+      if (el.innerHTML !== h) el.innerHTML = h; el.hidden = false;
+      if (!finalBox.buzz || Date.now() - finalBox.buzz > Math.max(800, dEnd * 120)) { finalBox.buzz = Date.now(); try { navigator.vibrate && dEnd < 30 && navigator.vibrate(dEnd < 8 ? [60, 60, 60] : 40); } catch (e) {} }
     }
     // ---------- voice navigation: spoken turns and distances, for walking to a spot in the woods ----------
     let voiceOn = store.get('nav.voice', false);
@@ -6064,7 +6238,7 @@ details.drop > .dropbody { padding: 0 14px 14px; }
       $('navBrg').textContent = `${Math.round(b)}° ${cardinal(b)}`;
       $('navBack').textContent = `${Math.round((b + 180) % 360)}° ${cardinal((b + 180) % 360)}`;
       const min = d / WOODS / 60;
-      $('navWalk').textContent = `${min < 1 ? '<1' : Math.round(min)} min · ${Math.round(d / PACE).toLocaleString()} paces`;
+      $('navWalk').textContent = `${min < 1 ? '<1' : Math.round(min)} min · ${Math.round(d / paceM()).toLocaleString()} paces`;
       $('navAcc').textContent = `±${Math.round(meAcc * YD)} yd`;
       $('navAcc').className = meAcc > 25 ? 'warn' : '';
       // arrow: relative to where the phone points (compass), else to the direction you're walking, else north-up
@@ -6090,6 +6264,7 @@ details.drop > .dropbody { padding: 0 14px 14px; }
         if (meAcc > 25) say += '. GPS is weak right now; distances may jump.';
       }
       $('navSay').textContent = say;
+      finalBox(dEnd, b);
       voiceCue(dEnd, b, hd, hd ? ((((b - hd.h) % 360) + 540) % 360 - 180) : 0, dEnd <= near);
     }
     async function keepAwake(on) {
@@ -6116,7 +6291,7 @@ details.drop > .dropbody { padding: 0 14px 14px; }
       const r = await precise(20, 'Saving where you stand'); if (!r) { if (!me) toast('No GPS signal yet. Try again in an opening.'); return; }
       const here = r.ll, acc = r.acc;
       if (acc > 30) toast(`GPS is only good to ±${Math.round(acc * YD)} yd here; saved anyway. Drag the marker if you know better.`);
-      const t = new Date(), m = { id: uid(), area: newArea(), t: Date.now(), type: 'note', name: `My spot ${t.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}`, notes: `Saved where I stood (±${Math.round(acc * YD)} yd, ${r.n} GPS readings averaged)`, lat: +here.lat.toFixed(6), lon: +here.lng.toFixed(6) };
+      const t = new Date(), m = { id: uid(), area: newArea(), t: Date.now(), type: 'note', acc: +acc.toFixed(1), fixes: 1, name: `My spot ${t.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}`, notes: `Saved where I stood (±${Math.round(acc * YD)} yd, ${r.n} GPS readings averaged)`, lat: +here.lat.toFixed(6), lon: +here.lng.toFixed(6) };
       DB.markers.push(m); saveDB(); drawSaved();
       toast('Spot saved. Tap it later and choose "Navigate here" to come back.');
     });
@@ -6798,28 +6973,90 @@ details.drop > .dropbody { padding: 0 14px 14px; }
       const ll = m ? L.latLng(m.lat, m.lon) : at || map.getCenter();
       if (pending) map.removeLayer(pending);
       pending = L.marker(ll, { icon: mkIcon(pType, ' pending'), draggable: true, zIndexOffset: 900 }).addTo(map);
+      pending.on('dragend', () => { pend.acc = null; pend.moved = 0; pendUI(); });
+      pend.acc = m ? (m.acc || null) : null; pend.fixes = m ? (m.fixes || (m.acc ? 1 : 0)) : 0; pend.moved = 0; pend.photo = undefined;
+      $('mpHt').value = m && m.h ? m.h : ''; $('mpFace').value = m && m.face != null ? m.face : ''; pend.winds = new Set(m && m.winds ? m.winds : []);
+      $('mpFinal').value = m ? (m.final || '') : ''; $('mpCoord').value = '';
+      $('mpPhotoImg').hidden = true; $('mpPhotoDel').hidden = true;
+      if (m && m.photo) pinPhoto(m.id).then(src => { if (src && editing === m) { $('mpPhotoImg').src = src; $('mpPhotoImg').hidden = false; $('mpPhotoDel').hidden = false; } });
+      buildTypes(); pendUI();
       if (!map.getBounds().contains(ll)) map.panTo(ll);
       $('mpInfo').innerHTML = 'Drag the orange pin or tap the map to place it, then press <b>Save marker</b>.';
       $('mp-add').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
     function cancelAdd() { if (pending) map.removeLayer(pending); pending = null; editing = null; }
-    $('mpTypes').innerHTML = Object.entries(MT).map(([k, t]) => `<button type="button" data-t="${k}" aria-pressed="false"><span class="mk" style="--c:${t[2]};width:24px;height:24px;border-width:1.5px"><svg style="width:14px;height:14px"><use href="#${t[1]}"/></svg></span>${t[0]}</button>`).join('');
+    const pend = { acc: null, fixes: 0, moved: 0, winds: new Set(), photo: undefined };
+    const typeBtn = (k, t) => `<button type="button" data-t="${k}" aria-pressed="${k === pType}"><span class="mk" style="--c:${t[2]};width:24px;height:24px;border-width:1.5px"><svg style="width:14px;height:14px"><use href="#${t[1]}"/></svg></span>${t[0]}</button>`;
+    function buildTypes() {
+      const q = ($('mpTypeQ').value || '').trim().toLowerCase(), rec = store.get('maps.recentTypes', []).filter(k => MT[k]).slice(0, 6);
+      let h = '';
+      if (q) { const hit = Object.entries(MT).filter(([k, t]) => (t[0] + ' ' + k).toLowerCase().includes(q)); h = hit.length ? hit.map(([k, t]) => typeBtn(k, t)).join('') : '<div class="caption">No pin type matches. Use Note and give it a name.</div>'; }
+      else {
+        if (rec.length) h += `<div class="mt-h">Recently used</div>` + rec.map(k => typeBtn(k, MT[k])).join('');
+        for (const [c, n] of MTCAT) h += `<div class="mt-h">${n}</div>` + Object.entries(MT).filter(([, t]) => t[3] === c).map(([k, t]) => typeBtn(k, t)).join('');
+      }
+      $('mpTypes').innerHTML = h;
+      $('mpSetup').hidden = (MT[pType] || MT.note)[3] !== 'setup' || pType === 'camera' || pType === 'cellcam';
+      $('mpWinds').innerHTML = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'].map(d => `<button type="button" data-w="${d}" aria-pressed="${pend.winds.has(d)}">${d}</button>`).join('');
+    }
+    function pendUI() {
+      const el = $('mpPrec'), a = pend.acc;
+      el.className = 'pin-prec ' + (a == null ? '' : a <= 4 ? 'good' : a <= 9 ? 'ok' : 'weak');
+      el.innerHTML = a == null ? '<b>Placed on the map.</b> For a GPS-exact pin, stand on the spot and press <b>Move to my location</b> (it averages your GPS for 20 seconds).'
+        : `<b>GPS pin ±${Math.max(1, Math.round(a * YD))} yd</b>${pend.fixes > 1 ? ` (${pend.fixes} visits averaged)` : ''}${a > 9 ? '. Weak: try again in an opening, or come back later and use Refine here.' : ''}`;
+      $('mpMoved').textContent = pend.moved ? `Moved ${Math.round(pend.moved / 0.3048)} ft by hand` : '';
+    }
+    $('mpTypeQ').addEventListener('input', buildTypes);
+    $('mpWinds').addEventListener('click', e => { const b = e.target.closest('[data-w]'); if (!b) return; const d = b.dataset.w; if (pend.winds.has(d)) pend.winds.delete(d); else pend.winds.add(d); b.setAttribute('aria-pressed', pend.winds.has(d)); });
+    $('mpFaceNow').addEventListener('click', () => { const h = compass.heading(); if (h == null) { toast('No compass reading. Point the top of the phone the way the stand faces.'); compass.ask && compass.ask(); return; } $('mpFace').value = Math.round(h) % 360; toast(`Faces ${Math.round(h) % 360}° ${cardinal(h)}`); });
+    document.querySelector('.nudge-pad').addEventListener('click', e => {
+      const b = e.target.closest('[data-n]'); if (!b || !pending) return; const st = +$('mpStep').value, ll = pending.getLatLng(), d = { N: [st, 0], S: [-st, 0], E: [0, st], W: [0, -st] }[b.dataset.n];
+      const nl = L.latLng(ll.lat + d[0] / 111320, ll.lng + d[1] / (111320 * Math.cos(ll.lat * Math.PI / 180))); pending.setLatLng(nl); pend.moved += st;
+      if (!map.getBounds().pad(-0.1).contains(nl)) map.panTo(nl); pendUI();
+    });
+    $('mpCoordGo').addEventListener('click', () => {
+      const c = parseCoords($('mpCoord').value || ''); if (!c) { toast('Couldn’t read those coordinates. Try 41.20512, -74.24871 or 18T 563850 4561320.'); return; }
+      if (!pending) return; pending.setLatLng(c); pend.acc = null; pend.moved = 0; map.setView(c, Math.max(map.getZoom(), 18)); pendUI(); toast('Pin placed at those coordinates.');
+    });
+    $('mpFinalHere').addEventListener('click', () => {
+      if (!pending) return; if (!me) { toast('Needs GPS. Turn on My location first.'); startGPS(false); return; }
+      const ll = pending.getLatLng(), d = me.distanceTo(ll), b2 = bearing(me, ll);
+      if (d > 300) { toast('You are more than 300 yards away. Stand at a landmark near the pin.'); return; }
+      const txt = `From [landmark where I stood]: ${Math.round(d / paceM())} paces (${Math.round(d * YD)} yd) at ${Math.round(b2)}° ${cardinal(b2)}`;
+      $('mpFinal').value = ($('mpFinal').value ? $('mpFinal').value + '\n' : '') + txt; $('mpFinal').focus();
+      toast('Added. Replace [landmark…] with what you are standing at (big rock, double oak…).');
+    });
+    $('mpPhoto').addEventListener('change', async e => {
+      const f = e.target.files && e.target.files[0]; e.target.value = ''; if (!f) return;
+      try { const bm = await createImageBitmap(f, { imageOrientation: 'from-image' }); const k = Math.min(1, 900 / Math.max(bm.width, bm.height)), c = document.createElement('canvas'); c.width = Math.round(bm.width * k); c.height = Math.round(bm.height * k); c.getContext('2d').drawImage(bm, 0, 0, c.width, c.height);
+        pend.photo = c.toDataURL('image/jpeg', 0.72); $('mpPhotoImg').src = pend.photo; $('mpPhotoImg').hidden = false; $('mpPhotoDel').hidden = false; } catch (err) { toast('Couldn’t open that photo.'); }
+    });
+    $('mpPhotoDel').addEventListener('click', () => { pend.photo = null; $('mpPhotoImg').hidden = true; $('mpPhotoDel').hidden = true; });
+    const pinPhoto = async id => { try { const r = await idb.pinGet(id); return r ? r.img : null; } catch (e) { return null; } };
     $('mpTypes').addEventListener('click', e => {
-      const b = e.target.closest('button'); if (!b) return; pType = b.dataset.t;
-      $('mpTypes').querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', x === b));
+      const b = e.target.closest('button[data-t]'); if (!b) return; pType = b.dataset.t;
+      $('mpTypes').querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', x.dataset.t === pType));
+      $('mpSetup').hidden = (MT[pType] || MT.note)[3] !== 'setup' || pType === 'camera' || pType === 'cellcam';
       if (pending) pending.setIcon(mkIcon(pType, ' pending'));
     });
     $('mpSave').addEventListener('click', () => {
       if (!pending) return;
       const ll = pending.getLatLng();
-      const rec = { name: $('mpName').value.trim(), notes: $('mpNotes').value.trim(), type: pType, lat: +ll.lat.toFixed(6), lon: +ll.lng.toFixed(6) };
-      if (editing) Object.assign(DB.markers.find(x => x.id === editing.id) || {}, rec);
-      else DB.markers.push(Object.assign({ id: uid(), area: newArea(), t: Date.now() }, rec));
+      const ht = parseFloat($('mpHt').value), fc = parseFloat($('mpFace').value);
+      const rec = { name: $('mpName').value.trim(), notes: $('mpNotes').value.trim(), type: pType, lat: +ll.lat.toFixed(7), lon: +ll.lng.toFixed(7),
+        acc: pend.acc ? +pend.acc.toFixed(1) : null, fixes: pend.acc ? Math.max(1, pend.fixes) : 0, final: $('mpFinal').value.trim(),
+        h: isFinite(ht) ? ht : null, face: isFinite(fc) ? ((fc % 360) + 360) % 360 : null, winds: [...pend.winds] };
+      let target;
+      if (editing) { target = DB.markers.find(x => x.id === editing.id) || {}; Object.assign(target, rec); }
+      else { target = Object.assign({ id: uid(), area: newArea(), t: Date.now() }, rec); DB.markers.push(target); }
+      if (pend.photo) { target.photo = true; idb.pinPut({ id: target.id, img: pend.photo, t: Date.now() }).catch(() => toast('Photo could not be saved on this phone.')); }
+      else if (pend.photo === null) { target.photo = false; idb.pinDel(target.id).catch(() => {}); }
+      store.set('maps.recentTypes', [pType, ...store.get('maps.recentTypes', []).filter(k => k !== pType)].slice(0, 6));
       saveDB(); cancelAdd(); setTool(null); drawSaved(); toast(editing ? 'Marker updated' : 'Marker saved');
     });
     $('mpHere').addEventListener('click', async () => {
-      const r = await precise(10, 'Placing the marker where you stand'); if (!r) return;
-      if (pending) { pending.setLatLng(r.ll); map.panTo(r.ll); toast(`Placed (±${Math.round(r.acc * YD)} yd).`); }
+      const r = await precise(20, 'Placing the marker where you stand'); if (!r) return;
+      if (pending) { pending.setLatLng(r.ll); map.panTo(r.ll); pend.acc = r.acc; pend.fixes = 1; pend.moved = 0; pendUI(); toast(`Placed (±${Math.round(r.acc * YD)} yd).`); }
     });
     $('mpCancel').addEventListener('click', () => { cancelAdd(); setTool(null); });
 
@@ -6931,17 +7168,26 @@ details.drop > .dropbody { padding: 0 14px 14px; }
       delete b.dataset.sure; b.textContent = 'Delete this area'; toast('Area deleted');
     });
     function buildList() {
-      const host = $('mpList'), ms = DB.markers.filter(inArea), ts = DB.tracks.filter(inArea);
-      if (!ms.length && !ts.length) { host.innerHTML = '<div class="caption">Nothing saved here yet. Use Marker to save a stand, camera or sign, or long-press the map.</div>'; return; }
+      const host = $('mpList'), q = ($('mpListQ').value || '').trim().toLowerCase(), sort = $('mpSort').value;
+      let ms = DB.markers.filter(inArea), ts = DB.tracks.filter(inArea);
+      if (q) { ms = ms.filter(m => `${m.name || ''} ${m.notes || ''} ${(MT[m.type] || MT.note)[0]} ${m.final || ''}`.toLowerCase().includes(q)); ts = ts.filter(t => (t.name || '').toLowerCase().includes(q)); }
+      $('mpCats').innerHTML = MTCAT.map(([c, n]) => `<button type="button" data-cat="${c}" aria-pressed="${!hideCats.has(c)}">${n} (${DB.markers.filter(inArea).filter(m => (MT[m.type] || MT.note)[3] === c).length})</button>`).join('');
+      $('mpLabels').checked = pinLabels; $('mpRings').checked = pinRings;
+      const pc = store.get('maps.pace', 0); $('mpPace').value = pc || ''; $('mpPaceV').textContent = `1 pace = ${(paceM() * 3.281).toFixed(1)} ft`;
+      if (!ms.length && !ts.length) { host.innerHTML = `<div class="caption">${q ? 'No pins match.' : 'Nothing saved here yet. Use Marker to save a stand, camera or sign, or long-press the map.'}</div>`; return; }
       host.innerHTML = '';
-      const items = [...ms.map(m => ({ k: 'm', o: m })), ...ts.map(t => ({ k: 't', o: t }))].sort((a, b) => b.o.t - a.o.t);
-      for (const it of items) {
+      const dist = o => me ? me.distanceTo(L.latLng(o.k === 'm' ? [o.o.lat, o.o.lon] : o.o.pts[0])) : 0;
+      const items = [...ms.map(m => ({ k: 'm', o: m })), ...ts.map(t => ({ k: 't', o: t }))];
+      if (sort === 'near' && me) items.sort((a, b) => dist(a) - dist(b));
+      else if (sort === 'type') items.sort((a, b) => (a.k === 'm' ? (MT[a.o.type] || MT.note)[0] : 'zz').localeCompare(b.k === 'm' ? (MT[b.o.type] || MT.note)[0] : 'zz'));
+      else items.sort((a, b) => b.o.t - a.o.t);
+      for (const it of items.slice(0, 300)) {
         const b = document.createElement('button'); b.type = 'button'; b.className = 'sitem';
         if (it.k === 'm') {
           const m = it.o, t = MT[m.type] || MT.note, ll = L.latLng(m.lat, m.lon);
-          b.innerHTML = `${mkHtml(m.type)}<div><b></b><span>${esc(t[0])} · ${esc(m.area)}</span></div><span>${me ? fmtDist(me.distanceTo(ll)) : ''}</span>`;
+          b.innerHTML = `${mkHtml(m.type)}<div><b></b><span>${esc(t[0])} · ${m.acc ? '±' + Math.max(1, Math.round(m.acc * YD)) + ' yd' : 'map pin'}${hideCats.has(t[3]) ? ' · hidden on map' : ''}</span></div><span>${me ? fmtDist(me.distanceTo(ll)) + ' ' + cardinal(bearing(me, ll)) : ''}</span>`;
           b.querySelector('b').textContent = m.name || t[0];
-          b.onclick = () => { map.setView(ll, Math.max(map.getZoom(), 16)); document.getElementById('map').scrollIntoView({ behavior: 'smooth', block: 'center' }); };
+          b.onclick = () => { map.setView(ll, Math.max(map.getZoom(), 17)); document.getElementById('map').scrollIntoView({ behavior: 'smooth', block: 'center' }); };
         } else {
           const t = it.o;
           b.innerHTML = `<div class="mk" style="--c:#ff3d7f"><svg><use href="#i-route"/></svg></div><div><b></b><span>Track · ${fmtDist(trackLen(t.pts))} · ${esc(t.area)}</span></div><span></span>`;
@@ -6951,6 +7197,11 @@ details.drop > .dropbody { padding: 0 14px 14px; }
         host.appendChild(b);
       }
     }
+    $('mpListQ').addEventListener('input', buildList); $('mpSort').addEventListener('change', buildList);
+    $('mpCats').addEventListener('click', e => { const b = e.target.closest('[data-cat]'); if (!b) return; const c = b.dataset.cat; if (hideCats.has(c)) hideCats.delete(c); else hideCats.add(c); store.set('maps.hideCats', [...hideCats]); drawSaved(); });
+    $('mpLabels').addEventListener('change', e => { pinLabels = e.target.checked; store.set('maps.pinLabels', pinLabels); drawSaved(); if (pinLabels && map.getZoom() < 16) toast('Names show when you zoom in close.'); });
+    $('mpRings').addEventListener('change', e => { pinRings = e.target.checked; store.set('maps.pinRings', pinRings); drawSaved(); });
+    $('mpPace').addEventListener('change', e => { const v = parseFloat(e.target.value); store.set('maps.pace', v >= 10 && v <= 40 ? v : 0); buildList(); toast(v >= 10 && v <= 40 ? `Saved: 1 pace = ${(30.48 / v * 3.281).toFixed(1)} ft` : 'Using the standard pace (5 ft).'); });
     const xmlEsc = t => String(t == null ? '' : t).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&apos;' }[c]));
     $('mpExport').addEventListener('click', () => {
       const ms = DB.markers.filter(inArea), ts = DB.tracks.filter(inArea);
@@ -7040,6 +7291,7 @@ details.drop > .dropbody { padding: 0 14px 14px; }
       const v = store.get('maps.view', { lat: LOC.lat, lon: LOC.lon, z: 14 });
       try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist(); } catch (e) {} // ask the phone not to clear saved markers and maps
       map = L.map('map', { zoomControl: true, attributionControl: true, maxZoom: 21, tap: false }).setView([v.lat, v.lon], v.z);
+      let zBig = map.getZoom() >= 16; map.on('zoomend', () => { const b = map.getZoom() >= 16; if (b !== zBig) { zBig = b; drawSaved(); } });
       map.attributionControl.setPrefix('<a href="https://leafletjs.com" target="_blank" rel="noopener">Leaflet</a>');
       buildLayerPanel(); fillAreas();
       setBase(baseKey);
@@ -7050,7 +7302,7 @@ details.drop > .dropbody { padding: 0 14px 14px; }
       map.on('moveend', () => { const c = map.getCenter(); store.set('maps.view', { lat: +c.lat.toFixed(5), lon: +c.lng.toFixed(5), z: map.getZoom() }); onMove(); });
       map.on('click', e => {
         if (tool === 'measure') { msPts.push(e.latlng); drawMeasure(); return; }
-        if (tool === 'add' && pending) { pending.setLatLng(e.latlng); return; }
+        if (tool === 'add' && pending) { pending.setLatLng(e.latlng); pend.acc = null; pend.moved = 0; pendUI(); return; }
         if (tool === 'blood' && curBT()) { if (tapMode === 'grid' && curBT().grid && toggleCell(e.latlng)) return; addBlood(e.latlng, 0, curBT().pts.length ? 'blood' : 'hit'); return; }
         landInfo(e.latlng);
       });
@@ -7511,7 +7763,7 @@ details.drop > .dropbody { padding: 0 14px 14px; }
       try { if (navigator.canShare && navigator.canShare({ files: [file] })) { await navigator.share({ files: [file], title }); return; } } catch (e) { if (e && e.name === 'AbortError') return; }
       download(file); toast('Saved to your Downloads folder.');
     }
-    const fullBackup = async () => { let photos = [], steps = []; try { photos = await idb.all(); } catch (e) {} try { steps = await idb.stepAll(); } catch (e) {} return fileOf({ app: 'Deer Eyes', kind: 'backup', v: 1, made: new Date().toISOString(), data: dump(), cams: photos, steps }, `deer-eyes-backup-${stamp()}.json`); };
+    const fullBackup = async () => { let photos = [], steps = [], pins = []; try { photos = await idb.all(); } catch (e) {} try { steps = await idb.stepAll(); } catch (e) {} try { pins = await idb.pinAll(); } catch (e) {} return fileOf({ app: 'Deer Eyes', kind: 'backup', v: 1, made: new Date().toISOString(), data: dump(), cams: photos, steps, pins }, `deer-eyes-backup-${stamp()}.json`); };
     function summary() {
       const g = k => store.get(k, []);
       const m = g('maps.markers'), t = g('maps.tracks'), j = g('journal'), a = g('maps.areas');
@@ -7539,6 +7791,7 @@ details.drop > .dropbody { padding: 0 14px 14px; }
         for (const [k, v] of Object.entries(o.data)) localStorage.setItem(PREFIX + k, v);
         if (Array.isArray(o.cams)) { try { await idb.clear(); for (const r of o.cams) await idb.put(r); } catch (er) {} }
         if (Array.isArray(o.steps)) { try { await idb.stepClear(); for (const r of o.steps) await idb.stepPut(r); } catch (er) {} }
+        if (Array.isArray(o.pins)) { try { await idb.pinClear(); for (const r of o.pins) await idb.pinPut(r); } catch (er) {} }
         toast('Restored. Reloading…'); setTimeout(() => location.reload(), 900);
       } catch (er) { toast('Could not read that file.'); }
     });
@@ -7566,7 +7819,7 @@ details.drop > .dropbody { padding: 0 14px 14px; }
   // =================================================================
   const idb = (() => {
     let dbp = null;
-    const open = () => dbp || (dbp = new Promise((res, rej) => { const r = indexedDB.open('deereyes', 2); r.onupgradeneeded = () => { const db = r.result; if (!db.objectStoreNames.contains('cams')) db.createObjectStore('cams', { keyPath: 'id' }); if (!db.objectStoreNames.contains('steps')) db.createObjectStore('steps', { keyPath: 'id' }); }; r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); }));
+    const open = () => dbp || (dbp = new Promise((res, rej) => { const r = indexedDB.open('deereyes', 3); r.onupgradeneeded = () => { const db = r.result; if (!db.objectStoreNames.contains('pins')) db.createObjectStore('pins', { keyPath: 'id' }); if (!db.objectStoreNames.contains('cams')) db.createObjectStore('cams', { keyPath: 'id' }); if (!db.objectStoreNames.contains('steps')) db.createObjectStore('steps', { keyPath: 'id' }); }; r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); }));
     const tx = async (mode, fn, name = 'cams') => { const db = await open(); return new Promise((res, rej) => { const t = db.transaction(name, mode), st = t.objectStore(name), out = fn(st); t.oncomplete = () => res(out && out.result !== undefined ? out.result : out); t.onerror = () => rej(t.error); }); };
     return {
       all: () => tx('readonly', st => st.getAll()),
@@ -7577,6 +7830,11 @@ details.drop > .dropbody { padding: 0 14px 14px; }
       stepPut: rec => tx('readwrite', st => { st.put(rec); }, 'steps'),
       stepDel: id => tx('readwrite', st => { st.delete(id); }, 'steps'),
       stepClear: () => tx('readwrite', st => { st.clear(); }, 'steps'),
+      pinGet: id => tx('readonly', st => st.get(id), 'pins'),
+      pinAll: () => tx('readonly', st => st.getAll(), 'pins'),
+      pinPut: rec => tx('readwrite', st => { st.put(rec); }, 'pins'),
+      pinDel: id => tx('readwrite', st => { st.delete(id); }, 'pins'),
+      pinClear: () => tx('readwrite', st => { st.clear(); }, 'pins'),
     };
   })();
 
