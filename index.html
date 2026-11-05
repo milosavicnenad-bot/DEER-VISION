@@ -5259,7 +5259,7 @@ details.drop > .dropbody { padding: 0 14px 14px; }
     const esriImg = () => xyz(ESRI('World_Imagery'), 19, { zIndex: 0, attribution: ESRI_ATT });
     const statePhotos = () => [
       xyz('https://maps.nj.gov/arcgis/rest/services/Basemap/Orthos_Natural_2020_NJ_WM/MapServer/tile/{z}/{y}/{x}', 20, { bounds: NJ_BB, minZoom: 13, zIndex: 1, attribution: 'NJ Office of GIS (2020, 1 ft)' }),
-      new ArcTiles('https://orthos.its.ny.gov/arcgis/rest/services/wms/Latest/MapServer', { layers: '', bounds: NY_BB, minZoom: 13, maxZoom: 21, zIndex: 1, attribution: 'NYS ITS Geospatial Services (6–12 in)' }),
+      new ArcTiles('https://orthos.its.ny.gov/arcgis/rest/services/wms/Latest/MapServer', { layers: '', photo: true, bounds: NY_BB, minZoom: 13, maxZoom: 21, zIndex: 1, attribution: 'NYS ITS Geospatial Services (6–12 in)' }),
     ];
     const BASES = {
       sat:    ['HD satellite (sharpest)', 'New York 6–12 in and New Jersey 1 ft state aerial photos; Esri World Imagery everywhere else. Zooms in to single trees.', () => grp(esriImg(), ...statePhotos())],
@@ -5275,10 +5275,10 @@ details.drop > .dropbody { padding: 0 14px 14px; }
       getTileUrl(c) {
         const ts = this.getTileSize(), nw = this._map.unproject(c.scaleBy(ts), c.z), se = this._map.unproject(c.add([1, 1]).scaleBy(ts), c.z);
         const a = L.CRS.EPSG3857.project(nw), b = L.CRS.EPSG3857.project(se);
-        const k = HD() ? 2 : 1;
+        const k = !HD() ? 1 : this.options.photo ? Math.min(3, Math.max(2, Math.round(window.devicePixelRatio || 2))) : 2; // photos: full phone-screen sharpness
         const bb = `bbox=${a.x.toFixed(2)},${b.y.toFixed(2)},${b.x.toFixed(2)},${a.y.toFixed(2)}&bboxSR=3857&imageSR=3857&size=${ts.x * k},${ts.y * k}`;
         if (this.options.image) return `${this._url}/exportImage?${bb}&format=${this.options.jpg ? 'jpgpng' : 'png'}&transparent=true&f=image${this.options.rr ? '&renderingRule=' + this.options.rr : ''}`;
-        return `${this._url}/export?${bb}&dpi=${96 * k}&format=png32&transparent=true&f=image${this.options.layers ? '&layers=' + this.options.layers : ''}`;
+        return `${this._url}/export?${bb}&dpi=${96 * k}&format=${this.options.photo ? 'jpgpng' : 'png32'}&transparent=true&f=image${this.options.layers ? '&layers=' + this.options.layers : ''}`;
       }
     });
     const arc = (url, layers, o) => new ArcTiles(url, Object.assign({ layers, maxZoom: 21, opacity, zIndex: 5 }, o));
@@ -5517,8 +5517,8 @@ details.drop > .dropbody { padding: 0 14px 14px; }
       lidar:     ['LiDAR terrain (1 m)', 'High-detail shading: benches, saddles, ditches and old roads that regular topo misses', () => imgSrv(TDEP, { rasterFunction: 'Hillshade Multidirectional' }, { opacity: 0.6, zIndex: 3, attribution: 'USGS 3DEP' }), 'terrain'],
       contours:  ['LiDAR contours (10 ft)', 'Detailed contour lines from lidar. Zoom in close.', () => imgSrv(TDEP, { rasterFunction: 'Preset 10ft Contour Interval' }, { minZoom: 14, zIndex: 6, attribution: 'USGS 3DEP' }), 'terrain'],
       hill:      ['Terrain shading (basic)', 'Lighter, faster shading for ridges and valleys', () => L.tileLayer(USGS('USGSShadedReliefOnly'), { maxNativeZoom: 16, maxZoom: 21, opacity: 0.4, zIndex: 3, attribution: 'USGS' }), 'terrain'],
-      photos:    ['State aerial photos', 'Sharp state photos: New York 6–12 in (2022–25), New Jersey 1 ft (2020)', () => grp(arc(NYORTHO, '', { minZoom: 12, zIndex: 2, attribution: 'NYS ITS Geospatial Services' }), xyz(NJORTHO + '/tile/{z}/{y}/{x}', 20, { minZoom: 10, zIndex: 2, opacity, attribution: 'NJ Office of GIS' })), 'photos'],
-      napp:      ['Old aerial photos, NY 1994–98', 'Color-infrared photos: old fields, orchards and logging roads now grown over', () => arc(NYNAPP, '', { minZoom: 11, zIndex: 2, attribution: 'NYS ITS, USGS NAPP' }), 'photos'],
+      photos:    ['State aerial photos', 'Sharp state photos: New York 6–12 in (2022–25), New Jersey 1 ft (2020)', () => grp(arc(NYORTHO, '', { photo: true, minZoom: 12, zIndex: 2, attribution: 'NYS ITS Geospatial Services' }), xyz(NJORTHO + '/tile/{z}/{y}/{x}', 20, { minZoom: 10, zIndex: 2, opacity, attribution: 'NJ Office of GIS' })), 'photos'],
+      napp:      ['Old aerial photos, NY 1994–98', 'Color-infrared photos: old fields, orchards and logging roads now grown over', () => arc(NYNAPP, '', { photo: true, minZoom: 11, zIndex: 2, attribution: 'NYS ITS, USGS NAPP' }), 'photos'],
       histTopo:  ['Old USGS topo maps', 'Historical topographic maps (1880s–2000s): old roads, farms and buildings', () => imgSrv(HTOPO, null, { zIndex: 2, attribution: 'USGS Historical Topographic Map Collection, Esri' }), 'photos'],
       wetlands:  ['Wetlands', 'Swamps, marshes and wet thickets: bedding cover and travel edges (US Fish & Wildlife)', () => arc(NWI, '', { minZoom: 11, attribution: 'USFWS National Wetlands Inventory' }), 'land'],
       water:     ['Streams and ponds', 'Detailed creeks, springs, ponds and lakes (USGS)', () => L.tileLayer(USGS('USGSHydroCached'), { maxNativeZoom: 16, maxZoom: 21, zIndex: 6, attribution: 'USGS' }), 'land'],
@@ -5529,7 +5529,7 @@ details.drop > .dropbody { padding: 0 14px 14px; }
       slope:     ['Slope steepness (LiDAR)', 'Green = flat, yellow and orange = moderate, red = steep. Look for flat benches (green) on steep sidehills: classic bedding and travel spots. Zoom in close.', () => imgSrv(TDEP, { rasterFunction: 'Slope Map' }, { opacity: 0.5, zIndex: 3, minZoom: 11, attribution: 'USGS 3DEP' }), 'terrain'],
       aspect:    ['Slope direction', 'Which way each slope faces. Red and orange = south and southwest (warm and sunny: late-season bedding and browse). Blue = north (cool and shaded: early season). Yellow = southeast, green = east, purple = west. Flat ground has no color.', () => new TerrainLayer({ mode: 'aspect', opacity: 0.55 }), 'terrain'],
       sunshade:  ['Sun and shade', 'Which slopes are in sun (warm yellow) or shade (dark blue) at the time you pick on the slider. On cold mornings deer bed where the first sun hits; on hot days they stay in the shade.', () => new TerrainLayer({ mode: 'sun', opacity: 0.6 }), 'terrain'],
-      cir:       ['Color-infrared photos (USDA NAIP)', 'Recent photos in false color: healthy leaves look bright red, evergreens (pine and hemlock cover) dark red-brown, fields and food plots pink to red, bare ground and roads blue-gray.', () => imgSrv(NAIP, { rasterFunction: 'FalseColorComposite' }, { jpg: true, opacity: 1, zIndex: 2, minZoom: 12, attribution: 'USDA NAIP via USGS' }), 'photos'],
+      cir:       ['Color-infrared photos (USDA NAIP)', 'Recent photos in false color: healthy leaves look bright red, evergreens (pine and hemlock cover) dark red-brown, fields and food plots pink to red, bare ground and roads blue-gray.', () => imgSrv(NAIP, { rasterFunction: 'FalseColorComposite' }, { jpg: true, photo: true, opacity: 1, zIndex: 2, minZoom: 12, attribution: 'USDA NAIP via USGS' }), 'photos'],
       crops:     ['Crop fields (USDA 2024)', 'Field-by-field crops: corn yellow, soybeans dark green, alfalfa pink, hay and pasture light green, winter wheat tan. Forest, water and towns show in their own colors.', () => L.tileLayer.wms('https://nassgeodata.gmu.edu/CropScapeService/wms_cdlall.cgi', { layers: 'cdl_2024', format: 'image/png', transparent: true, version: '1.1.1', crs: L.CRS.EPSG4326, opacity: 0.6, zIndex: 3, minZoom: 9, maxZoom: 21, attribution: 'USDA NASS Cropland Data Layer' }), 'land'],
       oak:       ['Oak forests (acorns)', 'Where oak-hickory and oak-pine forest dominate (US Forest Service, coarse 250 m blocks). Oaks mean acorns, the top fall food. Check the actual trees on the photos.', () => grp(imgSrv(OAKSRV, { rasterFunction: 'Oak_Hickory' }, { opacity: 0.55, attribution: 'USFS FIA Forest Atlas' }), imgSrv(OAKSRV, { rasterFunction: 'oakpine' }, { opacity: 0.55 })), 'land'],
       pressure:  ['Hunting pressure', 'How far each spot is on foot from the nearest road, trail or parking area. Clear: under ¼ mile (where most hunters sit). Yellow: ¼ to ½ mile. Orange: ½ to 1 mile. Red: over 1 mile (fewest hunters). Zoom in to see it.', () => new PressureMap(), 'access'],
