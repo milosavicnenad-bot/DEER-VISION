@@ -2296,11 +2296,11 @@ details.drop > .dropbody { padding: 0 14px 14px; }
       </div>
       <div class="panel mp" id="mp-route" hidden>
         <h2 style="margin:0">Route in and out</h2>
-        <div class="caption">Plans a walking route to your stand that keeps your scent off bedding, food and travel spots for today's wind, plus a different route out.</div>
+        <div class="caption"><b>Easiest walk:</b> the physically easiest way to your stand, around cliffs, rock ledges, steep gorges, ponds, rivers, creeks and swamps, using trails where they help. <b>Quiet routes:</b> keeps your scent off bedding, food and travel spots for today's wind, plus a different route out.</div>
         <div class="row"><label for="rtFrom">From</label><select id="rtFrom" class="full"></select><span class="v"></span></div>
         <div class="row"><label for="rtTo">To</label><select id="rtTo" class="full"></select><span class="v"></span></div>
         <div class="row"><span class="k">Hunt</span><div class="seg full" id="rtWhen"><button type="button" data-w="morning">Morning</button><button type="button" data-w="evening">Evening</button></div><span class="v"></span></div>
-        <div class="actions"><button class="btn primary" id="rtPlan" type="button">Plan my routes</button><button class="btn" id="rtNav" type="button">Navigate route in</button><button class="btn" id="rtClear" type="button">Clear</button></div>
+        <div class="actions"><button class="btn primary" id="rtEasy" type="button">Easiest walk</button><button class="btn primary" id="rtPlan" type="button">Quiet routes (deer)</button><button class="btn" id="rtNav" type="button">Navigate route in</button><button class="btn" id="rtClear" type="button">Clear</button></div>
         <div id="rtOut" class="rt-out"></div>
       </div>
       <div class="panel mp" id="mp-ai" hidden>
@@ -6973,6 +6973,95 @@ details.drop > .dropbody { padding: 0 14px 14px; }
     });
     $('rtNav').addEventListener('click', () => { if (!routeIn) { toast('Plan a route first.'); return; } setGoTo(routeIn[routeIn.length - 1], 'your stand (along the planned route)', routeIn.slice().reverse().map(p => [p.lat, p.lng])); });
     $('rtClear').addEventListener('click', () => { clearRoutes(); routeIn = null; $('rtOut').innerHTML = ''; });
+    // ---------- easiest walk: fine terrain grid + creeks, rivers, ponds, swamps and trails ----------
+    async function easyRoute(from, to) {
+      const D = from.distanceTo(to); if (D > 5000) throw new Error('far');
+      const pad = Math.max(350, D * 0.35), bb = L.latLngBounds([from, to]).pad(0).extend(L.latLng(Math.max(from.lat, to.lat), Math.max(from.lng, to.lng)));
+      const c = bb.getCenter(), latPad = pad / 111320, lonPad = pad / (111320 * Math.cos(c.lat * Math.PI / 180));
+      const S = bb.getSouth() - latPad, N = bb.getNorth() + latPad, Wl = bb.getWest() - lonPad, E = bb.getEast() + lonPad;
+      const z = D < 1800 ? 15 : 14, n = 2 ** z, X = lon => (lon + 180) / 360 * n * 256, Y = lat => (1 - Math.log(Math.tan(Math.PI / 4 + lat * Math.PI / 360)) / Math.PI) / 2 * n * 256;
+      const x0 = X(Wl), x1 = X(E), y0 = Y(N), y1 = Y(S), span = Math.max(x1 - x0, y1 - y0), W = Math.min(520, Math.max(120, Math.ceil(span))), st = span / W; // pixels per cell
+      const mpp = 40075016.7 * Math.cos(c.lat * Math.PI / 180) / (256 * n), cm = mpp * st;
+      // terrain tiles
+      const tiles = {}, need = [];
+      for (let tx = Math.floor(x0 / 256); tx <= Math.floor((x0 + span) / 256); tx++) for (let ty = Math.floor(y0 / 256); ty <= Math.floor((y0 + span) / 256); ty++) need.push([tx, ty]);
+      if (need.length > 160) throw new Error('far');
+      await Promise.all(need.map(([tx, ty]) => demGrid(z, tx, ty).then(e => { tiles[tx + '/' + ty] = e; })));
+      const elevPx = (px, py) => { const tx = Math.floor(px / 256), ty = Math.floor(py / 256), e = tiles[tx + '/' + ty]; if (!e) return NaN; const ix = Math.min(255, Math.max(0, Math.floor(px - tx * 256))), iy = Math.min(255, Math.max(0, Math.floor(py - ty * 256))); return e[iy * 256 + ix]; };
+      const Z = new Float32Array(W * W); for (let j = 0; j < W; j++) for (let i = 0; i < W; i++) Z[j * W + i] = elevPx(x0 + (i + 0.5) * st, y0 + (j + 0.5) * st);
+      const toLL = (i, j) => { const gx = x0 + (i + 0.5) * st, gy = y0 + (j + 0.5) * st; return L.latLng(Math.atan(Math.sinh(Math.PI * (1 - 2 * gy / (256 * n)))) * 180 / Math.PI, gx / (256 * n) * 360 - 180); };
+      const toIJ = ll => [Math.round((X(ll.lng) - x0) / st - 0.5), Math.round((Y(ll.lat) - y0) / st - 0.5)];
+      // map features from OpenStreetMap, painted onto the grid: 1 river/pond (no), 2 creek (wade), 3 swamp, 4 trail/road (easy)
+      const cls = new Uint8Array(W * W); let osm = true;
+      try {
+        const q = `[out:json][timeout:25];(way["waterway"~"^(river|stream|canal|ditch|drain|brook)$"](${S},${Wl},${N},${E});way["natural"="water"](${S},${Wl},${N},${E});relation["natural"="water"](${S},${Wl},${N},${E});way["natural"="wetland"](${S},${Wl},${N},${E});way["highway"~"^(path|footway|track|bridleway|steps|unclassified|residential|service|tertiary|secondary|primary|road)$"](${S},${Wl},${N},${E}););out geom;`;
+        const r = await fetch('https://overpass-api.de/api/interpreter', { method: 'POST', body: 'data=' + encodeURIComponent(q), headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }); if (!r.ok) throw new Error(r.status);
+        const j = await r.json(), cv = document.createElement('canvas'); cv.width = cv.height = W; const g = cv.getContext('2d'); g.imageSmoothingEnabled = false; g.lineCap = g.lineJoin = 'round';
+        const P = q2 => [(X(q2.lon) - x0) / st, (Y(q2.lat) - y0) / st], col = k => `rgb(${k},0,0)`;
+        const poly = (geom, k) => { g.fillStyle = col(k); g.beginPath(); geom.forEach((q2, i) => { const [a, b] = P(q2); i ? g.lineTo(a, b) : g.moveTo(a, b); }); g.closePath(); g.fill(); };
+        const line = (geom, k, wM) => { g.strokeStyle = col(k); g.lineWidth = Math.max(1.2, wM / cm); g.beginPath(); geom.forEach((q2, i) => { const [a, b] = P(q2); i ? g.lineTo(a, b) : g.moveTo(a, b); }); g.stroke(); };
+        const els = j.elements || [], T = e => e.tags || {};
+        els.filter(e => T(e).natural === 'wetland' && e.geometry).forEach(e => poly(e.geometry, 3));
+        els.filter(e => T(e).natural === 'water' && e.geometry).forEach(e => poly(e.geometry, 1));
+        els.filter(e => e.type === 'relation' && T(e).natural === 'water').forEach(e => (e.members || []).filter(m => m.role === 'outer' && m.geometry).forEach(m => poly(m.geometry, 1)));
+        els.filter(e => T(e).waterway && e.geometry).forEach(e => { const w = T(e).waterway; if (w === 'river' || w === 'canal') line(e.geometry, 1, 12); else line(e.geometry, 2, 3); });
+        els.filter(e => T(e).highway && e.geometry).forEach(e => line(e.geometry, 4, T(e).highway === 'path' || T(e).highway === 'footway' || T(e).highway === 'steps' ? 2 : 5));
+        const px = g.getImageData(0, 0, W, W).data; for (let k = 0; k < W * W; k++) cls[k] = px[k * 4 + 3] > 100 ? px[k * 4] : 0;
+      } catch (e) { osm = false; }
+      // cost: Tobler hiking speed on the slope, cliffs and ledges blocked, rough rocky ground slower
+      const slopeAt = (i, j) => { const zx = (Z[j * W + Math.min(W - 1, i + 1)] - Z[j * W + Math.max(0, i - 1)]) / (2 * cm), zy = (Z[Math.min(W - 1, j + 1) * W + i] - Z[Math.max(0, j - 1) * W + i]) / (2 * cm); return Math.hypot(zx, zy); };
+      const SL = new Float32Array(W * W); for (let j = 0; j < W; j++) for (let i = 0; i < W; i++) SL[j * W + i] = slopeAt(i, j);
+      const rough = k => { const i = k % W, j = (k / W) | 0; let m = 0; for (let dj = -1; dj <= 1; dj++) for (let di = -1; di <= 1; di++) { const a = i + di, b = j + dj; if (a < 0 || b < 0 || a >= W || b >= W) continue; m = Math.max(m, Math.abs(SL[b * W + a] - SL[k])); } return m; };
+      const cost = (i, j, a, b, d) => {
+        const v = b * W + a, dz = Z[v] - Z[j * W + i]; if (!isFinite(dz)) return Infinity;
+        const g = dz / d, s = SL[v], k = cls[v];
+        if (k === 1) return Infinity;                          // river, lake, pond
+        if (s > 0.9 && k !== 4) return Infinity;               // cliff or ledge (over ~42°)
+        const tob = 6 * Math.exp(-3.5 * Math.abs(g + 0.05)); // km/h, Tobler's hiking function
+        let f = 6 / tob;
+        if (s > 0.6 && k !== 4) f *= 3.5;                      // scramble (31–42°)
+        const rg = rough(v); if (rg > 0.25 && k !== 4) f *= 1 + Math.min(3, rg * 4); // ledgy, rocky ground
+        if (k === 2) f *= 10; if (k === 3) f *= 3.5; if (k === 4) f *= 0.6;
+        return d * f;
+      };
+      const G = { W, cm, toLL, toIJ, z: (i, j) => Z[j * W + i] };
+      const p = pathGrid(G, from, to, cost); if (!p) return null;
+      // describe the route
+      let crossings = 0, onTrail = 0, steep = 0, scramble = 0, prevC = 0, maxG = 0;
+      for (let k = 1; k < p.pts.length; k++) {
+        const [i, j] = toIJ(p.pts[k]), v = j * W + i, d = p.pts[k - 1].distanceTo(p.pts[k]), cc = cls[v] || 0, s = SL[v] || 0;
+        if (cc === 2 && prevC !== 2) crossings++; prevC = cc; if (cc === 4) onTrail += d; if (s > 0.35) steep += d; if (s > 0.6) scramble += d; maxG = Math.max(maxG, s);
+      }
+      // what a straight line would hit
+      let sCross = 0, sCliff = 0, sWater = 0, sp = 0; const nS = Math.ceil(D / (cm * 0.7));
+      for (let k = 0; k <= nS; k++) { const ll = L.latLng(from.lat + (to.lat - from.lat) * k / nS, from.lng + (to.lng - from.lng) * k / nS), [i, j] = toIJ(ll); if (i < 0 || j < 0 || i >= W || j >= W) continue; const cc = cls[j * W + i]; if (cc === 2 && sp !== 2) sCross++; if (cc === 1 && sp !== 1) sWater++; if (SL[j * W + i] > 0.9 && sp !== 9) { sCliff++; sp = 9; } else sp = cc; }
+      const tMin = p.pts.reduce((a, q2, k) => k ? a + (() => { const d = p.pts[k - 1].distanceTo(q2), [i0, j0] = toIJ(p.pts[k - 1]), [i1, j1] = toIJ(q2), g = ((Z[j1 * W + i1] || 0) - (Z[j0 * W + i0] || 0)) / Math.max(1, d); return d / (6 * Math.exp(-3.5 * Math.abs(g + 0.05)) / 3.6) / 60 * 1.25; })() : 0, 0);
+      return Object.assign(p, { crossings, onTrail, steep, scramble, maxG, tMin, osm, sCross, sCliff, sWater, cellM: cm });
+    }
+    $('rtEasy').addEventListener('click', async () => {
+      const from = await llOfSel($('rtFrom').value), to = await llOfSel($('rtTo').value);
+      if (!from || !to) { toast(!to ? 'Pick a stand (or any pin) as "To".' : 'Could not get your location.'); return; }
+      $('rtEasy').disabled = true; $('rtOut').innerHTML = 'Reading the terrain, creeks, swamps and trails…';
+      try {
+        const r = await easyRoute(from, to);
+        if (!r) { $('rtOut').textContent = 'No walkable way found: water or cliffs block every way in. Try a different start.'; return; }
+        clearRoutes(); routeLayer = L.layerGroup().addTo(map);
+        L.polyline([from, to], { color: '#555', weight: 2, dashArray: '2 6', interactive: false }).addTo(routeLayer);
+        L.polyline(r.pts, { color: '#fff', weight: 8, opacity: 0.85, interactive: false }).addTo(routeLayer);
+        L.polyline(r.pts, { color: '#2e7d32', weight: 5, opacity: 0.95, interactive: false }).addTo(routeLayer);
+        routeIn = r.pts; const ft = m => Math.round(m * 3.28084);
+        const avoided = [r.sCliff ? `${r.sCliff} cliff or ledge band${r.sCliff > 1 ? 's' : ''}` : '', r.sWater ? `${r.sWater} pond or river` : '', r.sCross > r.crossings ? `${r.sCross - r.crossings} creek crossing${r.sCross - r.crossings > 1 ? 's' : ''}` : ''].filter(Boolean);
+        $('rtOut').innerHTML = `<div><span class="rt-key" style="background:#2e7d32"></span><b>Easiest walk:</b> ${fmtDist(r.len)}, about ${fmtMin(r.tMin)}, ${ft(r.climb)} ft up and ${ft(r.drop)} ft down.</div>
+          <div>${r.crossings ? `<b>${r.crossings} creek crossing${r.crossings > 1 ? 's' : ''}</b> (look for the narrowest spot or a log)` : 'No creek crossings'}${r.onTrail > 40 ? ` · ${fmtDist(r.onTrail)} on trails or woods roads` : ''}${r.steep > 20 ? ` · ${fmtDist(r.steep)} steep (over 19°)` : ''}${r.scramble > 10 ? ` · <b>${fmtDist(r.scramble)} very steep: go slow</b>` : ''}.</div>
+          ${avoided.length ? `<div>The straight line (gray dashes) would hit ${avoided.join(', ')}: this route goes around.</div>` : ''}
+          <div class="caption">Built from elevation (about ${Math.round(r.cellM * YD)}-yard detail)${r.osm ? ' and mapped creeks, ponds, swamps and trails (OpenStreetMap)' : '; creeks and trails could not be loaded (no signal?), so only the terrain was used'}. Small ledges, blowdowns and unmapped creeks can still surprise you: check it on the satellite photos and walk it once in daylight.</div>
+          <div class="actions"><button class="btn primary" type="button" id="rtEasyGo">Navigate this route</button><button class="btn" type="button" id="rtEasyProf">Elevation profile</button></div>`;
+        $('rtEasyGo').onclick = () => setGoTo(r.pts[r.pts.length - 1], 'your stand (easiest walk)', r.pts.slice().reverse().map(q2 => [q2.lat, q2.lng]));
+        $('rtEasyProf').onclick = () => showProfile(r.pts, 'Easiest walk profile');
+        map.fitBounds(L.latLngBounds(r.pts).pad(0.15));
+      } catch (e) { $('rtOut').textContent = e.message === 'far' ? 'Start and stand are more than 3 miles apart. Pick a closer start.' : 'Could not load the terrain data. This needs signal, or an area saved for offline.'; }
+      finally { $('rtEasy').disabled = false; }
+    });
     // drag route: easiest way from a downed deer to the truck
     async function dragRoute(ll) {
       const pk = DB.markers.filter(m => m.type === 'parking').map(m => L.latLng(m.lat, m.lon)).sort((a, b) => a.distanceTo(ll) - b.distanceTo(ll))[0];
