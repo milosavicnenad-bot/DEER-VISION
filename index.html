@@ -317,6 +317,22 @@ html.night body { background: #000; }
 .ka-sw { width: 34px; height: 34px; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 0 0 1px var(--line); flex: none; }
 .ka-q { display: flex; flex-wrap: wrap; gap: 8px 14px; font-size: .88rem; }
 .ka-q label { display: flex; gap: 6px; align-items: center; }
+.sun-ctl { background: rgba(255,255,255,.94); color: #1d1a17; border-radius: 10px; padding: 8px 10px; box-shadow: 0 2px 8px rgba(0,0,0,.25); display: grid; grid-template-columns: 1fr auto; gap: 4px 8px; align-items: center; width: min(260px, 70vw); font-size: .8rem; }
+.sun-ctl .sun-l { grid-column: 1 / -1; }
+.sun-ctl input { width: 100%; }
+.sun-ctl button { border: 1px solid #bbb; background: #fff; border-radius: 6px; padding: 3px 8px; font: 600 .78rem system-ui; }
+.wmu-lbl { background: rgba(255,255,255,.75); border: 0; box-shadow: none; padding: 1px 4px; font: 700 10px/1.15 system-ui; text-align: center; color: #3b2f2a; }
+.wmu-lbl::before { display: none; }
+.cal-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.cal-chips span { border: 1px solid var(--line); border-radius: 999px; padding: 4px 10px; font-size: .8rem; background: var(--bg); }
+.cal-chips span.ok { border-color: #2e7d32; color: #2e7d32; } .cal-chips span.bad { border-color: #c62828; color: #c62828; } .cal-chips span.mid { border-color: #b26a00; color: #b26a00; }
+.cal-steps { margin: 0; padding-left: 1.2rem; display: grid; gap: 12px; font-size: .9rem; }
+.cal-fig8 { width: 200px; max-width: 100%; height: auto; display: block; margin-top: 6px; }
+.cal-phone { offset-path: path('M100 45 C130 5 185 5 185 45 C185 85 130 85 100 45 C70 5 15 5 15 45 C15 85 70 85 100 45 Z'); offset-rotate: auto 90deg; }
+@media (prefers-reduced-motion: no-preference) { .cal-phone { animation: calfig 4s linear infinite; } }
+@keyframes calfig { from { offset-distance: 0%; } to { offset-distance: 100%; } }
+.cal-check { border: 1px solid var(--line); border-radius: 10px; padding: 10px; display: grid; gap: 8px; background: var(--bg); margin-top: 6px; }
+.cal-big { font: 700 1.6rem var(--font-display); }
 .kt-hours { display: flex; gap: 6px; overflow-x: auto; }
 .kt-hours span { flex: none; display: grid; justify-items: center; padding: 6px 8px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); font-size: .75rem; color: var(--muted); }
 .kt-hours b { font-size: 1rem; color: var(--fg); }
@@ -1227,6 +1243,17 @@ body.nav-big { overflow: hidden; }
 .mk-tag { font-size: .9rem; opacity: .92; }
 .mk-bar { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
 .mk-stamp { font: 500 .78rem var(--font-mono); color: var(--muted); }
+.mk-mission { display: grid; gap: 10px; padding: 12px; border-radius: 12px; border: 1px solid rgba(255,140,60,.45); background: linear-gradient(160deg, #2a1a10, #140d08); color: #f6efe6; }
+.mk-mission summary { cursor: pointer; font: 700 1.1rem var(--font-display); letter-spacing: .12em; text-transform: uppercase; color: #ffb37a; }
+.mk-mission[open] summary { margin-bottom: 8px; }
+.mk-form { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; margin-bottom: 10px; }
+.mk-form label { display: grid; gap: 3px; font-size: .78rem; color: #e7cbb4; }
+.mk-form select, .mk-form input { font: 600 .92rem var(--font-body); padding: 7px 8px; border-radius: 8px; border: 1px solid rgba(255,179,122,.45); background: #1d140e; color: #fff; }
+.mk-form label:first-child { grid-column: 1 / -1; }
+.mk-verdict { padding: 10px 12px; border-radius: 10px; font-weight: 600; }
+.mk-verdict.no { background: rgba(211,47,47,.22); border: 1px solid #ef5350; }
+.mk-verdict.ok { background: rgba(76,175,80,.2); border: 1px solid #66bb6a; }
+.mk-verdict.mid { background: rgba(255,193,7,.18); border: 1px solid #ffca28; }
 .mk-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
 .mk-card { display: grid; gap: 10px; padding: 14px; border-radius: 12px; color: #f6efe6;
   background: radial-gradient(120% 90% at 100% 0%, rgba(255,106,26,.28), transparent 60%), linear-gradient(160deg, #23170f, #120c08); border: 1px solid rgba(255,140,60,.35); }
@@ -1503,7 +1530,6 @@ details.drop > .dropbody { padding: 0 14px 14px; }
       <a class="tile hero" href="#maps" style="--h: var(--h-moss)"><span class="ic"><svg><use href="#i-map"/></svg></span><span class="tt">Maps</span><span class="td">Topo, satellite and property lines, with your stands, sign, tracks, measuring and scent cone.</span></a>
       <a class="tile hero ai" href="#spots" style="--h: #7b3fd1"><span class="ic"><svg><use href="#i-ai"/></svg></span><span class="tt">AI hunt spots</span><span class="td">Where to hunt around you right now: food, water, cover, funnels, saddles, benches and bedding, with today's wind. Tap a spot to see why.</span></a>
       <a class="tile hero" href="#predict" style="--h: var(--h-gold)"><span class="ic"><svg><use href="#i-predict"/></svg></span><span class="tt">Deer movement</span><span class="td">When deer are most likely on their feet: best days, best hours and why.</span></a>
-      <a class="tile hero" href="#stats" style="--h: var(--h-sky)"><span class="ic"><svg><use href="#i-stats"/></svg></span><span class="tt">Hunting stats</span><span class="td">Deer harvest in New York and New Jersey: last season, 10 years, and by method.</span></a>
       <a class="tile hero" href="#blood" style="--h: var(--h-blood)"><span class="ic"><svg><use href="#i-blood"/></svg></span><span class="tt">Blood trail</span><span class="td">Make blood stand out on leaves and ground when tracking a hit deer.</span></a>
       <a class="tile hero" href="#track" style="--h: var(--h-bark)"><span class="ic"><svg><use href="#i-track"/></svg></span><span class="tt">Track finder</span><span class="td">Bring out faint hoofprints in mud, dirt and snow, and measure their size.</span></a>
       <a class="tile hero" href="#journal" style="--h: var(--h-bark)"><span class="ic"><svg><use href="#i-journal"/></svg></span><span class="tt">Hunt journal</span><span class="td">Log each sit in two taps, see which stand to hunt on today's wind, last-light alarm and harvest reporting.</span></a>
@@ -1524,8 +1550,9 @@ details.drop > .dropbody { padding: 0 14px 14px; }
       <a class="tile" href="#buck" style="--h: var(--h-bark)"><span class="ic"><svg><use href="#i-rack"/></svg></span><span class="tt">Buck age &amp; score</span><span class="td">Judge age from the body; gross and net score from measurements.</span></a>
       <a class="tile" href="#dress" style="--h: var(--h-blood)"><span class="ic"><svg><use href="#i-knife"/></svg></span><span class="tt">Field dressing</span><span class="td">Step by step, meat yield and how fast to cool it for today's temperature.</span></a>
       <a class="tile" href="#meat" style="--h: var(--h-sky)"><span class="ic"><svg><use href="#i-freezer"/></svg></span><span class="tt">Meat &amp; freezer</span><span class="td">Log every cut, see what's in the freezer, burger and jerky calculators, CWD testing and donating.</span></a>
-      <a class="tile" href="#backup" style="--h: var(--h-slate)"><span class="ic"><svg><use href="#i-backup"/></svg></span><span class="tt">Backup &amp; share</span><span class="td">Save all your spots and logs to a file, restore, or swap spots with a partner.</span></a>
       <a class="tile" href="#guide" style="--h: var(--h-bark)"><span class="ic"><svg><use href="#i-guide"/></svg></span><span class="tt">Hunter's guide</span><span class="td">Detergents, UV check, science</span></a>
+      <a class="tile hero" href="#stats" style="--h: var(--h-sky)"><span class="ic"><svg><use href="#i-stats"/></svg></span><span class="tt">Hunting stats</span><span class="td">Deer harvest in New York and New Jersey: last season, 10 years, and by method.</span></a>
+      <a class="tile hero" href="#backup" style="--h: var(--h-slate)"><span class="ic"><svg><use href="#i-backup"/></svg></span><span class="tt">Backup &amp; share</span><span class="td">Save all your spots and logs to a file, restore, or swap spots with a partner.</span></a>
           <a class="tile mikecon" href="#mikecon"><span class="mk-badge"><svg><use href="#i-mikecon"/></svg></span><span class="mk-text"><span class="mk-name">MIKECON</span></span><span class="mk-arrow" aria-hidden="true">›</span><span class="mk-warn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="currentColor"/><path d="M12 9.5v5M12 17.2v.3" stroke="#a83a06" stroke-width="2.4" stroke-linecap="round"/></svg><span>WARNING: JUST FOR EXPERT<span class="mk-bigs">S</span></span></span></a>
     </nav>
   </section>
@@ -2242,9 +2269,32 @@ details.drop > .dropbody { padding: 0 14px 14px; }
       <div class="mk-title">MIKECON</div>
       <div class="mk-tag">Advanced field readings for the initiated</div>
     </div>
+    <details class="mk-mission" open><summary>MIKECON missions</summary>
+      <div class="mk-form">
+        <label>Mission<select id="mkMission">
+          <option value="buck234">Kill a buck at 234 yards</option>
+          <option value="tacUp">Long-range target, uphill</option>
+          <option value="tacDown">Long-range target, downhill</option>
+          <option value="steel100">TAC course: 100 yd steel</option>
+          <option value="stand">Tree stand: buck right below</option>
+          <option value="gap18">Ground blind: 18 yd through a gap</option>
+          <option value="ravine">Buck across the ravine</option>
+          <option value="lastLight">Last minute of legal light</option>
+          <option value="custom">Custom shot</option>
+        </select></label>
+        <label>Arrow<select id="mkArrow"><option value="red">Carbon Express Maxima Red</option><option value="redsd">Carbon Express Maxima Red SD</option><option value="other">Some other arrow</option></select></label>
+        <label>Length<select id="mkLen"></select></label>
+        <label>Total weight<select id="mkGr"></select></label>
+        <label>Speed (fps)<input type="number" id="mkFps" min="150" max="400" step="1" inputmode="numeric"></label>
+        <label>Distance (yd)<input type="number" id="mkYd" min="1" max="400" step="1" inputmode="numeric"></label>
+        <label>Angle (°, + uphill)<input type="number" id="mkAng" min="-80" max="80" step="1" inputmode="numeric"></label>
+      </div>
+      <button class="btn primary" id="mkRun" type="button">Run MIKECON</button>
+      <div class="mk-grid" id="mkMissionOut"></div>
+    </details>
     <div class="mk-bar"><span class="mk-stamp" id="mkStamp"></span><button class="btn primary" id="mkReroll" type="button">Read the signs again</button></div>
     <div class="mk-grid" id="mkBody"></div>
-    <p class="caption" style="margin:0;text-align:center">Every MIKECON reading is generated at random, just for fun. Don't use it for real shooting decisions.</p>
+    <p class="caption" style="margin:0;text-align:center">MIKECON is for fun. The "Real physics" card uses real math (drop, flight time, energy, the true moon phase and barometer), but practice at real distances and know your effective range before you ever shoot at a deer.</p>
   </section>
 
   <!-- ============ BLOOD TRAIL ============ -->
@@ -2504,7 +2554,7 @@ details.drop > .dropbody { padding: 0 14px 14px; }
     <div class="note claude-only" hidden>The compass reads your phone's compass sensor, which works on the website version of this app, not inside Claude. The dial below shows the layout.</div>
     <svg class="dial" id="compassDial" viewBox="0 0 300 300" role="img" aria-label="Compass dial"></svg>
     <div class="stats">
-      <div class="stat"><span class="caption">Heading</span><span class="big" id="cmpDeg">—</span></div>
+      <div class="stat"><span class="caption">Heading <span id="cmpRef">(true north)</span></span><span class="big" id="cmpDeg">—</span></div>
       <div class="stat"><span class="caption">Direction</span><span class="big" id="cmpCard">—</span></div>
       <div class="stat"><span class="caption">Saved bearing</span><span class="big" id="cmpMark">—</span></div>
     </div>
@@ -2513,7 +2563,24 @@ details.drop > .dropbody { padding: 0 14px 14px; }
       <button class="btn" id="cmpMarkBtn" type="button">Save this bearing</button>
       <button class="btn" id="cmpClear" type="button">Clear bearing</button>
     </div>
-    <p class="caption">The top of the phone is your heading. Orange marker: the saved bearing (for example, toward your stand). Blue cone: where your scent drifts, using the wind set in Wind &amp; scent. The phone points to magnetic north, which in the NY/NJ area is about 13° west of true north. If it seems off, move the phone in a figure-8 to calibrate, and keep it away from metal and magnets.</p>
+    <p class="caption">The top of the phone is your heading. Orange marker: the saved bearing (for example, toward your stand). Blue cone: where your scent drifts, using the wind set in Wind &amp; scent.</p>
+    <div class="panel" id="calPanel">
+      <h2 style="margin:0">Test &amp; calibrate</h2>
+      <div class="cal-chips" id="calChips"></div>
+      <div class="row"><label for="calNorth">North</label><select id="calNorth" class="full"><option value="true">True north (matches maps and navigation)</option><option value="mag">Magnetic north (like a hand compass)</option></select><span class="v"></span></div>
+      <div class="row"><label for="calDecl">Declination</label><input type="number" id="calDecl" step="0.1" min="-30" max="30" class="full"><span class="v" id="calDeclV"></span></div>
+      <div class="caption" id="calDeclTxt"></div>
+      <ol class="cal-steps">
+        <li><b>Calibrate: figure-8.</b> Hold the phone flat, then slowly draw a big figure 8 in the air 3 times, turning your wrist so the phone tilts every way. Step away from trucks, tree-stand steel, gun barrels and magnets in phone cases first.
+          <svg class="cal-fig8" viewBox="0 0 200 90" aria-hidden="true"><path id="calPath" d="M100 45 C130 5 185 5 185 45 C185 85 130 85 100 45 C70 5 15 5 15 45 C15 85 70 85 100 45 Z" fill="none" stroke="var(--line)" stroke-width="3" stroke-dasharray="6 6"/><g class="cal-phone"><rect x="-9" y="-15" width="18" height="30" rx="4" fill="var(--accent)"/><rect x="-6" y="-11" width="12" height="20" rx="2" fill="#fff" opacity=".85"/></g></svg></li>
+        <li><b>Steadiness test.</b> Lay the phone flat and still (on a stump or your pack) and tap Test. <div class="actions"><button class="btn" id="calSteady" type="button">Test steadiness (5 s)</button></div><div id="calSteadyOut" class="caption"></div></li>
+        <li><b>Turn test.</b> Hold the phone flat in front of you and turn slowly all the way around once (about 20 seconds). Jumps mean metal nearby or a bad calibration. <div class="actions"><button class="btn" id="calTurn" type="button">Start turn test</button></div><div id="calTurnOut" class="caption"></div></li>
+        <li><b>Accuracy check against something you know.</b> Pick one:
+          <div class="actions"><button class="btn" id="calSun" type="button">Sun check</button><button class="btn" id="calPin" type="button">Map pin check</button><button class="btn" id="calWalk" type="button">Walk check</button></div>
+          <div id="calCheck" class="cal-check" hidden></div></li>
+      </ol>
+      <div class="actions"><button class="btn" id="calReset" type="button">Reset correction</button></div>
+    </div>
   </section>
 
   <!-- ============ SUN & MOON ============ -->
@@ -3776,7 +3843,13 @@ details.drop > .dropbody { padding: 0 14px 14px; }
   // COMPASS
   // =================================================================
   const compass = (() => {
-    let heading = null, mark = store.get('mark', null), listening = false, smooth = null;
+    let heading = null, raw = null, mark = store.get('mark', null), listening = false, smooth = null;
+    // magnetic declination for the NY/NJ region (fit to NOAA's model, about ±0.5°); other places: type it in
+    const autoDecl = (lat, lon) => lat > 38 && lat < 46 && lon > -81 && lon < -70 ? -12.67 - 0.536 * (lon + 74) - 0.239 * (lat - 41) : null;
+    const CAL = Object.assign({ north: 'true', decl: null, off: 0 }, store.get('compass.cal', {}));
+    const declNow = () => CAL.decl != null ? CAL.decl : (autoDecl(LOC.lat, LOC.lon) ?? 0);
+    const fix = h => h == null ? null : ((h + (CAL.north === 'true' ? declNow() : 0) + CAL.off) % 360 + 360) % 360;
+    let samples = [], acc = null; // recent raw readings [time, magnetic heading]
     // ---- faded compass rose behind the home screen ----
     const BG = 500;
     (function buildBg() {
@@ -3805,7 +3878,7 @@ details.drop > .dropbody { padding: 0 14px 14px; }
       if (heading == null) { t.innerHTML = listening ? 'Compass: waiting for sensor' : (CAN_LIVE ? 'Tap to start compass' : 'Compass: website version'); return; }
       const d = ((-heading - bgAngle + 540) % 360) - 180; bgAngle += d; // turn the short way round
       $('bgRose').setAttribute('transform', `rotate(${bgAngle.toFixed(1)} ${BG} ${BG})`);
-      t.innerHTML = `<b>${Math.round(heading)}°</b> ${cardinal(heading)}`;
+      t.innerHTML = `<b>${Math.round(heading) % 360}°</b> ${cardinal(heading)}`;
     }
     function render() {
       const h = heading == null ? 0 : heading;
@@ -3822,7 +3895,8 @@ details.drop > .dropbody { padding: 0 14px 14px; }
       g += `<line x1="150" y1="44" x2="150" y2="150" stroke="var(--fg)" stroke-width="2.5" stroke-linecap="round"/>`;
       g += `<circle cx="150" cy="150" r="6" fill="var(--fg)"/>`;
       $('compassDial').innerHTML = g;
-      $('cmpDeg').textContent = heading == null ? '—' : Math.round(heading) + '°';
+      $('cmpDeg').textContent = heading == null ? '—' : Math.round(heading) % 360 + '°';
+      $('cmpRef').textContent = CAL.north === 'true' ? '(true north)' : '(magnetic)'; calChips();
       $('cmpCard').textContent = heading == null ? '—' : cardinal(heading);
       $('cmpMark').textContent = mark == null ? '—' : Math.round(mark) + '° ' + cardinal(mark);
     }
@@ -3833,7 +3907,7 @@ details.drop > .dropbody { padding: 0 14px 14px; }
       if (h == null) return;
       if (screen.orientation && typeof screen.orientation.angle === 'number') h = (h + screen.orientation.angle) % 360;
       if (smooth == null) smooth = h; else { let d = ((h - smooth + 540) % 360) - 180; smooth = (smooth + d * 0.25 + 360) % 360; }
-      heading = smooth;
+      raw = smooth; heading = fix(smooth); samples.push([Date.now(), h]); if (samples.length > 400) samples.splice(0, samples.length - 400); if (e.webkitCompassAccuracy != null) acc = e.webkitCompassAccuracy;
       if (!listening) { listening = true; $('cmpStart').hidden = true; }
       if (current === 'compass') render();
       if (current === 'home') renderBg();
@@ -3866,9 +3940,121 @@ details.drop > .dropbody { padding: 0 14px 14px; }
       if (typeof DeviceOrientationEvent.requestPermission !== 'function') { listening = true; $('cmpStart').hidden = true; }
     }
     $('homeHeading').addEventListener('click', () => { if (!CAN_LIVE) { toast('The live compass works on the website version of this app.'); return; } if (!listening) start(); else location.hash = 'compass'; });
+    // ---------- test & calibrate ----------
+    const saveCal = () => store.set('compass.cal', CAL);
+    const esc = t => String(t == null ? '' : t).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    const angDiff = (a, b) => ((a - b + 540) % 360) - 180;
+    const circMean = arr => { let x = 0, y = 0; arr.forEach(h => { x += Math.cos(h * Math.PI / 180); y += Math.sin(h * Math.PI / 180); }); return { m: (Math.atan2(y, x) * 180 / Math.PI + 360) % 360, r: Math.hypot(x, y) / Math.max(1, arr.length) }; };
+    const rate = () => { const now = Date.now(), n = samples.filter(x => now - x[0] < 2000).length; return n / 2; };
+    let lastSteady = null, lastTurn = null;
+    function calChips() {
+      const r = rate(), d = declNow(), ch = [];
+      ch.push(heading == null ? `<span class="bad">Sensor: no readings</span>` : r < 3 ? `<span class="mid">Sensor: slow (${r.toFixed(0)}/s)</span>` : `<span class="ok">Sensor: working (${r.toFixed(0)}/s)</span>`);
+      if (acc != null) ch.push(acc < 0 ? '<span class="bad">Phone says: needs calibration</span>' : `<span class="${acc <= 10 ? 'ok' : acc <= 20 ? 'mid' : 'bad'}">Phone accuracy ±${Math.round(acc)}°</span>`);
+      ch.push(`<span>${CAL.north === 'true' ? 'True north' : 'Magnetic north'} · declination ${d > 0 ? '+' : ''}${d.toFixed(1)}°</span>`);
+      ch.push(`<span class="${CAL.off ? 'mid' : ''}">Correction ${CAL.off > 0 ? '+' : ''}${CAL.off.toFixed(1)}°</span>`);
+      if (lastSteady) ch.push(`<span class="${lastSteady.cls}">Steadiness ±${lastSteady.sd.toFixed(1)}°</span>`);
+      if (lastTurn) ch.push(`<span class="${lastTurn.cls}">Turn test: ${lastTurn.word}</span>`);
+      $('calChips').innerHTML = ch.join('');
+    }
+    function calUI() {
+      $('calNorth').value = CAL.north; const a = autoDecl(LOC.lat, LOC.lon);
+      $('calDecl').value = declNow().toFixed(1); $('calDeclV').textContent = CAL.decl == null ? 'auto' : 'yours';
+      $('calDeclTxt').innerHTML = (a != null ? `Here the compass needle points ${Math.abs(a).toFixed(1)}° ${a < 0 ? 'west' : 'east'} of true north. ` : 'Outside NY/NJ: look up your declination (NOAA magnetic field calculator) and type it in, west as minus. ') + 'With true north, the compass agrees with map bearings and with walking navigation to your pins.' + (CAL.decl != null ? ' <a href="#" id="calDeclAuto">Use auto</a>' : '');
+      calChips();
+    }
+    $('calNorth').addEventListener('change', e => { CAL.north = e.target.value; saveCal(); heading = fix(raw); render(); calUI(); });
+    $('calDecl').addEventListener('change', e => { const v = parseFloat(e.target.value); CAL.decl = isFinite(v) && Math.abs(v) <= 30 ? v : null; saveCal(); heading = fix(raw); render(); calUI(); });
+    $('calDeclTxt').addEventListener('click', e => { if (e.target.id === 'calDeclAuto') { e.preventDefault(); CAL.decl = null; saveCal(); heading = fix(raw); render(); calUI(); } });
+    const need = () => { if (heading == null) { toast(CAN_LIVE ? 'Start the compass first (tap Start compass).' : 'The compass test works on the website version.'); if (CAN_LIVE) start(true); return false; } return true; };
+    $('calSteady').addEventListener('click', () => {
+      if (!need()) return; const t0 = Date.now(), b = $('calSteady'); b.disabled = true; $('calSteadyOut').textContent = 'Hold still… 5';
+      const iv = setInterval(() => { const left = 5 - Math.floor((Date.now() - t0) / 1000); $('calSteadyOut').textContent = left > 0 ? `Hold still… ${left}` : 'Checking…'; }, 250);
+      setTimeout(() => {
+        clearInterval(iv); b.disabled = false;
+        const hs = samples.filter(x => x[0] >= t0).map(x => x[1]); if (hs.length < 5) { $('calSteadyOut').textContent = 'Not enough readings. Is the compass running?'; return; }
+        const { m } = circMean(hs), sd = Math.sqrt(hs.reduce((a, h) => a + angDiff(h, m) ** 2, 0) / hs.length), spread = Math.max(...hs.map(h => Math.abs(angDiff(h, m)))) * 2;
+        lastSteady = { sd, cls: sd < 1.5 ? 'ok' : sd < 4 ? 'mid' : 'bad' };
+        $('calSteadyOut').innerHTML = `<b>${sd < 1.5 ? 'Steady.' : sd < 4 ? 'A bit jumpy.' : 'Unsteady.'}</b> Wobble ±${sd.toFixed(1)}° (total spread ${spread.toFixed(0)}°, ${hs.length} readings). ${sd < 1.5 ? 'Good.' : 'Do the figure-8 again and move away from metal, then test again.'}`;
+        calChips();
+      }, 5200);
+    });
+    let turnOn = null;
+    $('calTurn').addEventListener('click', () => {
+      if (!need()) return;
+      if (turnOn) { finishTurn(); return; }
+      turnOn = { t0: Date.now() }; $('calTurn').textContent = 'Stop turn test'; $('calTurnOut').textContent = 'Turn slowly all the way around…';
+      turnOn.iv = setInterval(() => { const hs = samples.filter(x => x[0] >= turnOn.t0); let tot = 0; for (let i = 1; i < hs.length; i++) tot += angDiff(hs[i][1], hs[i - 1][1]);
+        $('calTurnOut').textContent = `Turned ${Math.abs(Math.round(tot))}° of 360°…`; if (Math.abs(tot) >= 360 || Date.now() - turnOn.t0 > 60000) finishTurn(); }, 300);
+    });
+    function finishTurn() {
+      clearInterval(turnOn.iv); const hs = samples.filter(x => x[0] >= turnOn.t0); turnOn = null; $('calTurn').textContent = 'Start turn test';
+      if (hs.length < 20) { $('calTurnOut').textContent = 'Not enough readings. Try again, turning slowly.'; return; }
+      let tot = 0, jumps = 0, back = 0, dir = 0; const steps = [];
+      for (let i = 1; i < hs.length; i++) { const d = angDiff(hs[i][1], hs[i - 1][1]), dt = Math.max(16, hs[i][0] - hs[i - 1][0]); tot += d; steps.push(d); if (Math.abs(d) / dt * 1000 > 120) jumps++; }
+      dir = Math.sign(tot); steps.forEach(d => { if (Math.sign(d) === -dir && Math.abs(d) > 4) back++; });
+      const full = Math.abs(tot) >= 330, bad = jumps + back;
+      lastTurn = { cls: !full ? 'mid' : bad <= 2 ? 'ok' : bad <= 8 ? 'mid' : 'bad', word: !full ? 'not a full turn' : bad <= 2 ? 'smooth' : bad <= 8 ? 'a few jumps' : 'jumpy' };
+      $('calTurnOut').innerHTML = !full ? `You turned ${Math.abs(Math.round(tot))}°. Turn all the way around (360°) for a full test.` : `<b>${bad <= 2 ? 'Smooth all the way around.' : bad <= 8 ? 'Mostly smooth, a few jumps.' : 'Jumpy.'}</b> ${jumps} sudden jumps, ${back} backward kicks. ${bad <= 2 ? 'No sign of metal or bad calibration.' : 'Something nearby is pulling the compass, or it needs a figure-8. Move away from metal and try again.'}`;
+      calChips();
+    }
+    // accuracy checks: compare the compass with a direction we know exactly
+    const sunAz = (date, lat, lon) => { const r = Math.PI / 180, d = date.getTime() / 864e5 - 10957.5, g = (357.529 + 0.98560028 * d) * r, q = 280.459 + 0.98564736 * d, Ls = (q + 1.915 * Math.sin(g) + 0.020 * Math.sin(2 * g)) * r, e = (23.439 - 0.00000036 * d) * r;
+      const ra = Math.atan2(Math.cos(e) * Math.sin(Ls), Math.cos(Ls)), dec = Math.asin(Math.sin(e) * Math.sin(Ls)), ha = ((18.697374558 + 24.06570982441908 * d) * 15 + lon) * r - ra, la = lat * r;
+      const alt = Math.asin(Math.sin(la) * Math.sin(dec) + Math.cos(la) * Math.cos(dec) * Math.cos(ha)), az = Math.atan2(-Math.sin(ha), Math.tan(dec) * Math.cos(la) - Math.sin(la) * Math.cos(ha));
+      return { az: (az / r + 360) % 360, alt: alt / r }; };
+    const brg = (a, b) => { const r = Math.PI / 180, y = Math.sin((b.lon - a.lon) * r) * Math.cos(b.lat * r), x = Math.cos(a.lat * r) * Math.sin(b.lat * r) - Math.sin(a.lat * r) * Math.cos(b.lat * r) * Math.cos((b.lon - a.lon) * r); return (Math.atan2(y, x) / r + 360) % 360; };
+    const distM = (a, b) => { const r = Math.PI / 180, dl = (b.lat - a.lat) * r, dn = (b.lon - a.lon) * r, h = Math.sin(dl / 2) ** 2 + Math.cos(a.lat * r) * Math.cos(b.lat * r) * Math.sin(dn / 2) ** 2; return 12742018 * Math.asin(Math.sqrt(h)); };
+    const getPos = () => new Promise(res => { if (!navigator.geolocation) return res(null); navigator.geolocation.getCurrentPosition(p => res({ lat: p.coords.latitude, lon: p.coords.longitude, acc: p.coords.accuracy }), () => res(null), { enableHighAccuracy: true, timeout: 10000, maximumAge: 30000 }); });
+    const trueNow = () => raw == null ? null : ((raw + declNow() + CAL.off) % 360 + 360) % 360; // checks always compare in true north
+    function showResult(knownTrue, label) {
+      const hs = samples.filter(x => Date.now() - x[0] < 1000).map(x => x[1]); if (!hs.length) { toast('No compass readings. Hold still and try again.'); return; }
+      const cm = circMean(hs); if (cm.r < 0.995) { toast('The phone was moving. Hold it still on the target for 2 seconds, then tap Measure again.'); return; }
+      const meas = ((cm.m + declNow() + CAL.off) % 360 + 360) % 360, err = angDiff(meas, knownTrue), a = Math.abs(err);
+      const cls = a <= 3 ? 'ok' : a <= 8 ? 'mid' : 'bad';
+      $('calCheck').insertAdjacentHTML('beforeend', `<div class="cal-res"><div class="cal-big" style="color:${cls === 'ok' ? '#2e7d32' : cls === 'mid' ? '#b26a00' : '#c62828'}">${err > 0 ? '+' : ''}${err.toFixed(1)}° off</div>
+        <div class="caption">Compass ${meas.toFixed(1)}° vs ${label} ${knownTrue.toFixed(1)}° (true north). ${a <= 3 ? 'Excellent: within normal compass accuracy.' : a <= 8 ? 'A little off. You can apply a correction, or redo the figure-8 and check again.' : 'Too far off. Redo the figure-8 away from metal, then check again before applying a correction.'}</div>
+        <div class="actions">${a > 1 && a <= 30 ? `<button class="btn primary" type="button" data-calapply="${(-err).toFixed(1)}">Apply ${(-err) > 0 ? '+' : ''}${(-err).toFixed(1)}° correction</button>` : ''}</div></div>`);
+    }
+    $('calCheck').addEventListener('click', e => { const b = e.target.closest('[data-calapply]'); if (b) { CAL.off = Math.round((CAL.off + parseFloat(b.dataset.calapply)) * 10) / 10; saveCal(); heading = fix(raw); render(); calChips(); toast(`Correction saved: ${CAL.off > 0 ? '+' : ''}${CAL.off}°. It's used everywhere in the app.`); b.remove(); }
+      const m = e.target.closest('[data-calmeasure]'); if (m && calMeasure) calMeasure(); });
+    let calMeasure = null, walkW = null;
+    function openCheck(html, fnMeasure) { if (walkW != null) { navigator.geolocation.clearWatch(walkW); walkW = null; } const c = $('calCheck'); c.hidden = false; c.innerHTML = html; calMeasure = fnMeasure; }
+    $('calSun').addEventListener('click', async () => {
+      if (!need()) return; const p = (await getPos()) || { lat: LOC.lat, lon: LOC.lon }, s = sunAz(new Date(), p.lat, p.lon);
+      if (s.alt < 3) { openCheck('<div>The sun is down or too low right now. Use the map pin check or the walk check instead.</div>'); return; }
+      if (s.alt > 65) { openCheck('<div>The sun is too high overhead for a good check. Try in the morning or late afternoon, or use the map pin check.</div>'); return; }
+      openCheck(`<div><b>Sun check.</b> The sun is at ${s.az.toFixed(1)}° right now (${Math.round(s.alt)}° up), so your shadow points to <b>${((s.az + 180) % 360).toFixed(1)}°</b> (true north). <b>Don't look at the sun.</b> Stand with your back to it, hold the phone flat, and point the top of the phone straight along the middle of your own shadow. Hold still, then tap Measure.</div><div class="actions"><button class="btn primary" type="button" data-calmeasure="1">Measure</button></div>`,
+        () => showResult((sunAz(new Date(), p.lat, p.lon).az + 180) % 360, 'your shadow'));
+    });
+    $('calPin').addEventListener('click', async () => {
+      if (!need()) return; const p = await getPos(); if (!p) { openCheck('<div>Needs your GPS position. Allow location and try again.</div>'); return; }
+      const ms = (store.get('maps.markers', []) || []).map(m => ({ m, d: distM(p, m) })).filter(x => x.d > 90 && x.d < 3000).sort((a, b) => a.d - b.d).slice(0, 8);
+      if (!ms.length) { openCheck('<div>No map pins between 100 yards and 2 miles from here. Put a pin on something you can see far away (a tower, a lone tree, the corner of a field) in Maps, then come back. Or use the sun or walk check.</div>'); return; }
+      openCheck(`<div><b>Map pin check.</b> Pick a pin you can actually see from here, point the top of the phone straight at it (phone flat), hold still and tap Measure. Your GPS is ±${Math.round(p.acc * 1.094)} yd, so farther pins give a more exact check.</div>
+        <select id="calPinSel" class="full">${ms.map((x, i) => `<option value="${i}">${esc(x.m.name || x.m.type || 'Pin')} · ${Math.round(x.d * 1.094)} yd · ${Math.round(brg(p, x.m))}°</option>`).join('')}</select>
+        <div class="actions"><button class="btn primary" type="button" data-calmeasure="1">Measure</button></div>`, () => { const x = ms[+$('calPinSel').value]; showResult(brg(p, x.m), 'the pin'); });
+    });
+    $('calWalk').addEventListener('click', () => {
+      if (!need()) return; if (!navigator.geolocation) { openCheck('<div>Needs GPS.</div>'); return; }
+      let start = null, last = null; const hs = [];
+      openCheck(`<div><b>Walk check.</b> Hold the phone flat, pointing straight ahead, and walk in a straight line for at least 50 yards (a road, field edge or straight trail is best). Tap Finish at the end.</div><div id="calWalkTxt" class="caption">Waiting for GPS…</div><div class="actions"><button class="btn primary" type="button" data-calmeasure="1">Finish</button></div>`, () => {
+        if (walkW != null) { navigator.geolocation.clearWatch(walkW); walkW = null; }
+        if (!start || !last || distM(start, last) < 40) { $('calWalkTxt').textContent = 'Walk at least 50 yards in a straight line first (GPS needs the distance).'; return; }
+        const course = brg(start, last), mh = circMean(hs).m, meas = ((mh + declNow() + CAL.off) % 360 + 360) % 360;
+        samples.push([Date.now(), mh]); showResult(course, 'your GPS walking line');
+      });
+      walkW = navigator.geolocation.watchPosition(p => {
+        const q = { lat: p.coords.latitude, lon: p.coords.longitude }; if (p.coords.accuracy > 25) { $('calWalkTxt').textContent = `GPS ±${Math.round(p.coords.accuracy * 1.094)} yd: wait for a better signal…`; return; }
+        if (!start) start = q; last = q; if (raw != null) hs.push(raw);
+        $('calWalkTxt').textContent = `Walked ${Math.round(distM(start, last) * 1.094)} yd`;
+      }, () => { $('calWalkTxt').textContent = 'GPS not available.'; }, { enableHighAccuracy: true, maximumAge: 0 });
+    });
+    $('calReset').addEventListener('click', () => { CAL.off = 0; saveCal(); heading = fix(raw); render(); calChips(); toast('Compass correction reset to 0°.'); });
+    setInterval(() => { if (current === 'compass') calChips(); }, 2000);
     return {
-      show() { render(); if (CAN_LIVE) quietStart(); },
-      heading: () => heading,
+      show() { render(); calUI(); if (CAN_LIVE) quietStart(); },
+      heading: () => heading, magnetic: () => raw,
       listen() { if (CAN_LIVE) quietStart(); },
       ask() { if (CAN_LIVE) return start(true); },
       home() { if (CAN_LIVE) quietStart(); renderBg(); },
@@ -4587,8 +4773,93 @@ details.drop > .dropbody { padding: 0 14px 14px; }
       ];
       $('mkBody').innerHTML = cards.join('');
     }
+
+    // ---- MIKECON missions: fun readings on top of real arrow physics, the real moon and the real barometer ----
+    const MISS = {
+      buck234: { yd: 234, ang: 0, buck: true, n: 'Kill a buck at 234 yards' },
+      tacUp: { yd: 90, ang: 20, buck: false, n: 'Long-range target, uphill' },
+      tacDown: { yd: 80, ang: -25, buck: false, n: 'Long-range target, downhill' },
+      steel100: { yd: 100, ang: 5, buck: false, n: 'TAC course: 100 yd steel' },
+      stand: { yd: 9, ang: -55, buck: true, n: 'Tree stand: buck right below' },
+      gap18: { yd: 18, ang: 0, buck: true, n: 'Ground blind: 18 yd through a gap' },
+      ravine: { yd: 45, ang: -12, buck: true, n: 'Buck across the ravine' },
+      lastLight: { yd: 28, ang: 0, buck: true, n: 'Last minute of legal light' },
+      custom: { yd: 40, ang: 0, buck: true, n: 'Custom shot' },
+    };
+    const lenSel = $('mkLen'), grSel = $('mkGr');
+    for (let l = 25; l <= 32.01; l += 0.5) lenSel.insertAdjacentHTML('beforeend', `<option value="${l}">${l}"</option>`);
+    for (let g = 300; g <= 750; g += 25) grSel.insertAdjacentHTML('beforeend', `<option value="${g}">${g} gr</option>`);
+    const ch0 = store.get('chrono', null), ab0 = store.get('arrowbuild', null);
+    lenSel.value = String(ab0 && ab0.v && ab0.v.abLen ? Math.round(ab0.v.abLen * 2) / 2 : 28.5);
+    grSel.value = String(ch0 && ch0.arrow ? Math.min(750, Math.max(300, Math.round(ch0.arrow / 25) * 25)) : 425);
+    $('mkFps').value = ch0 && ch0.speed ? Math.round(ch0.speed) : 280;
+    const setMission = () => { const m = MISS[$('mkMission').value]; $('mkYd').value = m.yd; $('mkAng').value = m.ang; };
+    $('mkMission').addEventListener('change', () => { setMission(); runMission(); });
+    setMission();
+    let wx = null;
+    async function getWx() {
+      if (wx || IN_CLAUDE) return wx;
+      try { const r = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${LOC.lat}&longitude=${LOC.lon}&current=surface_pressure,pressure_msl,temperature_2m&hourly=pressure_msl&past_days=1&forecast_days=1&temperature_unit=fahrenheit&timezone=auto`); const j = await r.json();
+        const h = j.hourly, now = Date.now(); let i = h.time.findIndex(t => new Date(t).getTime() > now); i = i < 0 ? h.time.length - 1 : i;
+        wx = { msl: j.current.pressure_msl, sfc: j.current.surface_pressure, t: j.current.temperature_2m, trend: h.pressure_msl[i] - h.pressure_msl[Math.max(0, i - 3)] }; } catch (e) { wx = null; }
+      return wx;
+    }
+    const moonNow = () => { const SYN = 29.530588853, age = (((Date.now() - Date.UTC(2000, 0, 6, 18, 14)) / 864e5) % SYN + SYN) % SYN, ill = (1 - Math.cos(2 * Math.PI * age / SYN)) / 2;
+      const nm = age < 1.85 ? 'New moon' : age < 5.54 ? 'Waxing crescent' : age < 9.23 ? 'First quarter' : age < 12.92 ? 'Waxing gibbous' : age < 16.61 ? 'Full moon' : age < 20.3 ? 'Waning gibbous' : age < 23.99 ? 'Last quarter' : age < 27.68 ? 'Waning crescent' : 'New moon';
+      return { age, ill, nm }; };
+    // real point-mass arrow flight with air drag (feet, seconds). Drag tuned so a 400 gr arrow loses about 5% of its speed in 40 yd.
+    function fly(fps, gr, yd, angDeg, rhoRatio, sd) {
+      const c = 0.000427 * (400 / gr) * rhoRatio * (sd ? 0.85 : 1), th = angDeg * Math.PI / 180, D = yd * 3;
+      let x = 0, y = 0, vx = fps * Math.cos(th), vy = fps * Math.sin(th), t = 0; const dt = 0.0005;
+      while (x * Math.cos(th) + y * Math.sin(th) < D && t < 12) { const v = Math.hypot(vx, vy); vx -= c * v * vx * dt; vy -= (c * v * vy + 32.174) * dt; x += vx * dt; y += vy * dt; t += dt; }
+      const drop = (-x * Math.sin(th) + y * Math.cos(th)) * -12; // inches below the line of sight
+      const v = Math.hypot(vx, vy); return { t, v, drop, ke: gr * v * v / 450240, mom: gr * v / 225400 };
+    }
+    async function runMission() {
+      const key = $('mkMission').value, m = MISS[key], arrow = $('mkArrow').value, red = arrow !== 'other', sd = arrow === 'redsd';
+      const len = +lenSel.value, gr = +grSel.value, fps = Math.min(400, Math.max(150, +$('mkFps').value || 280)), yd = Math.min(400, Math.max(1, +$('mkYd').value || 20)), ang = Math.max(-80, Math.min(80, +$('mkAng').value || 0));
+      const w = await getWx(), mo = moonNow();
+      const inHg = w ? w.sfc * 0.02953 : 29.92, rho = w ? (w.sfc / 1013.25) * (518.67 / (w.t + 459.67)) : 1;
+      const f = fly(fps, gr, yd, ang, rho, sd), fStd = fly(fps, gr, yd, ang, 1, sd), f0 = fly(fps, gr, yd, 0, rho, sd);
+      const ke0 = gr * fps * fps / 450240, sound = yd * 3 / 1125, react = Math.max(0, f.t - sound), horiz = yd * Math.cos(ang * Math.PI / 180);
+      const ft = n => n >= 24 ? (n / 12).toFixed(1) + ' ft' : n.toFixed(1) + ' in';
+      const foc = R(8, 14, 1) + (len < 27 ? 2 : len > 30 ? -1.5 : 0) + (gr > 500 ? 3 : 0);
+      const presMood = !w ? 'no signal' : w.trend > 0.8 ? 'rising fast' : w.trend > 0.2 ? 'rising' : w.trend < -0.8 ? 'falling fast' : w.trend < -0.2 ? 'falling' : 'steady';
+      let verdict, vc;
+      if (m.buck || key === 'custom') {
+        if (yd > 60) { verdict = `MIKECON's honest verdict: don't shoot. At ${yd} yards the arrow is in the air ${f.t.toFixed(2)} s. The deer hears the string after ${sound.toFixed(2)} s and has ${react.toFixed(2)} s to move before the arrow gets there, and a ${ft(Math.abs(f.drop))} drop leaves no room for a misjudged yard. Get closer. That's the expert move.`; vc = 'no'; }
+        else if (yd > 40) { verdict = `Only if you shoot this distance all year, the deer is calm and broadside, and there's no wind. Otherwise, get closer.`; vc = 'mid'; }
+        else { verdict = `Inside normal bowhunting range. Aim for the vitals, behind the shoulder${ang < -30 ? ', and from up high aim a little higher on the near side so the arrow exits low on the far side' : ''}.`; vc = 'ok'; }
+      } else { verdict = `Target mission. Use your ${Math.round(horiz)} yd pin (angle rule: aim for the level distance${Math.abs(ang) >= 10 ? `, not the ${yd} yd line-of-sight distance` : ''}). On the way the arrow falls about ${ft(Math.abs(f.drop))} below your line of sight; that's what your pin makes up.`; vc = 'ok'; }
+      const cards = [
+        card('Mission brief', MISS[key].n, `<div class="mk-verdict ${vc}">${esc2(verdict)}</div>`),
+        card('Real physics', 'no magic here', big(ft(Math.abs(f.drop)), `drop below your line of sight at ${yd} yd`) + rows([
+          ['Flight time', f.t.toFixed(2) + ' s'], ['Speed at target', Math.round(f.v) + ' fps (from ' + fps + ')'], ['Energy at target', f.ke.toFixed(1) + ' ft-lb (at bow ' + ke0.toFixed(1) + ')'],
+          ['Momentum at target', f.mom.toFixed(3) + ' slug·ft/s'], ['Sound reaches the deer', sound.toFixed(2) + ' s'], ['Time the deer has to move', react.toFixed(2) + ' s'],
+          ...(ang ? [['Level distance (aim for this)', horiz.toFixed(0) + ' yd'], ['Drop if it were flat', ft(Math.abs(f0.drop))]] : []),
+        ]) + `<div class="caption" style="color:#d9bfa9">Common guidance for whitetails: at least 40 ft-lb of energy, and a shot inside your practiced effective range.</div>`),
+        card(red ? 'Maxima Red factor' : 'Arrow factor', red ? 'red band engaged' : 'red band missing', big(red ? R(97, 100) + '%' : R(41, 72) + '%', red ? 'MIKECON-approved arrow' : 'MIKECON is skeptical') + rows([
+          ['Red band confidence', red ? P(['absolute', 'unshakable', 'legendary', 'blinding']) : P(['nervous', 'confused', 'asking questions'])],
+          ['Diameter', sd ? 'small (cuts wind and drag)' : arrow === 'red' ? 'standard' : 'unknown, suspicious'],
+          ['Length harmony at ' + len + '"', len >= 27.5 && len <= 29.5 ? 'perfect (' + R(90, 99) + '%)' : len < 27.5 ? 'short and spicy (' + R(70, 88) + '%)' : 'long and wise (' + R(72, 89) + '%)'],
+          ['Grain gravity at ' + gr + ' gr', gr >= 500 ? 'heavy hitter: momentum king' : gr >= 425 ? 'balanced: the hunter’s middle' : 'light and fast: flat but nervous'],
+          ['Front of center (guess)', foc.toFixed(1) + '%'],
+        ]) + meter(red ? 'Maxima Red loyalty' : 'Arrow loyalty', red ? R(92, 100) : R(30, 70))),
+        card('Moon & barometer', 'sky desk', big(Math.round(mo.ill * 100) + '%', mo.nm.toLowerCase() + ' (real)') + rows([
+          ['Barometer (real)', w ? inHg.toFixed(2) + ' inHg at your elevation, ' + presMood : 'no signal: using 29.92'],
+          ['Air density vs. standard', ((rho - 1) * 100).toFixed(1) + '%'],
+          ['Real barometer effect on drop', (Math.abs(f.drop - fStd.drop)).toFixed(2) + ' in at ' + yd + ' yd'],
+          ['Real moon effect on the arrow', '0.00 in (sorry, Moon)'],
+          ['Lunar pull on the buck', R(5, 95) + '% (MIKECON estimate)'],
+          ['Deer mood from pressure', !w ? 'unknown' : w.trend > 0.2 ? 'up and moving after the front' : w.trend < -0.2 ? 'feeding before the weather' : 'normal routine'],
+        ]) + quote(P(['A rising barometer lifts the hunter’s spirit, not the arrow.', 'The moon pulls tides, not Maxima Reds.', 'High pressure, clear head, short shot.', 'Full moon, full quiver, full patience.']))),
+      ];
+      $('mkMissionOut').innerHTML = cards.join('');
+    }
+    $('mkRun').addEventListener('click', runMission);
+    ['mkArrow', 'mkLen', 'mkGr'].forEach(id => $(id).addEventListener('change', runMission));
     $('mkReroll').addEventListener('click', build);
-    return { show: build };
+    return { show() { build(); runMission(); } };
   })();
   // =================================================================
   // MAPS
@@ -4645,32 +4916,47 @@ details.drop > .dropbody { padding: 0 14px 14px; }
     const newArea = () => DB.cur !== 'all' ? DB.cur : (DB.areas[0] || 'My spots');
 
     // ---------- map and layers ----------
-    let map = null, baseLayer = null, baseKey = store.get('maps.base', 'topo');
+    if (!store.get('maps.hdMig', false)) { const ob = store.get('maps.base', null); if (ob === 'topo') store.set('maps.base', 'etopo'); store.set('maps.hdMig', true); } // one-time move to the sharp maps
+    let map = null, baseLayer = null, baseKey = store.get('maps.base', 'sat');
     const overOn = store.get('maps.over', { nyParcels: true, njParcels: true, nyState: true, njState: true });
     const overLayers = {};
     let opacity = store.get('maps.opacity', 0.8);
     const USGS = n => `https://basemap.nationalmap.gov/arcgis/rest/services/${n}/MapServer/tile/{z}/{y}/{x}`;
+    // HD: on sharp phone screens, load twice-as-detailed map pictures (more data, much crisper)
+    const HD = () => (window.devicePixelRatio || 1) > 1.3 && store.get('maps.hd', true);
+    const ESRI = n => `https://server.arcgisonline.com/ArcGIS/rest/services/${n}/MapServer/tile/{z}/{y}/{x}`;
+    const xyz = (url, native, o) => L.tileLayer(url, Object.assign({ maxZoom: 21 }, o, { detectRetina: HD(), maxNativeZoom: HD() ? native - 1 : native }));
+    const ESRI_ATT = 'Esri, Maxar, Earthstar Geographics, USDA, USGS';
+    const NY_BB = [[40.47, -79.8], [45.03, -71.8]], NJ_BB = [[38.85, -75.6], [41.37, -73.88]];
+    const esriImg = () => xyz(ESRI('World_Imagery'), 19, { zIndex: 0, attribution: ESRI_ATT });
+    const statePhotos = () => [
+      xyz('https://maps.nj.gov/arcgis/rest/services/Basemap/Orthos_Natural_2020_NJ_WM/MapServer/tile/{z}/{y}/{x}', 20, { bounds: NJ_BB, minZoom: 13, zIndex: 1, attribution: 'NJ Office of GIS (2020, 1 ft)' }),
+      new ArcTiles('https://orthos.its.ny.gov/arcgis/rest/services/wms/Latest/MapServer', { layers: '', bounds: NY_BB, minZoom: 13, maxZoom: 21, zIndex: 1, attribution: 'NYS ITS Geospatial Services (6–12 in)' }),
+    ];
     const BASES = {
-      topo:   ['USGS topo', 'Contour lines, streams, trails and roads', () => L.tileLayer(USGS('USGSTopo'), { maxNativeZoom: 16, maxZoom: 19, attribution: 'USGS The National Map' })],
-      sat:    ['Satellite', 'Aerial photos (USGS)', () => L.tileLayer(USGS('USGSImageryOnly'), { maxNativeZoom: 16, maxZoom: 19, attribution: 'USGS The National Map' })],
-      hybrid: ['Satellite + topo', 'Aerial photos with roads, names and contours', () => L.tileLayer(USGS('USGSImageryTopo'), { maxNativeZoom: 16, maxZoom: 19, attribution: 'USGS The National Map' })],
-      otm:    ['OpenTopoMap', 'Detailed contours, trails and paths', () => L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', { subdomains: 'abc', maxNativeZoom: 17, maxZoom: 19, attribution: 'Map data © OpenStreetMap contributors, SRTM | Style © OpenTopoMap (CC-BY-SA)' })],
-      osm:    ['Street map', 'Roads and places (OpenStreetMap)', () => L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxNativeZoom: 19, maxZoom: 19, attribution: '© OpenStreetMap contributors' })],
+      sat:    ['HD satellite (sharpest)', 'New York 6–12 in and New Jersey 1 ft state aerial photos; Esri World Imagery everywhere else. Zooms in to single trees.', () => grp(esriImg(), ...statePhotos())],
+      hybrid: ['HD satellite + roads', 'The same sharp photos with roads, trails and place names', () => grp(esriImg(), ...statePhotos(), xyz(ESRI('Reference/World_Transportation'), 19, { zIndex: 1 }), xyz(ESRI('Reference/World_Boundaries_and_Places'), 19, { zIndex: 1 }))],
+      etopo:  ['HD topo', 'Detailed topo map (contours, trails, buildings) that stays sharp up close (Esri)', () => xyz(ESRI('World_Topo_Map'), 19, { attribution: 'Esri, HERE, Garmin, USGS, NGA' })],
+      topo:   ['USGS topo', 'Classic USGS topo: contours, streams, trails and roads (sharp to zoom 16)', () => L.tileLayer(USGS('USGSTopo'), { maxNativeZoom: 16, maxZoom: 21, attribution: 'USGS The National Map' })],
+      usgsSat:['USGS satellite', 'Government aerial photos (sharp to zoom 16, lighter on data)', () => L.tileLayer(USGS('USGSImageryOnly'), { maxNativeZoom: 16, maxZoom: 21, attribution: 'USGS The National Map' })],
+      otm:    ['OpenTopoMap', 'Detailed contours, trails and paths', () => L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', { subdomains: 'abc', maxNativeZoom: 17, maxZoom: 21, attribution: 'Map data © OpenStreetMap contributors, SRTM | Style © OpenTopoMap (CC-BY-SA)' })],
+      osm:    ['Street map', 'Roads and places (OpenStreetMap)', () => L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxNativeZoom: 19, maxZoom: 21, attribution: '© OpenStreetMap contributors' })],
     };
     // ArcGIS "export" images cut to map tiles, for services that are not pre-tiled
     const ArcTiles = L.TileLayer.extend({
       getTileUrl(c) {
         const ts = this.getTileSize(), nw = this._map.unproject(c.scaleBy(ts), c.z), se = this._map.unproject(c.add([1, 1]).scaleBy(ts), c.z);
         const a = L.CRS.EPSG3857.project(nw), b = L.CRS.EPSG3857.project(se);
-        const bb = `bbox=${a.x.toFixed(2)},${b.y.toFixed(2)},${b.x.toFixed(2)},${a.y.toFixed(2)}&bboxSR=3857&imageSR=3857&size=${ts.x},${ts.y}`;
-        if (this.options.image) return `${this._url}/exportImage?${bb}&format=png&transparent=true&f=image${this.options.rr ? '&renderingRule=' + this.options.rr : ''}`;
-        return `${this._url}/export?${bb}&dpi=96&format=png32&transparent=true&f=image${this.options.layers ? '&layers=' + this.options.layers : ''}`;
+        const k = HD() ? 2 : 1;
+        const bb = `bbox=${a.x.toFixed(2)},${b.y.toFixed(2)},${b.x.toFixed(2)},${a.y.toFixed(2)}&bboxSR=3857&imageSR=3857&size=${ts.x * k},${ts.y * k}`;
+        if (this.options.image) return `${this._url}/exportImage?${bb}&format=${this.options.jpg ? 'jpgpng' : 'png'}&transparent=true&f=image${this.options.rr ? '&renderingRule=' + this.options.rr : ''}`;
+        return `${this._url}/export?${bb}&dpi=${96 * k}&format=png32&transparent=true&f=image${this.options.layers ? '&layers=' + this.options.layers : ''}`;
       }
     });
-    const arc = (url, layers, o) => new ArcTiles(url, Object.assign({ layers, maxZoom: 19, opacity, zIndex: 5 }, o));
-    const imgSrv = (url, rr, o) => new ArcTiles(url, Object.assign({ image: true, rr: rr ? encodeURIComponent(JSON.stringify(rr)) : '', maxZoom: 19, opacity, zIndex: 4 }, o));
+    const arc = (url, layers, o) => new ArcTiles(url, Object.assign({ layers, maxZoom: 21, opacity, zIndex: 5 }, o));
+    const imgSrv = (url, rr, o) => new ArcTiles(url, Object.assign({ image: true, rr: rr ? encodeURIComponent(JSON.stringify(rr)) : '', maxZoom: 21, opacity, zIndex: 4 }, o));
     // several map layers that switch on and off together
-    const grp = (...ls) => { const g = L.layerGroup(ls); g.setOpacity = v => ls.forEach(l => l.setOpacity && l.setOpacity(v)); return g; };
+    const grp = (...ls) => { const g = L.layerGroup(ls); g.setOpacity = v => ls.forEach(l => l.setOpacity && l.setOpacity(v)); g.bringToBack = () => g; return g; };
     const TDEP = 'https://elevation.nationalmap.gov/arcgis/rest/services/3DEPElevation/ImageServer';
     const NYORTHO = 'https://orthos.its.ny.gov/arcgis/rest/services/wms/Latest/MapServer';
     const NYNAPP = 'https://orthos.its.ny.gov/arcgis/rest/services/wms/napp/MapServer';
@@ -4758,6 +5044,138 @@ details.drop > .dropbody { padding: 0 14px 14px; }
         if (!sg.length) toastOnce('No rub or scrape markers yet. Add them in Maps (Marker → Rub / Scrape) as you scout.');
       },
     });
+    // ---------- more hunting maps ----------
+    const NAIP = 'https://imagery.nationalmap.gov/arcgis/rest/services/USGSNAIPPlus/ImageServer';
+    const OAKSRV = 'https://imagery.geoplatform.gov/iipp/rest/services/Vegetation/USFS_EDW_FIA_ForestAtlas_TreeSpecies_109/ImageServer';
+    // sun position (degrees): azimuth from north, clockwise; altitude above the horizon
+    const sunPos = (date, lat, lon) => {
+      const r = Math.PI / 180, d = date.getTime() / 864e5 - 10957.5;
+      const g = (357.529 + 0.98560028 * d) * r, q = 280.459 + 0.98564736 * d, Ls = (q + 1.915 * Math.sin(g) + 0.020 * Math.sin(2 * g)) * r, e = (23.439 - 0.00000036 * d) * r;
+      const ra = Math.atan2(Math.cos(e) * Math.sin(Ls), Math.cos(Ls)), dec = Math.asin(Math.sin(e) * Math.sin(Ls));
+      const ha = ((18.697374558 + 24.06570982441908 * d) * 15 + lon) * r - ra, la = lat * r;
+      const alt = Math.asin(Math.sin(la) * Math.sin(dec) + Math.cos(la) * Math.cos(dec) * Math.cos(ha));
+      const az = Math.atan2(-Math.sin(ha), Math.tan(dec) * Math.cos(la) - Math.sin(la) * Math.cos(ha));
+      return { az: (az / r + 360) % 360, alt: alt / r };
+    };
+    const demPix = {};
+    function demGrid(z, x, y) {
+      const k = z + '/' + x + '/' + y; if (demPix[k]) return demPix[k];
+      return (demPix[k] = (async () => {
+        const r = await fetch(DEM.replace('{z}', z).replace('{x}', x).replace('{y}', y), { mode: 'cors', credentials: 'omit' }); if (!r.ok) throw new Error(r.status);
+        const bm = await createImageBitmap(await r.blob()), c = document.createElement('canvas'); c.width = c.height = 256;
+        const g = c.getContext('2d'); g.drawImage(bm, 0, 0); const d = g.getImageData(0, 0, 256, 256).data, el = new Float32Array(65536);
+        for (let i = 0; i < 65536; i++) el[i] = d[i * 4] * 256 + d[i * 4 + 1] + d[i * 4 + 2] / 256 - 32768;
+        return el;
+      })().catch(err => { delete demPix[k]; throw err; }));
+    }
+    const ASPECT_COL = [[43, 95, 217], [43, 181, 217], [139, 195, 74], [242, 193, 46], [240, 112, 26], [214, 49, 43], [156, 39, 176], [94, 53, 177]]; // N NE E SE S SW W NW
+    const TerrainLayer = L.GridLayer.extend({
+      options: { mode: 'sun', opacity: 0.6, zIndex: 4, minZoom: 10, maxZoom: 21, maxNativeZoom: 15, attribution: 'Elevation: AWS Terrain Tiles (USGS 3DEP)' },
+      createTile(c, done) {
+        const t = document.createElement('canvas'); t.width = t.height = 256;
+        this._paint(t, c).then(() => done(null, t), () => done(null, t)); return t;
+      },
+      async _paint(t, c) {
+        const el = await demGrid(c.z, c.x, c.y), n = 2 ** c.z;
+        const lat = Math.atan(Math.sinh(Math.PI * (1 - 2 * (c.y + 0.5) / n))) * 180 / Math.PI, lon = (c.x + 0.5) / n * 360 - 180;
+        const mpp = 156543.034 * Math.cos(lat * Math.PI / 180) / n, r = Math.PI / 180;
+        const g = t.getContext('2d'), im = g.createImageData(256, 256), p = im.data;
+        const sun = this.options.mode === 'sun' ? sunPos(new Date(this.options.t || Date.now()), lat, lon) : null;
+        if (sun && sun.alt <= 0) { g.fillStyle = 'rgba(10,20,55,.55)'; g.fillRect(0, 0, 256, 256); return; }
+        const zen = sun ? (90 - sun.alt) * r : 0, saz = sun ? sun.az * r : 0, cz = Math.cos(zen), sz = Math.sin(zen);
+        const E = (x, y) => el[Math.min(255, Math.max(0, y)) * 256 + Math.min(255, Math.max(0, x))];
+        for (let y = 0; y < 256; y++) for (let x = 0; x < 256; x++) {
+          const dx = (E(x + 1, y) - E(x - 1, y)) / (2 * mpp), dn = -(E(x, y + 1) - E(x, y - 1)) / (2 * mpp); // east and north rise per meter
+          const slope = Math.atan(Math.hypot(dx, dn)), asp = Math.atan2(-dx, -dn), i = (y * 256 + x) * 4; // aspect: direction the slope faces
+          if (sun) {
+            const il = cz * Math.cos(slope) + sz * Math.sin(slope) * Math.cos(saz - asp), rel = il - cz; // compared with flat ground
+            if (il <= 0.02) { p[i] = 12; p[i + 1] = 24; p[i + 2] = 70; p[i + 3] = 200; }
+            else if (rel < -0.03) { p[i] = 12; p[i + 1] = 24; p[i + 2] = 70; p[i + 3] = Math.min(190, -rel * 520); }
+            else if (rel > 0.03) { p[i] = 255; p[i + 1] = 196; p[i + 2] = 60; p[i + 3] = Math.min(130, rel * 420); }
+          } else {
+            const deg = slope / r; if (deg < 3) continue;
+            const col = ASPECT_COL[Math.round(((asp / r + 360) % 360) / 45) % 8];
+            p[i] = col[0]; p[i + 1] = col[1]; p[i + 2] = col[2]; p[i + 3] = Math.min(220, 60 + deg * 8);
+          }
+        }
+        g.putImageData(im, 0, 0);
+      },
+      onAdd(m) {
+        L.GridLayer.prototype.onAdd.call(this, m);
+        if (this.options.mode !== 'sun') return;
+        const self = this, C = L.Control.extend({ options: { position: 'topleft' }, onAdd() {
+          const d = L.DomUtil.create('div', 'sun-ctl'); L.DomEvent.disableClickPropagation(d); L.DomEvent.disableScrollPropagation(d);
+          const now = new Date(), mins = now.getHours() * 60 + now.getMinutes();
+          d.innerHTML = `<div class="sun-l"><b>Sun and shade</b> <span></span></div><input type="range" min="300" max="1200" step="10" value="${Math.min(1200, Math.max(300, mins))}" aria-label="Time of day"><button type="button">Now</button>`;
+          const inp = d.querySelector('input'), lbl = d.querySelector('span');
+          const upd = () => { const t = new Date(); t.setHours(0, +inp.value, 0, 0); self.options.t = t.getTime(); const c = m.getCenter(), s = sunPos(t, c.lat, c.lng);
+            lbl.textContent = `${t.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })} · sun ${s.alt > 0 ? Math.round(s.alt) + '° up, from ' + ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'][Math.round(s.az / 45) % 8] : 'down'}`; };
+          let tm = null; inp.addEventListener('input', () => { upd(); clearTimeout(tm); tm = setTimeout(() => self.redraw(), 150); });
+          d.querySelector('button').addEventListener('click', () => { const t = new Date(); inp.value = t.getHours() * 60 + t.getMinutes(); upd(); self.redraw(); });
+          upd(); return d; } });
+        this._ctl = new C().addTo(m);
+      },
+      onRemove(m) { if (this._ctl) { this._ctl.remove(); this._ctl = null; } L.GridLayer.prototype.onRemove.call(this, m); },
+    });
+    // hunting pressure: distance on foot from the nearest road, trail or parking area (OpenStreetMap)
+    const PressureMap = L.LayerGroup.extend({
+      onAdd(m) { L.LayerGroup.prototype.onAdd.call(this, m); this._cache = this._cache || {}; this._h = () => this._load(); m.on('moveend', this._h); this._load(); },
+      onRemove(m) { m.off('moveend', this._h); L.LayerGroup.prototype.onRemove.call(this, m); this._b = null; },
+      async _load() {
+        const m = this._map; if (!m) return;
+        const z = m.getZoom();
+        if (z < 13) { this.clearLayers(); this._b = null; toastOnce('Zoom in closer to see the hunting pressure map.'); return; }
+        if (this._b && this._b.contains(m.getBounds()) && this._z === z) return;
+        const b = m.getBounds().pad(0.6), s = b.getSouth().toFixed(4), w = b.getWest().toFixed(4), n = b.getNorth().toFixed(4), e = b.getEast().toFixed(4), key = [s, w, n, e].join(',');
+        let j = this._cache[key];
+        if (!j) {
+          const q = `[out:json][timeout:25];(way["highway"~"^(motorway|trunk|primary|secondary|tertiary|unclassified|residential|living_street|service|road|track|path|footway|bridleway|cycleway|steps)$"](${key});nwr["amenity"="parking"](${key}););out geom;`;
+          try { const r = await fetch('https://overpass-api.de/api/interpreter', { method: 'POST', body: 'data=' + encodeURIComponent(q), headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }); if (!r.ok) throw new Error(r.status); j = this._cache[key] = await r.json(); }
+          catch (err) { toast('Couldn’t load roads and trails for the pressure map (no signal?).'); return; }
+        }
+        if (!this._map) return;
+        const o = m.project(b.getNorthWest(), z), o2 = m.project(b.getSouthEast(), z), k = Math.min(1, 2400 / Math.max(o2.x - o.x, o2.y - o.y));
+        const W = Math.ceil((o2.x - o.x) * k), H = Math.ceil((o2.y - o.y) * k), mpp = 156543.034 * Math.cos(b.getCenter().lat * Math.PI / 180) / 2 ** z / k;
+        const cv = document.createElement('canvas'); cv.width = W; cv.height = H; const g = cv.getContext('2d');
+        const P = (la, lo) => { const pt = m.project([la, lo], z); return [(pt.x - o.x) * k, (pt.y - o.y) * k]; };
+        const lines = [], dots = [];
+        for (const el of j.elements || []) {
+          if (el.type === 'node') dots.push(P(el.lat, el.lon));
+          else if (el.geometry) { const pts = el.geometry.map(q2 => P(q2.lat, q2.lon)); if (el.tags && el.tags.amenity === 'parking') pts.forEach(p2 => dots.push(p2)); else lines.push(pts); }
+        }
+        g.fillStyle = '#c4002f'; g.fillRect(0, 0, W, H);
+        const band = (meters, col, cut) => {
+          g.globalCompositeOperation = cut ? 'destination-out' : 'source-over'; g.strokeStyle = g.fillStyle = col; g.lineWidth = 2 * meters / mpp; g.lineCap = g.lineJoin = 'round';
+          for (const pts of lines) { g.beginPath(); pts.forEach((p2, i) => i ? g.lineTo(p2[0], p2[1]) : g.moveTo(p2[0], p2[1])); g.stroke(); }
+          for (const d2 of dots) { g.beginPath(); g.arc(d2[0], d2[1], meters / mpp, 0, 7); g.fill(); }
+        };
+        band(1609, '#ff8a00'); band(805, '#ffd400'); band(402, '#000', true); g.globalCompositeOperation = 'source-over';
+        this.clearLayers(); L.imageOverlay(cv.toDataURL('image/png'), b, { opacity: 0.42, interactive: false, zIndex: 6, attribution: 'Roads and trails © OpenStreetMap contributors' }).addTo(this);
+        this._b = b; this._z = z;
+        if (!lines.length && !dots.length) toastOnce('No roads or trails found here in OpenStreetMap, so the pressure map can’t tell.');
+      },
+    });
+    // NY deer harvest per WMU, 2024-25 (NY DEC "2024 Deer Harvest by Wildlife Management Unit"): bucks, antlerless, total, bucks/mi², total/mi²
+    const NYH = {"1C":[1426,1547,2973,1.6,3.3],"3A":[797,156,953,1.1,1.4],"3C":[676,414,1090,2.1,3.4],"3F":[410,216,626,1.2,1.9],"3G":[653,376,1029,1.4,2.3],"3H":[2014,1438,3452,3.6,6.2],"3J":[821,673,1494,2.3,4.2],"3K":[936,532,1468,2.5,3.9],"3M":[2570,2361,4931,3.4,6.6],"3N":[318,180,498,1.4,2.2],"3P":[225,100,325,1.8,2.6],"3R":[205,64,269,1.0,1.3],"3S":[490,360,850,1.1,2.0],"4A":[1084,664,1748,2.5,4.1],"4B":[439,349,788,2.7,4.9],"4C":[517,426,943,3.1,5.7],"4F":[3283,2317,5600,2.8,4.8],"4G":[939,695,1634,2.5,4.4],"4H":[950,579,1529,3.3,5.3],"4J":[251,290,541,1.7,3.6],"4K":[603,450,1053,2.4,4.1],"4L":[347,176,523,1.6,2.4],"4O":[2139,999,3138,2.8,4.1],"4P":[960,577,1537,2.7,4.3],"4R":[667,393,1060,2.3,3.7],"4S":[510,373,883,2.3,4.0],"4T":[316,319,635,2.4,4.8],"4U":[289,133,422,2.3,3.3],"4W":[965,502,1467,2.2,3.3],"4Y":[355,269,624,2.0,3.5],"4Z":[510,496,1006,2.0,4.0],"5A":[1051,347,1398,1.7,2.3],"5C":[1000,212,1212,0.9,1.1],"5F":[702,134,836,0.5,0.6],"5G":[1082,297,1379,1.0,1.2],"5H":[2276,392,2668,0.7,0.9],"5J":[1107,307,1414,1.6,2.1],"5R":[764,885,1649,2.0,4.4],"5S":[1131,796,1927,2.7,4.6],"5T":[373,200,573,1.7,2.6],"6A":[3422,1291,4713,2.3,3.2],"6C":[2241,1360,3601,2.3,3.7],"6F":[1074,135,1209,0.9,1.0],"6G":[3256,2931,6187,3.5,6.6],"6H":[160,139,299,0.9,1.7],"6J":[1131,232,1363,0.7,0.9],"6K":[3217,1887,5104,2.8,4.4],"6N":[778,115,893,1.6,1.8],"6P":[565,662,1227,2.8,6.0],"6R":[1106,789,1895,2.0,3.5],"6S":[1378,1051,2429,2.3,4.1],"7A":[1680,1300,2980,3.1,5.5],"7F":[1746,1699,3445,2.5,5.0],"7H":[981,918,1899,2.7,5.3],"7J":[2585,2766,5351,3.1,6.4],"7M":[3900,3522,7422,3.1,6.0],"7P":[1626,959,2585,3.4,5.3],"7R":[2307,2698,5005,3.1,6.8],"7S":[2567,2136,4703,3.9,7.1],"8A":[1806,2265,4071,4.3,9.7],"8C":[127,163,290,0.9,2.1],"8F":[2677,3255,5932,3.7,8.1],"8G":[3242,3715,6957,4.7,10.1],"8H":[2629,3263,5892,4.6,10.3],"8J":[2158,2353,4511,3.0,6.3],"8M":[1377,1737,3114,4.5,10.1],"8N":[1737,2209,3946,5.5,12.6],"8P":[1576,1424,3000,4.4,8.4],"8R":[1807,2437,4244,6.7,15.7],"8S":[1189,1436,2625,4.6,10.2],"8T":[2140,2075,4215,5.6,10.9],"8W":[2132,1800,3932,4.9,8.9],"8X":[2509,2954,5463,6.3,13.6],"8Y":[1428,1428,2856,4.0,8.1],"9A":[1792,1779,3571,3.9,7.7],"9F":[1229,1253,2482,4.4,9.0],"9G":[715,976,1691,3.1,7.4],"9H":[4173,3959,8132,4.3,8.4],"9J":[2987,3120,6107,4.3,8.8],"9K":[1800,1589,3389,4.0,7.6],"9M":[1402,1120,2522,4.3,7.6],"9N":[806,769,1575,3.9,7.6],"9P":[2782,1950,4732,4.8,8.1],"9R":[632,450,1082,2.9,5.0],"9S":[257,180,437,2.8,4.8],"9T":[752,522,1274,3.0,5.1],"9W":[909,612,1521,3.6,6.1],"9X":[1075,630,1705,4.9,7.8],"9Y":[711,870,1581,5.7,12.7]};
+    const harvCol = v => v == null ? '#9e9e9e' : v < 1 ? '#cfd8dc' : v < 2 ? '#fff3b0' : v < 3 ? '#ffd54f' : v < 4 ? '#ff9800' : v < 5 ? '#e64a19' : '#a50f15';
+    const NYHarvest = L.LayerGroup.extend({
+      onAdd(m) { L.LayerGroup.prototype.onAdd.call(this, m); this._load(); },
+      async _load() {
+        if (this._done || this._busy) return; this._busy = true;
+        try {
+          const r = await fetch(`${DEC}/4/query?where=1%3D1&outFields=*&returnGeometry=true&outSR=4326&maxAllowableOffset=0.002&f=geojson`); if (!r.ok) throw new Error(r.status);
+          const gj = await r.json(), wmu = p => { const v = Object.values(p || {}).find(x => typeof x === 'string' && /^\s*\d[A-Z]\s*$/.test(x)); return v ? v.trim() : null; };
+          L.geoJSON(gj, {
+            style: f => { const d = NYH[wmu(f.properties)]; return { color: '#3b2f2a', weight: 1, fillColor: harvCol(d && d[3]), fillOpacity: 0.45 }; },
+            onEachFeature: (f, l) => { const u = wmu(f.properties), d = NYH[u]; if (!u) return;
+              l.bindTooltip(`${u}${d ? '<br>' + d[3] : ''}`, { permanent: true, direction: 'center', className: 'wmu-lbl' });
+              l.bindPopup(d ? `<b>WMU ${u}</b> · 2024–25 harvest (NY DEC)<br>Bucks: ${d[0].toLocaleString()} (<b>${d[3]} per sq mi</b>)<br>Antlerless: ${d[1].toLocaleString()}<br>All deer: ${d[2].toLocaleString()} (${d[4]} per sq mi)` : `<b>WMU ${u}</b><br>No harvest numbers for this unit.`); },
+          }).addTo(this);
+          this._done = true;
+        } catch (err) { toast('Couldn’t load the WMU map (no signal?). Try again with signal.'); }
+        this._busy = false;
+      },
+    });
     const GROUPS = [['legal', 'Property, public land and rules'], ['terrain', 'Terrain'], ['photos', 'Aerial photos and old maps'], ['land', 'Land and water'], ['access', 'Access'], ['mine', 'Your sign']];
     const OVERS = {
       nyParcels: ['NY property lines', 'Tax parcels with owners (38 counties incl. Orange, Rockland, Ulster, Putnam). Zoom in close.', () => arc(NYP, 'show:1', { minZoom: 14 }), 'legal'],
@@ -4770,24 +5188,32 @@ details.drop > .dropbody { padding: 0 14px 14px; }
       njDmz:     ['NJ deer zones', 'Deer Management Zone boundaries', () => arc('https://mapsdep.nj.gov/arcgis/rest/services/Features/Environmental_admin/MapServer', 'show:17', { minZoom: 7 }), 'legal'],
       lidar:     ['LiDAR terrain (1 m)', 'High-detail shading: benches, saddles, ditches and old roads that regular topo misses', () => imgSrv(TDEP, { rasterFunction: 'Hillshade Multidirectional' }, { opacity: 0.6, zIndex: 3, attribution: 'USGS 3DEP' }), 'terrain'],
       contours:  ['LiDAR contours (10 ft)', 'Detailed contour lines from lidar. Zoom in close.', () => imgSrv(TDEP, { rasterFunction: 'Preset 10ft Contour Interval' }, { minZoom: 14, zIndex: 6, attribution: 'USGS 3DEP' }), 'terrain'],
-      hill:      ['Terrain shading (basic)', 'Lighter, faster shading for ridges and valleys', () => L.tileLayer(USGS('USGSShadedReliefOnly'), { maxNativeZoom: 16, maxZoom: 19, opacity: 0.4, zIndex: 3, attribution: 'USGS' }), 'terrain'],
-      photos:    ['State aerial photos', 'Sharp state photos: New York 6–12 in (2022–25), New Jersey 1 ft (2020)', () => grp(arc(NYORTHO, '', { minZoom: 12, zIndex: 2, attribution: 'NYS ITS Geospatial Services' }), L.tileLayer(NJORTHO + '/tile/{z}/{y}/{x}', { maxNativeZoom: 20, maxZoom: 19, minZoom: 10, zIndex: 2, opacity, attribution: 'NJ Office of GIS' })), 'photos'],
+      hill:      ['Terrain shading (basic)', 'Lighter, faster shading for ridges and valleys', () => L.tileLayer(USGS('USGSShadedReliefOnly'), { maxNativeZoom: 16, maxZoom: 21, opacity: 0.4, zIndex: 3, attribution: 'USGS' }), 'terrain'],
+      photos:    ['State aerial photos', 'Sharp state photos: New York 6–12 in (2022–25), New Jersey 1 ft (2020)', () => grp(arc(NYORTHO, '', { minZoom: 12, zIndex: 2, attribution: 'NYS ITS Geospatial Services' }), xyz(NJORTHO + '/tile/{z}/{y}/{x}', 20, { minZoom: 10, zIndex: 2, opacity, attribution: 'NJ Office of GIS' })), 'photos'],
       napp:      ['Old aerial photos, NY 1994–98', 'Color-infrared photos: old fields, orchards and logging roads now grown over', () => arc(NYNAPP, '', { minZoom: 11, zIndex: 2, attribution: 'NYS ITS, USGS NAPP' }), 'photos'],
       histTopo:  ['Old USGS topo maps', 'Historical topographic maps (1880s–2000s): old roads, farms and buildings', () => imgSrv(HTOPO, null, { zIndex: 2, attribution: 'USGS Historical Topographic Map Collection, Esri' }), 'photos'],
       wetlands:  ['Wetlands', 'Swamps, marshes and wet thickets: bedding cover and travel edges (US Fish & Wildlife)', () => arc(NWI, '', { minZoom: 11, attribution: 'USFWS National Wetlands Inventory' }), 'land'],
-      water:     ['Streams and ponds', 'Detailed creeks, springs, ponds and lakes (USGS)', () => L.tileLayer(USGS('USGSHydroCached'), { maxNativeZoom: 16, maxZoom: 19, zIndex: 6, attribution: 'USGS' }), 'land'],
+      water:     ['Streams and ponds', 'Detailed creeks, springs, ponds and lakes (USGS)', () => L.tileLayer(USGS('USGSHydroCached'), { maxNativeZoom: 16, maxZoom: 21, zIndex: 6, attribution: 'USGS' }), 'land'],
       landcover: ['Forest and field types', 'Hardwood, evergreen and mixed forest, shrub, grass, hay and crop fields (national land cover)', () => imgSrv(NLCD, null, { opacity: 0.55, attribution: 'USGS Annual NLCD' }), 'land'],
       forestLoss:['Timber cuts and forest loss', 'Where and when forest was cut or lost since 1985. Recent cuts grow thick browse and cover (US Forest Service)', () => imgSrv(LCMS, null, { attribution: 'USFS LCMS' }), 'land'],
       signheat:  ['Rub & scrape heat map', 'From your rub and scrape markers. Red: this week, orange: 1–3 weeks, yellow: up to 2 months, gray: older. Dashed lines join nearby scrapes into likely scrape lines.', () => new SignHeat(), 'mine'],
       access:    ['Parking, trails and access', 'NY DEC parking areas, roads and trails; NJ state land facilities, trails and WMA parking', () => grp(arc(DECPARK, 'show:0,1', { minZoom: 11 }), arc(DECTRAIL, 'show:0,2', { minZoom: 11 }), arc(NJL, 'show:62,63,88', { minZoom: 11 })), 'access'],
+      slope:     ['Slope steepness (LiDAR)', 'Green = flat, yellow and orange = moderate, red = steep. Look for flat benches (green) on steep sidehills: classic bedding and travel spots. Zoom in close.', () => imgSrv(TDEP, { rasterFunction: 'Slope Map' }, { opacity: 0.5, zIndex: 3, minZoom: 11, attribution: 'USGS 3DEP' }), 'terrain'],
+      aspect:    ['Slope direction', 'Which way each slope faces. Red and orange = south and southwest (warm and sunny: late-season bedding and browse). Blue = north (cool and shaded: early season). Yellow = southeast, green = east, purple = west. Flat ground has no color.', () => new TerrainLayer({ mode: 'aspect', opacity: 0.55 }), 'terrain'],
+      sunshade:  ['Sun and shade', 'Which slopes are in sun (warm yellow) or shade (dark blue) at the time you pick on the slider. On cold mornings deer bed where the first sun hits; on hot days they stay in the shade.', () => new TerrainLayer({ mode: 'sun', opacity: 0.6 }), 'terrain'],
+      cir:       ['Color-infrared photos (USDA NAIP)', 'Recent photos in false color: healthy leaves look bright red, evergreens (pine and hemlock cover) dark red-brown, fields and food plots pink to red, bare ground and roads blue-gray.', () => imgSrv(NAIP, { rasterFunction: 'FalseColorComposite' }, { jpg: true, opacity: 1, zIndex: 2, minZoom: 12, attribution: 'USDA NAIP via USGS' }), 'photos'],
+      crops:     ['Crop fields (USDA 2024)', 'Field-by-field crops: corn yellow, soybeans dark green, alfalfa pink, hay and pasture light green, winter wheat tan. Forest, water and towns show in their own colors.', () => L.tileLayer.wms('https://nassgeodata.gmu.edu/CropScapeService/wms_cdlall.cgi', { layers: 'cdl_2024', format: 'image/png', transparent: true, version: '1.1.1', crs: L.CRS.EPSG4326, opacity: 0.6, zIndex: 3, minZoom: 9, maxZoom: 21, attribution: 'USDA NASS Cropland Data Layer' }), 'land'],
+      oak:       ['Oak forests (acorns)', 'Where oak-hickory and oak-pine forest dominate (US Forest Service, coarse 250 m blocks). Oaks mean acorns, the top fall food. Check the actual trees on the photos.', () => grp(imgSrv(OAKSRV, { rasterFunction: 'Oak_Hickory' }, { opacity: 0.55, attribution: 'USFS FIA Forest Atlas' }), imgSrv(OAKSRV, { rasterFunction: 'oakpine' }, { opacity: 0.55 })), 'land'],
+      pressure:  ['Hunting pressure', 'How far each spot is on foot from the nearest road, trail or parking area. Clear: under ¼ mile (where most hunters sit). Yellow: ¼ to ½ mile. Orange: ½ to 1 mile. Red: over 1 mile (fewest hunters). Zoom in to see it.', () => new PressureMap(), 'access'],
+      harvest:   ['NY deer harvest by unit', 'Bucks taken per square mile in each NY WMU, 2024–25 (NY DEC). Gray: under 1, pale yellow: 1–2, yellow: 2–3, orange: 3–4, red: 4–5, dark red: 5 or more. Tap a unit for the numbers.', () => new NYHarvest(), 'legal'],
     };
 
     function setBase(k) {
-      if (!BASES[k]) k = 'topo';
+      if (!BASES[k]) k = 'sat';
       baseKey = k; store.set('maps.base', k);
       if (baseLayer) map.removeLayer(baseLayer);
       baseLayer = BASES[k][2]().addTo(map); baseLayer.bringToBack();
-      document.querySelectorAll('#mpBase input').forEach(i => { i.checked = i.value === k; });
+      document.querySelectorAll('#mpBase input[type=radio]').forEach(i => { i.checked = i.value === k; });
       refresh3d();
     }
     function setOver(k, on) {
@@ -4797,10 +5223,15 @@ details.drop > .dropbody { padding: 0 14px 14px; }
       refresh3d();
     }
     function buildLayerPanel() {
-      $('mpBase').innerHTML = Object.entries(BASES).map(([k, b]) => `<label class="lyr"><input type="radio" name="mpBase" value="${k}"><div><b>${b[0]}</b><span>${b[1]}</span></div></label>`).join('');
+      $('mpBase').innerHTML = Object.entries(BASES).map(([k, b]) => `<label class="lyr"><input type="radio" name="mpBase" value="${k}"><div><b>${b[0]}</b><span>${b[1]}</span></div></label>`).join('') + `<label class="lyr"><input type="checkbox" id="mpHD" ${store.get('maps.hd', true) ? 'checked' : ''}><div><b>HD maps</b><span>Twice-as-sharp map pictures on high-resolution phone screens. Uses about 4× more data; turn off on a weak signal.</span></div></label>`;
       $('mpOver').innerHTML = GROUPS.map(([g, title]) => `<div class="lyr-g">${title}</div>` + Object.entries(OVERS).filter(([, o]) => o[3] === g)
         .map(([k, o]) => `<label class="lyr"><input type="checkbox" value="${k}"${overOn[k] ? ' checked' : ''}><div><b>${o[0]}</b><span>${o[1]}</span></div></label>`).join('')).join('');
-      $('mpBase').addEventListener('change', e => setBase(e.target.value));
+      $('mpBase').addEventListener('change', e => {
+        if (e.target.id !== 'mpHD') { setBase(e.target.value); return; }
+        store.set('maps.hd', e.target.checked); setBase(baseKey);
+        for (const k of Object.keys(overLayers)) { if (map.hasLayer(overLayers[k])) map.removeLayer(overLayers[k]); delete overLayers[k]; if (overOn[k]) setOver(k, true); }
+        toast(e.target.checked ? 'HD maps on: sharper pictures, more data.' : 'HD maps off: lighter on data.');
+      });
       $('mpOver').addEventListener('change', e => setOver(e.target.value, e.target.checked));
       $('mpOpacity').value = Math.round(opacity * 100); $('mpOpacityV').textContent = Math.round(opacity * 100) + '%';
       $('mpOpacity').addEventListener('input', () => {
@@ -5274,6 +5705,7 @@ details.drop > .dropbody { padding: 0 14px 14px; }
     function tilesOf(l) {
       if (!l) return [];
       if (!(l instanceof L.TileLayer)) return l.getLayers ? l.getLayers().flatMap(tilesOf) : [];
+      if (L.TileLayer.WMS && l instanceof L.TileLayer.WMS) return [];
       const o = l.options; let tiles;
       if (l instanceof ArcTiles) {
         const bb = 'bbox={bbox-epsg-3857}&bboxSR=3857&imageSR=3857&size=256,256';
@@ -6569,20 +7001,23 @@ details.drop > .dropbody { padding: 0 14px 14px; }
       } else toast('No waypoints or tracks found in that file.');
     });
 
-    // offline: save USGS map pictures for the current view
+    // offline: save the map pictures (base map, layers that are on, and HD tiles) for the current view
     $('mpOffline').addEventListener('click', async () => {
       if (!('caches' in window)) { toast('Offline saving needs the website version on https.'); return; }
-      const b = map.getBounds(), z0 = Math.max(10, map.getZoom() - 1), z1 = Math.min(17, map.getZoom() + 2), urls = [];
+      const b = map.getBounds(), z0 = Math.max(10, map.getZoom() - 1), z1 = Math.min(18, map.getZoom() + 2), urls = [];
       const flat = l => l instanceof L.TileLayer ? [l] : (l && l.getLayers ? l.getLayers().flatMap(flat) : []);
       const layers = flat(baseLayer).concat(...Object.keys(OVERS).filter(k => overOn[k] && overLayers[k]).map(k => flat(overLayers[k])));
-      if (baseKey !== 'sat') layers.push(L.tileLayer(USGS('USGSImageryOnly'), { maxNativeZoom: 16 })); // satellite too, always handy
+      if (baseKey !== 'sat' && baseKey !== 'hybrid') layers.push(esriImg()); // sharp satellite too, always handy
       for (let z = z0; z <= z1; z++) {
         const p1 = map.project(b.getNorthWest(), z).divideBy(256).floor(), p2 = map.project(b.getSouthEast(), z).divideBy(256).floor();
         for (let x = p1.x; x <= p2.x; x++) for (let y = p1.y; y <= p2.y; y++) {
           for (const l of layers) {
             const o = l.options; if (z < (o.minZoom || 0) || z > (o.maxNativeZoom || 19)) continue;
+            if (o.bounds) { const bb = L.latLngBounds(o.bounds), tb = L.latLngBounds(map.unproject(L.point(x * 256, (y + 1) * 256), z), map.unproject(L.point((x + 1) * 256, y * 256), z)); if (!bb.intersects(tb)) continue; }
+            if (L.TileLayer.WMS && l instanceof L.TileLayer.WMS) continue;
             if (l instanceof ArcTiles) { const c = L.point(x, y); c.z = z; urls.push(l.getTileUrl(c)); }
-            else { const subs = typeof o.subdomains === 'string' ? o.subdomains : (o.subdomains || ['a']).join(''); urls.push(L.Util.template(l._url, { x, y, z, s: subs[(x + y) % subs.length], r: '' })); }
+            else { const subs = typeof o.subdomains === 'string' ? o.subdomains : (o.subdomains || ['a']).join(''), zz = o.detectRetina && L.Browser.retina ? z + 1 : z, f = zz - z;
+              for (let dx = 0; dx <= f; dx++) for (let dy = 0; dy <= f; dy++) { const X = (x << f) + dx, Y = (y << f) + dy; urls.push(L.Util.template(l._url, { x: X, y: Y, z: zz, s: subs[(X + Y) % subs.length], r: '' })); } }
           }
           if (z <= 15) urls.push(DEM.replace('{z}', z).replace('{x}', x).replace('{y}', y)); // 3D terrain and thermals
         }
@@ -6604,7 +7039,7 @@ details.drop > .dropbody { padding: 0 14px 14px; }
       Object.assign(L.Popup.prototype.options, { autoPanPaddingTopLeft: L.point(8, 80), autoPanPaddingBottomRight: L.point(64, 12) }); // keep popups clear of the map buttons
       const v = store.get('maps.view', { lat: LOC.lat, lon: LOC.lon, z: 14 });
       try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist(); } catch (e) {} // ask the phone not to clear saved markers and maps
-      map = L.map('map', { zoomControl: true, attributionControl: true, maxZoom: 19, tap: false }).setView([v.lat, v.lon], v.z);
+      map = L.map('map', { zoomControl: true, attributionControl: true, maxZoom: 21, tap: false }).setView([v.lat, v.lon], v.z);
       map.attributionControl.setPrefix('<a href="https://leafletjs.com" target="_blank" rel="noopener">Leaflet</a>');
       buildLayerPanel(); fillAreas();
       setBase(baseKey);

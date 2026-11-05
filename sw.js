@@ -1,12 +1,12 @@
 // Deer Eyes offline helper: keeps the app and the maps you've viewed working without signal in the woods.
 // Each copy of the app (each website folder) keeps its own saved pages, so two versions can live side by side.
 const SCOPE = self.registration.scope;
-const CACHE = 'deer-eyes-core-v8 ' + SCOPE;
+const CACHE = 'deer-eyes-core-v9 ' + SCOPE;
 const TILES = 'deer-eyes-tiles'; // map pictures are shared between copies
 const CORE = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png', './maplibre-gl.js', './maplibre-gl.css'];
 const TILE_HOSTS = ['basemap.nationalmap.gov', 'tile.opentopomap.org', 'a.tile.opentopomap.org', 'b.tile.opentopomap.org', 'c.tile.opentopomap.org', 'tile.openstreetmap.org',
   'gisservices.its.ny.gov', 'gisservices.dec.ny.gov', 'mapsdep.nj.gov', 'elevation.nationalmap.gov', 'orthos.its.ny.gov', 'maps.nj.gov',
-  'historical1.arcgis.com', 'fwspublicservices.wim.usgs.gov', 'imagery.geoplatform.gov', 's3.amazonaws.com'];
+  'historical1.arcgis.com', 'server.arcgisonline.com', 'imagery.nationalmap.gov', 'fwspublicservices.wim.usgs.gov', 'imagery.geoplatform.gov', 's3.amazonaws.com'];
 
 // Map pictures are saved only when the map server allows it (CORS). Pictures without that permission
 // count as ~7 MB each against the phone's storage limit, so those are shown but not saved.
