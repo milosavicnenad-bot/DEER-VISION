@@ -361,6 +361,19 @@ html.night body { background: #000; }
 .nav-final .nf-big { font: 700 1.6rem var(--font-display); }
 .nav-final img { width: 100%; max-height: 160px; object-fit: cover; border-radius: 8px; }
 .mp-label.perm { background: rgba(255,255,255,.9); border: 0; box-shadow: 0 1px 3px rgba(0,0,0,.3); font-weight: 700; }
+.pf-svg { width: 100%; height: auto; background: var(--bg); border: 1px solid var(--line); border-radius: 10px; }
+.ap-key { display: inline-block; width: 14px; height: 6px; border-radius: 3px; vertical-align: middle; margin-right: 4px; }
+.sc-num { background: #6d28d9; color: #fff; border: 2px solid #fff; border-radius: 50%; width: 24px; height: 24px; display: grid; place-items: center; font: 800 12px system-ui; box-shadow: 0 1px 4px rgba(0,0,0,.4); }
+.pop .vis { display: grid; gap: 3px; font-size: .8rem; } .pop .vis div { border-left: 3px solid var(--line); padding-left: 6px; }
+.pop .logf { display: grid; gap: 6px; margin-top: 6px; } .pop .logf .sts { display: flex; flex-wrap: wrap; gap: 4px; }
+.pop .logf .sts button { border: 1px solid var(--line); background: var(--bg); color: var(--fg); border-radius: 999px; padding: 4px 9px; font: 600 .78rem var(--font-body); }
+.pop .logf .sts button[aria-pressed="true"] { background: #2f6fae; color: #fff; border-color: #2f6fae; }
+.pop .logf input { padding: 5px 7px; border: 1px solid var(--line); border-radius: 6px; font: inherit; background: var(--bg); color: var(--fg); }
+.sc-wx { display: grid; gap: 6px; font-size: .9rem; } .sc-wx div { padding: 8px 10px; border-radius: 8px; background: var(--bg); border: 1px solid var(--line); }
+.sc-guide summary { cursor: pointer; font-weight: 700; padding: 6px 0; } .sc-guide ul { margin: 0 0 6px; padding-left: 1.2rem; display: grid; gap: 4px; font-size: .88rem; }
+.sc-mast { display: grid; gap: 6px; } .sc-mast a { display: flex; justify-content: space-between; gap: 8px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 10px; color: var(--fg); text-decoration: none; background: var(--bg); font-size: .88rem; }
+.sos-card { border: 2px solid #c62828; } .sos-big { font: 700 1.5rem var(--font-mono); word-break: break-word; } .sos-sub { font: 500 .9rem var(--font-mono); color: var(--muted); white-space: pre-line; }
+.sos-call { background: #c62828 !important; border-color: #c62828 !important; color: #fff !important; font-weight: 800; }
 .trk-kit { display: grid; gap: 6px; }
 .trk-kit-i { display: flex; gap: 10px; align-items: flex-start; padding: 8px 10px; border: 1px solid var(--line); border-radius: 10px; background: var(--bg); cursor: pointer; }
 .trk-kit-i input { width: 20px; height: 20px; margin-top: 2px; flex: none; accent-color: var(--accent); }
@@ -1586,7 +1599,9 @@ details.drop > .dropbody { padding: 0 14px 14px; }
       <a class="tile hero" href="#maps" style="--h: var(--h-moss)"><span class="ic"><svg><use href="#i-map"/></svg></span><span class="tt">Maps</span><span class="td">Topo, satellite and property lines, with your stands, sign, tracks, measuring and scent cone.</span></a>
       <a class="tile hero ai" href="#spots" style="--h: #7b3fd1"><span class="ic"><svg><use href="#i-ai"/></svg></span><span class="tt">AI hunt spots</span><span class="td">Where to hunt around you right now: food, water, cover, funnels, saddles, benches and bedding, with today's wind. Tap a spot to see why.</span></a>
       <a class="tile hero" href="#predict" style="--h: var(--h-gold)"><span class="ic"><svg><use href="#i-predict"/></svg></span><span class="tt">Deer movement</span><span class="td">When deer are most likely on their feet: best days, best hours and why.</span></a>
+      <a class="tile hero" href="#scouting" style="--h: var(--h-moss)"><span class="ic"><svg><use href="#i-track"/></svg></span><span class="tt">Scouting &amp; sign</span><span class="td">How old is this sign (with the real last rain and snow), mast report, pressure log, scouting loop and public-land stand rules.</span></a>
       <a class="tile hero" href="#tracking" style="--h: var(--h-blood)"><span class="ic"><svg><use href="#i-blood"/></svg></span><span class="tt">Deer tracking</span><span class="td">After the shot: what you hit (check your arrow with a photo), when to start tracking, blood pins and search grid, blood camera and track finder.</span></a>
+      <a class="tile hero" href="#sos" style="--h: #c62828"><span class="ic"><svg><use href="#i-hazard"/></svg></span><span class="tt">Emergency</span><span class="td">Your exact position in every format, call or text 911 with it, and the way out to your truck or the nearest road.</span></a>
       <a class="tile hero" href="#journal" style="--h: var(--h-bark)"><span class="ic"><svg><use href="#i-journal"/></svg></span><span class="tt">Hunt journal</span><span class="td">Log each sit in two taps, see which stand to hunt on today's wind, last-light alarm and harvest reporting.</span></a>
       <a class="tile" href="#camo" style="--h: var(--h-moss)"><span class="ic"><svg><use href="#i-camo"/></svg></span><span class="tt">Camo check</span><span class="td">Score how well you blend in</span></a>
       <a class="tile" href="#movement" style="--h: var(--h-gold)"><span class="ic"><svg><use href="#i-move"/></svg></span><span class="tt">Movement</span><span class="td">See what motion gives away</span></a>
@@ -2080,7 +2095,7 @@ details.drop > .dropbody { padding: 0 14px 14px; }
           <div><dt>On foot</dt><dd id="navWalk">—</dd></div>
           <div><dt>GPS accuracy</dt><dd id="navAcc">—</dd></div>
         </dl>
-        <div class="nav-acts"><button type="button" class="btn" id="navVoice" aria-pressed="false"><svg style="width:18px;height:18px"><use href="#i-speaker"/></svg><span>Voice</span></button><button type="button" class="btn" id="navBig">Full screen</button><button type="button" class="btn" id="navMap">Show on map</button><button type="button" class="btn" id="navStop">Stop</button></div>
+        <div class="nav-acts"><button type="button" class="btn" id="navPace" aria-pressed="false"><svg style="width:18px;height:18px"><use href="#i-track"/></svg><span>Pace mode</span></button><button type="button" class="btn" id="navVoice" aria-pressed="false"><svg style="width:18px;height:18px"><use href="#i-speaker"/></svg><span>Voice</span></button><button type="button" class="btn" id="navBig">Full screen</button><button type="button" class="btn" id="navMap">Show on map</button><button type="button" class="btn" id="navStop">Stop</button></div>
       </div>
       <div class="mapinfo" id="mpInfo">Tap the map to see who owns the land and the hunting rules there. Long-press to drop a marker.</div>
       <div class="mtools" role="group" aria-label="Map tools">
@@ -2093,6 +2108,9 @@ details.drop > .dropbody { padding: 0 14px 14px; }
         <button type="button" data-tool="route"><svg><use href="#i-route"/></svg>Route</button>
         <button type="button" id="mpAiBtn"><svg><use href="#i-ai"/></svg>AI spots</button>
         <button type="button" data-tool="blood" class="bt-tool"><svg><use href="#i-blood"/></svg>Blood</button>
+        <button type="button" data-tool="bearing"><svg><use href="#i-compass"/></svg>Bearing</button>
+        <button type="button" data-tool="approach"><svg><use href="#i-fov"/></svg>Approach</button>
+        <button type="button" data-tool="scout"><svg><use href="#i-track"/></svg>Scout loop</button>
       </div>
 
       <div class="panel mp" id="mp-layers" hidden>
@@ -2124,6 +2142,7 @@ details.drop > .dropbody { padding: 0 14px 14px; }
         <div id="mpSetup" class="pin-setup" hidden>
           <div class="k">Stand details</div>
           <div class="pin-row"><label>Height (ft)<input type="number" id="mpHt" min="0" max="40" step="1" inputmode="numeric"></label><label>Faces (°)<input type="number" id="mpFace" min="0" max="359" step="1" inputmode="numeric"></label><button class="btn" id="mpFaceNow" type="button">Use compass</button></div>
+          <div class="pin-row"><label>Remove stand by<input type="date" id="mpPull" style="width:150px"></label></div>
           <div class="caption">Good winds for this setup (wind coming from):</div>
           <div class="pin-winds" id="mpWinds"></div>
         </div>
@@ -2138,6 +2157,41 @@ details.drop > .dropbody { padding: 0 14px 14px; }
         </div>
       </div>
 
+      <div class="panel mp" id="mp-bearing" hidden>
+        <h2 style="margin:0">Follow a bearing</h2>
+        <div class="caption">Old-school compass and pacing for thick cover where GPS drifts. Set a bearing and a distance, then walk it with the arrow. Turn on <b>Pace mode</b> in the navigation card so your steps move you on the map even when GPS is weak.</div>
+        <div class="pin-row"><label>Bearing (°)<input type="number" id="brgDeg" min="0" max="359" inputmode="numeric"></label><button class="btn" id="brgNow" type="button">Use compass</button><label>Distance<input type="number" id="brgDist" min="1" max="5000" inputmode="numeric" value="100"></label><label>Unit<select id="brgUnit"><option value="pace">paces</option><option value="yd">yards</option></select></label></div>
+        <div class="actions"><button class="btn primary" id="brgGo" type="button">Walk this bearing</button></div>
+        <div class="caption" id="brgOut"></div>
+      </div>
+
+      <div class="panel mp" id="mp-approach" hidden>
+        <h2 style="margin:0">Approach check</h2>
+        <div class="caption">Checks your walk-in against a bedding area (or any deer spot): where the terrain lets deer <b>see</b> you, and where today's wind and thermals carry your <b>scent</b> to them. Terrain only: trees and brush hide you more than this shows.</div>
+        <div class="row"><label for="apDeer">Deer spot</label><select id="apDeer" class="full"></select><span class="v"></span></div>
+        <div class="row"><label for="apRoute">Your route</label><select id="apRoute" class="full"></select><span class="v"></span></div>
+        <div class="actions"><button class="btn primary" id="apRun" type="button">Check my approach</button><button class="btn" id="apClear" type="button">Clear</button></div>
+        <div id="apOut" class="caption"></div>
+      </div>
+
+      <div class="panel mp" id="mp-scout" hidden>
+        <h2 style="margin:0">First-day scouting loop</h2>
+        <div class="caption">Plans one efficient loop through the best spots around you, walked so the wind is in your face as much as possible. Tap the map to add your own stops.</div>
+        <div class="row"><label for="scFrom">Start and finish</label><select id="scFrom" class="full"></select><span class="v"></span></div>
+        <label class="lyr"><input type="checkbox" id="scAi" checked><div><b>Include AI hunt spots</b><span>Saddles, benches, funnels, food and bedding the terrain model finds.</span></div></label>
+        <label class="lyr"><input type="checkbox" id="scPins" checked><div><b>Include my pins</b><span>Food, water, terrain and sign pins within about a mile.</span></div></label>
+        <div class="row"><label for="scMax">Most stops</label><input type="number" id="scMax" min="3" max="20" value="10" class="full" inputmode="numeric"><span class="v"></span></div>
+        <div class="actions"><button class="btn primary" id="scPlan" type="button">Plan the loop</button><button class="btn" id="scNext" type="button">Navigate to next stop</button><button class="btn" id="scProf" type="button">Elevation profile</button><button class="btn" id="scClear" type="button">Clear</button></div>
+        <div id="scOut" class="caption"></div>
+      </div>
+
+      <div class="panel mp" id="mp-profile" hidden>
+        <h2 style="margin:0" id="pfTitle">Elevation profile</h2>
+        <svg id="pfSvg" class="pf-svg" viewBox="0 0 340 140" aria-hidden="true"></svg>
+        <div id="pfOut" class="caption"></div>
+        <div class="actions"><button class="btn" id="pfClose" type="button">Close</button></div>
+      </div>
+
       <div class="panel mp" id="mp-measure" hidden>
         <h2 style="margin:0">Measure</h2>
         <div class="caption">Tap points on the map. The total distance and the direction of the last leg are shown.</div>
@@ -2145,7 +2199,7 @@ details.drop > .dropbody { padding: 0 14px 14px; }
           <div class="stat"><span class="caption">Distance</span><span class="big" id="msDist">0 yd</span></div>
           <div class="stat"><span class="caption">Last leg</span><span class="big" id="msBear">—</span></div>
         </div>
-        <div class="actions"><button class="btn" id="msUndo" type="button">Undo last point</button><button class="btn" id="msClear" type="button">Clear</button></div>
+        <div class="actions"><button class="btn" id="msUndo" type="button">Undo last point</button><button class="btn" id="msClear" type="button">Clear</button><button class="btn" id="msProf" type="button">Elevation profile</button></div>
       </div>
 
       <div class="panel mp" id="mp-track" hidden>
@@ -2383,6 +2437,54 @@ details.drop > .dropbody { padding: 0 14px 14px; }
     <p class="caption" style="margin:0;text-align:center">MIKECON is 100% for fun and 0% science. Real hunting decisions: practice, know your range, and get closer.</p>
   </section>
 
+  <!-- ============ SCOUTING & SIGN ============ -->
+  <section class="view" id="v-scouting" hidden aria-label="Scouting and sign">
+    <div class="vhead" style="--h: var(--h-moss)"><button class="back" type="button"><svg><use href="#i-back"/></svg>Menu</button><span class="vic"><svg><use href="#i-track"/></svg></span><h2>Scouting &amp; sign</h2></div>
+    <p class="lead">Read sign like a pro, log what you find, and learn where the pressure really is.</p>
+    <div class="panel"><h2 style="margin:0">How old is this sign?</h2>
+      <div class="caption">Rain and snow at your spot (from the weather record) put a clock on tracks and scrapes.</div>
+      <div id="scWx" class="sc-wx">Checking the last rain and snow…</div>
+      <details class="sc-guide"><summary>Tracks</summary><ul><li><b>Fresh:</b> sharp, crisp edges, dewclaw marks clean, no leaves or debris inside, dirt darker and damp where it was pushed up.</li><li><b>Older:</b> edges crumbled or rounded, debris or bug tracks inside, dirt dried to the same color as around it.</li><li><b>After rain:</b> raindrop pits inside the track mean it was made before the rain; a crisp track over smooth, rain-packed dirt was made after it.</li><li><b>In snow:</b> no new snow inside = made after the last snowfall. Melted, rounded or crusted edges = a day or more old; a frozen crust inside often means it was made before a cold night.</li></ul></details>
+      <details class="sc-guide"><summary>Rubs</summary><ul><li><b>Fresh:</b> bright, light-colored wood that still looks wet, bark shavings lying on the ground or on top of the leaves, sap still sticky.</li><li><b>Older:</b> wood turned gray or brown, edges of bark dried and curled, shavings faded or covered.</li><li>Big rubs on big trees, rubbed again year after year, are a buck's signpost: log every visit.</li></ul></details>
+      <details class="sc-guide"><summary>Scrapes</summary><ul><li><b>Active:</b> bare, damp dirt pawed clean of leaves, often with a track in it, a strong musky smell, and the licking branch above broken, chewed or bent.</li><li><b>Old:</b> leaves blown back in, dirt dry and crusted, no smell.</li><li>Clear the leaves out of a scrape when you find it; if it is clean again on your next visit, a buck worked it since.</li></ul></details>
+      <details class="sc-guide"><summary>Droppings</summary><ul><li><b>Fresh (hours):</b> shiny, wet-looking, dark, soft enough to squash.</li><li><b>A day or two:</b> dull outside, still moist inside.</li><li><b>Old:</b> dry, crumbly, lighter in color. Pellets in fall and winter; soft clumps mean lush, green food.</li></ul></details>
+      <details class="sc-guide"><summary>Beds</summary><ul><li><b>Fresh:</b> oval of pressed-down leaves or grass, still flat, sometimes warm; in snow, melted down to the leaves, hair in the bed.</li><li><b>Older:</b> leaves fluffing back up, frost or new snow in it.</li><li>Big single beds on points and benches, facing downhill with the wind at the back, are often bucks.</li></ul></details>
+    </div>
+    <div class="panel"><h2 style="margin:0">Mast report: which oaks are dropping</h2>
+      <div class="caption">From your white oak, red oak and fruit tree pins. On the map, tap the pin, <b>Log a visit</b>, and count acorns on the ground in a 1-yard circle under it. White oaks drop first and deer hit them first.</div>
+      <div id="scMast"></div></div>
+    <div class="panel"><h2 style="margin:0">Pressure log</h2>
+      <div class="caption">One tap at the lot or in the woods. Uses your GPS. After a few weeks you'll see when and where other hunters really go.</div>
+      <div class="pin-row"><label>Trucks at this lot<input type="number" id="plN" min="0" max="60" value="0" inputmode="numeric"></label><button class="btn primary" type="button" data-pl="trucks">Log trucks</button></div>
+      <div class="actions"><button class="btn" type="button" data-pl="hunter">Hunter seen</button><button class="btn" type="button" data-pl="shot">Shot heard</button><button class="btn" type="button" data-pl="stand">Someone else's stand</button><button class="btn" type="button" data-pl="people">Hikers / dogs / ATV</button></div>
+      <div id="plSum" class="caption"></div>
+      <div class="actions"><a class="btn" href="#maps">See it on the map (Layers: Pressure you logged)</a></div></div>
+    <div class="panel"><h2 style="margin:0">New piece of public land?</h2>
+      <div class="caption">Plan one efficient scouting loop through saddles, benches, funnels, food and water, walked with the wind in your face. Then use <b>Approach</b> on the map to check your walk-in against bedding.</div>
+      <div class="actions"><a class="btn primary" href="#scoutloop">Plan a scouting loop</a></div></div>
+    <div class="panel"><h2 style="margin:0">Public-land stand rules</h2>
+      <ul class="trk-tips"><li><b>New York state land</b> (6 NYCRR 190.8): label the stand with your name and address or license number; place and use it only during big game, turkey or migratory bird season; nothing that injures the tree: no nails, screws, screw-in steps or permanent stands.</li><li><b>New Jersey state parks and forests:</b> label with your Conservation ID (CID) and contact info; up no more than 30 days before the season, down within 14 days after; one stand or blind at a time; nothing that pierces a tree; no dead or diseased trees.</li><li><b>New Jersey WMAs:</b> rules differ; check the NJ Hunting Digest for that WMA.</li><li>Each stand pin shows these rules, and you can set a <b>Remove stand by</b> date in the pin.</li></ul>
+      <div class="caption">Rules change. Confirm with NY DEC or NJ Fish &amp; Wildlife before the season.</div></div>
+    <div class="panel"><h2 style="margin:0">Better GPS in the timber</h2>
+      <ul class="trk-tips"><li><b>Dual-frequency GPS phones</b> (many newer Android phones, e.g. recent Pixel and Galaxy models) hold much better under hemlock and in hollows.</li><li><b>A Bluetooth GPS receiver</b> (Garmin GLO 2, Bad Elf type) clipped high on your pack is the biggest upgrade. On Android, pair it and set it as the location source with a mock-location app; this app then uses it automatically.</li><li>Phone in an outer chest pocket or held up, not deep in a pack. Cold drains batteries and slows GPS: keep it warm.</li><li>Under thick cover, turn on <b>Pace mode</b> in navigation so your steps keep moving you on the map.</li><li>Save pins in openings when you can, and use <b>Refine here</b> on later visits.</li></ul></div>
+  </section>
+
+  <!-- ============ EMERGENCY ============ -->
+  <section class="view" id="v-sos" hidden aria-label="Emergency">
+    <div class="vhead" style="--h: #c62828"><button class="back" type="button"><svg><use href="#i-back"/></svg>Menu</button><span class="vic"><svg><use href="#i-hazard"/></svg></span><h2>Emergency</h2></div>
+    <div class="panel sos-card">
+      <div class="caption">Your position</div>
+      <div class="sos-big" id="sosDec">Getting GPS…</div>
+      <div class="sos-sub" id="sosAlt"></div>
+      <div class="actions"><a class="btn sos-call" href="tel:911">Call 911</a><button class="btn primary" id="sosSms" type="button">Text my location</button><button class="btn" id="sosSay" type="button">Read it out loud</button><button class="btn" id="sosCopy" type="button">Copy</button></div>
+    </div>
+    <div class="panel"><h2 style="margin:0">Way out</h2>
+      <div id="sosOut" class="caption">Waiting for GPS…</div>
+      <div class="actions"><button class="btn" id="sosTruck" type="button">Navigate to my truck</button><button class="btn" id="sosRoad" type="button">Navigate to nearest road</button></div></div>
+    <div class="panel"><h2 style="margin:0">If you are lost or hurt</h2>
+      <ul class="trk-tips"><li><b>Stop and stay put</b> if you are hurt or truly lost: searchers find people who stay in one place.</li><li><b>Call 911</b> and read them the coordinates above. A text may go through when a call won't.</li><li><b>Three blasts on a whistle</b> (or three shots where legal) is the signal for help. Wear your blaze orange.</li><li><b>Save battery:</b> dim the screen, close other apps, turn on battery saver. Keep the phone warm in an inside pocket.</li><li><b>Tree-stand fall:</b> don't move someone with a possible neck or back injury unless they are in danger.</li><li>Before every hunt, use the <a href="#journal">check-in timer</a> so someone knows when to expect you.</li></ul></div>
+  </section>
+
   <!-- ============ DEER TRACKING (hub) ============ -->
   <section class="view" id="v-tracking" hidden aria-label="Deer tracking">
     <div class="vhead" style="--h: var(--h-blood)"><button class="back" type="button"><svg><use href="#i-back"/></svg>Menu</button><span class="vic"><svg><use href="#i-blood"/></svg></span><h2>Deer tracking</h2></div>
@@ -2410,11 +2512,11 @@ details.drop > .dropbody { padding: 0 14px 14px; }
       </div></div>
     <div class="panel"><h2 style="margin:0">3 · Tracking kit</h2>
       <div class="caption">Keep these in your pack all season. Tick them off as you pack; the app remembers.</div>
-      <div class="trk-kit" id="trkKit"><label class="trk-kit-i"><input type="checkbox" data-kit="h2o2"><span><b>Hydrogen peroxide (3%) in a small spray bottle</b><small>Spray a dark spot: if it fizzes and foams white, it is almost surely blood, even when it has dried brown or black. Settles "blood or mud?" in a second.</small></span></label><label class="trk-kit-i"><input type="checkbox" data-kit="light"><span><b>Bright white flashlight or headlamp, plus spare batteries</b><small>White light makes wet blood shine at night. Colored "blood-tracking" lights help some people; test yours on known blood before you rely on it.</small></span></label><label class="trk-kit-i"><input type="checkbox" data-kit="flag"><span><b>Flagging tape or toilet paper</b><small>Mark every blood spot so you can look back and see the line the deer is taking. Take flagging back out when you are done.</small></span></label><label class="trk-kit-i"><input type="checkbox" data-kit="phone"><span><b>Phone with offline maps and a power bank</b><small>Download the area in Maps before you go. Drop blood pins as you track; GPS and the screen drain the battery fast.</small></span></label><label class="trk-kit-i"><input type="checkbox" data-kit="bino"><span><b>Binoculars</b><small>Glass ahead before every step. The deer may be lying just ahead, or still alive and bedded.</small></span></label><label class="trk-kit-i"><input type="checkbox" data-kit="partner"><span><b>A partner (and a whistle or radio)</b><small>One person stays on the last blood while the other looks ahead or circles. Two sets of eyes find more blood.</small></span></label><label class="trk-kit-i"><input type="checkbox" data-kit="knife"><span><b>Knife, gloves, tag and a pen or zip tie</b><small>So you can tag and field dress where you find it. Check your state's tagging rules.</small></span></label><label class="trk-kit-i"><input type="checkbox" data-kit="drag"><span><b>Drag rope or harness (or a game cart)</b><small>A rope with a handle around the neck and front legs makes dragging much easier.</small></span></label><label class="trk-kit-i"><input type="checkbox" data-kit="water"><span><b>Water, snack and an extra layer</b><small>A long track at night gets cold. You think better when you are not thirsty.</small></span></label><label class="trk-kit-i"><input type="checkbox" data-kit="tacks"><span><b>Reflective trail tacks</b><small>Mark the way back to the truck in the dark. A flashlight finds them from far away.</small></span></label><label class="trk-kit-i"><input type="checkbox" data-kit="shears"><span><b>Small pruning shears</b><small>Thick brush and greenbrier slow you down; clip a path instead of fighting through.</small></span></label><label class="trk-kit-i"><input type="checkbox" data-kit="orange"><span><b>Blaze orange hat or vest</b><small>Other hunters may be in the woods, especially in gun season. Check your state's blaze orange rules for after-dark tracking.</small></span></label><label class="trk-kit-i"><input type="checkbox" data-kit="glow"><span><b>Optional: forensic blood-glow spray (luminol type)</b><small>Makes blood glow in total darkness. Pricey and short-lived; a backup when the trail is very faint.</small></span></label></div>
+      <div class="trk-kit" id="trkKit"><label class="trk-kit-i"><input type="checkbox" data-kit="h2o2"><span><b>Hydrogen peroxide (3%) in a small spray bottle</b><small>Spray a dark spot: if it fizzes and foams white, it is almost surely blood, even when it has dried brown or black. Settles "blood or mud?" in a second.</small></span></label><label class="trk-kit-i"><input type="checkbox" data-kit="light"><span><b>Bright white flashlight or headlamp, plus spare batteries</b><small>White light makes wet blood shine at night. Colored "blood-tracking" lights help some people; test yours on known blood before you rely on it.</small></span></label><label class="trk-kit-i"><input type="checkbox" data-kit="flag"><span><b>Small LED marker lights (plus flagging as backup)</b><small>Drop a small clip-on or stake LED at every blood spot. At night you can look back and see the glowing line the deer is taking, much better than toilet paper. Carry 10 or more, and pick them all up when you are done; flagging tape or toilet paper is the backup when you run out.</small></span></label><label class="trk-kit-i"><input type="checkbox" data-kit="phone"><span><b>Phone with offline maps and a power bank</b><small>Download the area in Maps before you go. Drop blood pins as you track; GPS and the screen drain the battery fast.</small></span></label><label class="trk-kit-i"><input type="checkbox" data-kit="bino"><span><b>Binoculars</b><small>Glass ahead before every step. The deer may be lying just ahead, or still alive and bedded.</small></span></label><label class="trk-kit-i"><input type="checkbox" data-kit="partner"><span><b>A partner (and a whistle or radio)</b><small>One person stays on the last blood while the other looks ahead or circles. Two sets of eyes find more blood.</small></span></label><label class="trk-kit-i"><input type="checkbox" data-kit="knife"><span><b>Knife, gloves, tag and a pen or zip tie</b><small>So you can tag and field dress where you find it. Check your state's tagging rules.</small></span></label><label class="trk-kit-i"><input type="checkbox" data-kit="drag"><span><b>Drag rope or harness (or a game cart)</b><small>A rope with a handle around the neck and front legs makes dragging much easier.</small></span></label><label class="trk-kit-i"><input type="checkbox" data-kit="water"><span><b>Water, snack and an extra layer</b><small>A long track at night gets cold. You think better when you are not thirsty.</small></span></label><label class="trk-kit-i"><input type="checkbox" data-kit="tacks"><span><b>Reflective trail tacks</b><small>Mark the way back to the truck in the dark. A flashlight finds them from far away.</small></span></label><label class="trk-kit-i"><input type="checkbox" data-kit="shears"><span><b>Small pruning shears</b><small>Thick brush and greenbrier slow you down; clip a path instead of fighting through.</small></span></label><label class="trk-kit-i"><input type="checkbox" data-kit="orange"><span><b>Blaze orange hat or vest</b><small>Other hunters may be in the woods, especially in gun season. Check your state's blaze orange rules for after-dark tracking.</small></span></label><label class="trk-kit-i"><input type="checkbox" data-kit="glow"><span><b>Optional: forensic blood-glow spray (luminol type)</b><small>Makes blood glow in total darkness. Pricey and short-lived; a backup when the trail is very faint.</small></span></label></div>
       <div class="actions"><span class="caption" id="trkKitN"></span><button class="btn" id="trkKitReset" type="button">Uncheck all</button></div></div>
     <div class="panel"><h2 style="margin:0">4 · Tracking tips</h2>
       <ul class="trk-tips">
-        <li><b>Mark first, then follow.</b> Pin the shot spot and the first blood before you move on. If you lose the trail, go back to the last pin.</li>
+        <li><b>Mark first, then follow.</b> Pin the shot spot and the first blood before you move on, and drop an LED marker light at each blood spot. If you lose the trail, go back to the last light.</li>
         <li><b>Go slow and quiet,</b> one person on the blood, one looking ahead. Look at knee height on brush and on both sides of the trail.</li>
         <li><b>Blood dries and darkens fast.</b> Dried blood looks brown or black; wet blood shines in a flashlight.</li>
         <li><b>Trail ran out?</b> Start a search grid from the last blood. Check the nearest water, thick cover and downhill first: hurt deer often go there.</li>
@@ -5262,7 +5364,7 @@ details.drop > .dropbody { padding: 0 14px 14px; }
         this.clearLayers();
         const now = Date.now(), sg = DB.markers.filter(x => (x.type === 'rub' || x.type === 'scrape') && inArea(x));
         for (const x of sg) {
-          const age = (now - (x.t || now)) / 864e5, col = age <= 7 ? '#d32f2f' : age <= 21 ? '#f57c00' : age <= 60 ? '#fbc02d' : '#9e9e9e';
+          const age = (now - (sigT(x) || now)) / 864e5, col = age <= 7 ? '#d32f2f' : age <= 21 ? '#f57c00' : age <= 60 ? '#fbc02d' : '#9e9e9e';
           for (const [r, o] of [[110, 0.08], [70, 0.14], [35, 0.22]]) L.circle([x.lat, x.lon], { radius: r, stroke: false, fillColor: col, fillOpacity: o, interactive: false }).addTo(this);
         }
         const sc = sg.filter(x => x.type === 'scrape');
@@ -5431,6 +5533,7 @@ details.drop > .dropbody { padding: 0 14px 14px; }
       crops:     ['Crop fields (USDA 2024)', 'Field-by-field crops: corn yellow, soybeans dark green, alfalfa pink, hay and pasture light green, winter wheat tan. Forest, water and towns show in their own colors.', () => L.tileLayer.wms('https://nassgeodata.gmu.edu/CropScapeService/wms_cdlall.cgi', { layers: 'cdl_2024', format: 'image/png', transparent: true, version: '1.1.1', crs: L.CRS.EPSG4326, opacity: 0.6, zIndex: 3, minZoom: 9, maxZoom: 21, attribution: 'USDA NASS Cropland Data Layer' }), 'land'],
       oak:       ['Oak forests (acorns)', 'Where oak-hickory and oak-pine forest dominate (US Forest Service, coarse 250 m blocks). Oaks mean acorns, the top fall food. Check the actual trees on the photos.', () => grp(imgSrv(OAKSRV, { rasterFunction: 'Oak_Hickory' }, { opacity: 0.55, attribution: 'USFS FIA Forest Atlas' }), imgSrv(OAKSRV, { rasterFunction: 'oakpine' }, { opacity: 0.55 })), 'land'],
       pressure:  ['Hunting pressure', 'How far each spot is on foot from the nearest road, trail or parking area. Clear: under ¼ mile (where most hunters sit). Yellow: ¼ to ½ mile. Orange: ½ to 1 mile. Red: over 1 mile (fewest hunters). Zoom in to see it.', () => new PressureMap(), 'access'],
+      plog:      ['Pressure you logged', 'Trucks, hunters, shots and other stands you logged in Scouting & sign, by recency (darker = this week). Tap a circle for when.', () => new PressureLog(), 'access'],
       harvest:   ['NY deer harvest by unit', 'Bucks taken per square mile in each NY WMU, 2024–25 (NY DEC). Gray: under 1, pale yellow: 1–2, yellow: 2–3, orange: 3–4, red: 4–5, dark red: 5 or more. Tap a unit for the numbers.', () => new NYHarvest(), 'legal'],
     };
 
@@ -6133,6 +6236,7 @@ details.drop > .dropbody { padding: 0 14px 14px; }
       if (watchId == null) {
         watchId = navigator.geolocation.watchPosition(p => {
           if (avgRun) avgRun.add(p.coords.latitude, p.coords.longitude, p.coords.accuracy);
+          if (!drGps(p.coords.latitude, p.coords.longitude, p.coords.accuracy)) return; // pace mode is steering while GPS is weak
           const f = kfUpdate(p.coords.latitude, p.coords.longitude, p.coords.accuracy, p.timestamp || Date.now());
           if (!f) return; // a jump: ignore this reading
           const nme = f.ll;
@@ -6192,10 +6296,11 @@ details.drop > .dropbody { padding: 0 14px 14px; }
         + (setup ? `<div class="sec">${esc(setup)}${m.winds && m.winds.length && typeof WIND !== 'undefined' && WIND.from != null ? ` · today's wind: from ${cardinal(WIND.from)}${m.winds.includes(WD[Math.round(WIND.from / 45) % 8]) ? ' ✓ good' : ' ✗ not listed'}` : ''}</div>` : '')
         + (m.final ? `<div class="sec"><b>Last yards:</b> ${esc(m.final)}</div>` : '')
         + `<img class="ppic" alt="" hidden>`
+        + visitHtml(m) + standRules(m)
         + `<div class="sec"><b>Precision:</b> ${esc(precTxt(m))}</div>`
         + `<div class="sec pcoord">${coordTxt(m.lat, m.lon)}${elevTxt ? elevTxt(ll) : ''}</div>`
         + (dMe != null ? `<div class="sec muted">${fmtDist(dMe)} ${cardinal(bearing(me, ll))} of you (${Math.round(bearing(me, ll))}°)</div>` : '')
-        + `<div class="acts"><button type="button" data-a="go">Navigate here</button>${m.type === 'blood' ? '<button type="button" data-a="drag">Drag route to truck</button>' : ''}<button type="button" data-a="share">Share</button>${dMe != null && dMe < 60 ? '<button type="button" data-a="refine">Refine here</button>' : ''}<button type="button" data-a="copy">Copy coordinates</button><button type="button" data-a="scent">Scent cone here</button><button type="button" data-a="edit">Edit</button><button type="button" data-a="del">Delete</button></div>`;
+        + `<div class="acts"><button type="button" data-a="go">Navigate here</button>${m.type === 'blood' ? '<button type="button" data-a="drag">Drag route to truck</button>' : ''}<button type="button" data-a="share">Share</button>${dMe != null && dMe < 60 ? '<button type="button" data-a="refine">Refine here</button>' : ''}<button type="button" data-a="copy">Copy coordinates</button>${loggable(m) ? '<button type="button" data-a="log">Log a visit</button>' : ''}<button type="button" data-a="scent">Scent cone here</button><button type="button" data-a="edit">Edit</button><button type="button" data-a="del">Delete</button></div>`;
       box.querySelector('[data-a=go]').onclick = () => { map.closePopup(); setGoTo(ll, m.name || t[0]); if (goTo) goTo.pin = m; };
       box.querySelector('[data-a=scent]').onclick = () => { map.closePopup(); scentFrom = ll; setScent(true); };
       box.querySelector('[data-a=share]').onclick = () => shareSpot(ll, m.name || t[0]);
@@ -6206,6 +6311,7 @@ details.drop > .dropbody { padding: 0 14px 14px; }
         if (del.dataset.sure) { DB.markers = DB.markers.filter(x => x.id !== m.id); if (m.photo) idb.pinDel(m.id).catch(() => {}); saveDB(); map.closePopup(); drawSaved(); toast('Marker deleted'); }
         else { del.dataset.sure = 1; del.textContent = 'Tap again to delete'; }
       };
+      const lg = box.querySelector('[data-a=log]'); if (lg) lg.onclick = ev => { ev.stopPropagation(); lg.hidden = true; logForm(m, box, () => map.closePopup()); };
       const rf = box.querySelector('[data-a=refine]'); if (rf) rf.onclick = async () => { map.closePopup(); await refinePin(m); };
       box.querySelector('[data-a=copy]').onclick = async () => { const txt = `${m.lat.toFixed(6)}, ${m.lon.toFixed(6)}`; try { await navigator.clipboard.writeText(txt); toast('Copied ' + txt); } catch (e) { toast(txt); } };
       if (m.photo) pinPhoto(m.id).then(src => { const im = box.querySelector('.ppic'); if (src && im) { im.src = src; im.hidden = false; } });
@@ -6227,7 +6333,8 @@ details.drop > .dropbody { padding: 0 14px 14px; }
       const dur = t.pts.length > 1 && t.pts[0][2] ? (t.pts[t.pts.length - 1][2] - t.pts[0][2]) / 60000 : null;
       box.innerHTML = `<h4>${esc(t.name)}</h4><div class="muted">${esc(t.area)} · ${new Date(t.t).toLocaleDateString()}</div>`
         + `<div class="sec">${dl([['Length', fmtDist(trackLen(t.pts))], ['Time', dur ? Math.round(dur) + ' min' : null]])}</div>`
-        + `<div class="acts"><button type="button" data-a="del">Delete track</button></div>`;
+        + `<div class="acts"><button type="button" data-a="prof">Elevation profile</button><button type="button" data-a="del">Delete track</button></div>`;
+      box.querySelector('[data-a=prof]').onclick = () => { map.closePopup(); showProfile(t.pts, t.name); };
       const del = box.querySelector('[data-a=del]');
       del.onclick = () => {
         if (del.dataset.sure) { DB.tracks = DB.tracks.filter(x => x.id !== t.id); saveDB(); map.closePopup(); drawSaved(); toast('Track deleted'); }
@@ -6355,7 +6462,8 @@ details.drop > .dropbody { padding: 0 14px 14px; }
           if (goTo.trail) say += ' · following your trail back';
           if (hd.src === 'walk') say += ' (from your walking direction)';
         }
-        if (meAcc > 25) say += '. GPS is weak right now; distances may jump.';
+        if (meAcc > 25 && !DR.on) say += '. GPS is weak right now: turn on Pace mode below.';
+        if (DR.on) say += ` · Pace mode (±${Math.round(meAcc * YD)} yd)`;
       }
       $('navSay').textContent = say;
       finalBox(dEnd, b);
@@ -6829,12 +6937,219 @@ details.drop > .dropbody { padding: 0 14px 14px; }
         const ft = m => Math.round(m * 3.28084), mins = p.len / 0.27 / 60; // dragging a deer: about 0.6 mph
         const box = document.createElement('div'); box.className = 'pop';
         box.innerHTML = `<h4>Drag route to ${pk && to === pk ? 'your truck' : 'your location'}</h4><div>${fmtDist(p.len)} · about ${fmtMin(mins)} of dragging · ${ft(p.drop)} ft down, ${ft(p.climb)} ft up</div><div class="muted" style="margin-top:4px">Picks the easiest ground: downhill or level where it can, around steep slopes, swamps and thick brush. Get help for long drags, and wear orange.</div><div class="acts"><button type="button" data-a="nav">Navigate along it</button></div>`;
+        box.insertAdjacentHTML('beforeend', '<div class="acts"><button type="button" data-a="prof">Elevation profile</button></div>'); box.querySelector('[data-a=prof]').onclick = () => { map.closePopup(); showProfile(p.pts, 'Pack-out drag route'); };
         box.querySelector('[data-a=nav]').onclick = () => { map.closePopup(); setGoTo(to, 'the truck (drag route)', p.pts.slice().reverse().map(q => [q.lat, q.lng])); };
         L.popup({ maxWidth: 262 }).setLatLng(ll).setContent(box).openOn(map);
         map.fitBounds(L.latLngBounds(p.pts).pad(0.2));
       } catch (e) { toast('Could not load the terrain data. This needs signal, or an area saved for offline.'); }
     }
 
+
+    // =========== deep-woods tools ===========
+    // elevation at a point (meters) from terrain tiles, bilinear
+    async function elevM(ll, z = 15) {
+      const n = 2 ** z, xf = (ll.lng + 180) / 360 * n, yf = (1 - Math.log(Math.tan(Math.PI / 4 + ll.lat * Math.PI / 360)) / Math.PI) / 2 * n;
+      const tx = Math.floor(xf), ty = Math.floor(yf), el = await demGrid(z, tx, ty), px = (xf - tx) * 256 - 0.5, py = (yf - ty) * 256 - 0.5;
+      const x0 = Math.max(0, Math.min(255, Math.floor(px))), y0 = Math.max(0, Math.min(255, Math.floor(py))), x1 = Math.min(255, x0 + 1), y1 = Math.min(255, y0 + 1), fx = Math.max(0, Math.min(1, px - x0)), fy = Math.max(0, Math.min(1, py - y0));
+      const E = (x, y) => el[y * 256 + x];
+      return E(x0, y0) * (1 - fx) * (1 - fy) + E(x1, y0) * fx * (1 - fy) + E(x0, y1) * (1 - fx) * fy + E(x1, y1) * fx * fy;
+    }
+    const resample = (pts, step) => { const out = [L.latLng(pts[0])]; for (let i = 1; i < pts.length; i++) { const a = L.latLng(pts[i - 1]), b = L.latLng(pts[i]), d = a.distanceTo(b), k = Math.max(1, Math.round(d / step)); for (let j = 1; j <= k; j++) out.push(L.latLng(a.lat + (b.lat - a.lat) * j / k, a.lng + (b.lng - a.lng) * j / k)); } return out; };
+
+    // ---------- 1. pace mode: steps + compass move you when GPS is weak (dead reckoning) ----------
+    const DR = { on: false, pos: null, err: 0, steps: 0, filt: 9.8, armed: true, last: 0, gpsGoodSince: 0 };
+    function drMotion(e) {
+      const a = e.accelerationIncludingGravity; if (!a || a.x == null) return;
+      const mag = Math.hypot(a.x, a.y, a.z), t = Date.now(); DR.filt = DR.filt * 0.92 + mag * 0.08; const dyn = mag - DR.filt;
+      if (dyn < 0.4) DR.armed = true;
+      if (DR.armed && dyn > 1.4 && t - DR.last > 280) {
+        DR.armed = false; DR.last = t; DR.steps++;
+        const h = compass.heading(), step = paceM() / 2;
+        if (h != null && DR.pos) { DR.pos = destPoint(DR.pos, h, step); DR.err += step * 0.05; me = DR.pos; meAcc = Math.max(3, DR.err); if (meMarker) { meMarker.setLatLng(me); meCircle.setLatLng(me).setRadius(meAcc); } addCrumb(meAcc); onMove(); }
+        $('navPace').lastChild.textContent = `Pace mode · ${Math.floor(DR.steps / 2)} paces`;
+      }
+    }
+    async function setPace(on) {
+      if (on) {
+        if (!me) { toast('Pace mode starts from your last GPS fix or a pin. Wait for GPS once, then turn it on.'); return; }
+        try { if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') { const r = await DeviceMotionEvent.requestPermission(); if (r !== 'granted') { toast('Motion access is needed to count steps.'); return; } } } catch (e) {}
+        if (compass.heading() == null) { compass.ask && compass.ask(); toast('Pace mode needs the compass. Hold the phone flat, top pointing where you walk.'); }
+        DR.on = true; DR.pos = me; DR.err = Math.max(3, meAcc); DR.steps = 0; DR.gpsGoodSince = 0; window.addEventListener('devicemotion', drMotion);
+        toast('Pace mode on: hold the phone flat in front of you, pointing where you walk. Your steps move you on the map.');
+      } else { DR.on = false; window.removeEventListener('devicemotion', drMotion); $('navPace').lastChild.textContent = 'Pace mode'; }
+      $('navPace').setAttribute('aria-pressed', DR.on);
+    }
+    $('navPace').addEventListener('click', () => setPace(!DR.on));
+    // GPS readings while pace mode is on: ignore weak ones; when GPS has been good for 10 s, re-sync to it
+    function drGps(lat, lon, acc) {
+      if (!DR.on) return true;
+      if (acc > 8) { DR.gpsGoodSince = 0; return false; }
+      if (!DR.gpsGoodSince) DR.gpsGoodSince = Date.now();
+      if (Date.now() - DR.gpsGoodSince < 10000) return false;
+      const moved = DR.pos ? DR.pos.distanceTo([lat, lon]) : 0; DR.pos = L.latLng(lat, lon); DR.err = acc;
+      if (moved > 5) toast(`GPS is strong again: pace position corrected by ${Math.round(moved * YD)} yd.`);
+      DR.gpsGoodSince = Date.now(); return true;
+    }
+
+    // ---------- follow a bearing ----------
+    $('brgNow').addEventListener('click', () => { const h = compass.heading(); if (h == null) { compass.ask && compass.ask(); toast('No compass reading yet. Point the top of the phone where you want to go.'); return; } $('brgDeg').value = Math.round(h) % 360; });
+    $('brgGo').addEventListener('click', () => {
+      const b = parseFloat($('brgDeg').value), d0 = parseFloat($('brgDist').value);
+      if (!isFinite(b) || !isFinite(d0) || d0 <= 0) { toast('Enter a bearing (0–359°) and a distance.'); return; }
+      const from = me || map.getCenter(), m = $('brgUnit').value === 'pace' ? d0 * paceM() : d0 / YD, tgt = destPoint(from, ((b % 360) + 360) % 360, m);
+      setGoTo(tgt, `${Math.round(b)}° for ${Math.round(d0)} ${$('brgUnit').value === 'pace' ? 'paces' : 'yd'}`);
+      $('brgOut').innerHTML = `Target set ${fmtDist(m)} at ${Math.round(b)}° ${cardinal(b)}${me ? '' : ' from the map center (no GPS yet)'}. Tip: pick a tree on the line, walk to it, pick the next one.`;
+      if (me && meAcc > 15) toast('GPS is weak here: turn on Pace mode in the navigation card.');
+    });
+
+    // ---------- 2. approach check: line of sight + scent along your route ----------
+    const deerish = m => ['bed', 'food', 'whiteoak', 'redoak', 'fruit', 'plot', 'browse', 'water', 'spring', 'funnel', 'tsaddle', 'bench', 'scrape', 'rub', 'sighting', 'buck', 'doe', 'trail', 'mineral'].includes(m.type);
+    function fillApproach() {
+      const ms = DB.markers.filter(inArea).filter(deerish).sort((a, b) => (b.type === 'bed') - (a.type === 'bed'));
+      $('apDeer').innerHTML = ms.length ? ms.map(m => `<option value="${m.id}">${esc(m.name || (MT[m.type] || MT.note)[0])} (${esc((MT[m.type] || MT.note)[0])})</option>`).join('') : '<option value="">Add a bedding or food pin first</option>';
+      const rs = []; if (routeIn) rs.push(['plan', 'Planned route in (Route tool)']); if (scoutPts) rs.push(['scout', 'Scouting loop']);
+      if (msPts.length > 1) rs.push(['measure', 'Line drawn with Measure']);
+      DB.tracks.filter(inArea).slice(-12).reverse().forEach(t => rs.push(['t:' + t.id, 'Track: ' + t.name]));
+      $('apRoute').innerHTML = rs.length ? rs.map(([v, n]) => `<option value="${v}">${esc(n)}</option>`).join('') : '<option value="">Plan a route, record a track, or draw one with Measure</option>';
+    }
+    let apLayer = null;
+    $('apClear').addEventListener('click', () => { if (apLayer) map.removeLayer(apLayer); apLayer = null; $('apOut').innerHTML = ''; });
+    $('apRun').addEventListener('click', async () => {
+      const deer = DB.markers.find(m => m.id === $('apDeer').value), rv = $('apRoute').value;
+      let pts = rv === 'plan' ? routeIn : rv === 'scout' ? scoutPts : rv === 'measure' ? msPts : rv.startsWith('t:') ? (DB.tracks.find(t => t.id === rv.slice(2)) || {}).pts : null;
+      if (!deer || !pts || pts.length < 2) { toast('Pick a deer spot and a route first.'); return; }
+      pts = resample(pts.map(p => Array.isArray(p) ? [p[0], p[1]] : [p.lat, p.lng]), 15);
+      $('apRun').disabled = true; $('apOut').textContent = 'Reading the terrain…';
+      try {
+        const D = L.latLng(deer.lat, deer.lon), eD = await elevM(D), hr = new Date().getHours(), down = (WIND.from + 180) % 360, half = coneHalf(WIND.speed), res = [];
+        for (const P of pts) {
+          const dist = P.distanceTo(D); let seen = false, smell = false, why = '';
+          if (dist < 450) { // line of sight over the ground between the deer (eyes ~3 ft up, bedded) and you (~5.5 ft)
+            const eP = await elevM(P), k = Math.max(4, Math.round(dist / 10)); seen = true;
+            for (let i = 1; i < k; i++) { const f = i / k, Q = L.latLng(D.lat + (P.lat - D.lat) * f, D.lng + (P.lng - D.lng) * f), eq = await elevM(Q), line = (eD + 0.9) + ((eP + 1.7) - (eD + 0.9)) * f; if (eq > line + 0.5) { seen = false; break; } }
+            if (dist < 400) { const ang = Math.abs(((bearing(P, D) - down + 540) % 360) - 180); if (ang < half && dist < 380) { smell = true; why = 'wind'; }
+              if (!smell && WIND.speed < 5 && dist < 250) { const cool = hr < 9 || hr >= 17; if ((cool && eD < eP - 4) || (!cool && eD > eP + 4)) { smell = true; why = cool ? 'cool air sinking' : 'warm air rising'; } } }
+          }
+          res.push({ P, seen, smell, why, dist });
+        }
+        if (apLayer) map.removeLayer(apLayer); apLayer = L.layerGroup().addTo(map);
+        for (let i = 1; i < res.length; i++) { const r = res[i], c = r.seen && r.smell ? '#7b1fa2' : r.seen ? '#d32f2f' : r.smell ? '#ef6c00' : '#2e7d32'; L.polyline([res[i - 1].P, r.P], { color: c, weight: 7, opacity: 0.9, interactive: false }).addTo(apLayer); }
+        L.circleMarker(D, { radius: 9, color: '#fff', weight: 2, fillColor: '#6d28d9', fillOpacity: 1, interactive: false }).addTo(apLayer);
+        const nS = res.filter(r => r.seen).length, nW = res.filter(r => r.smell).length, len = (res.length - 1) * 15, first = res.find(r => r.seen || r.smell);
+        $('apOut').innerHTML = `<div><span class="ap-key" style="background:#2e7d32"></span>hidden and downwind-safe · <span class="ap-key" style="background:#d32f2f"></span>deer can see you · <span class="ap-key" style="background:#ef6c00"></span>scent reaches them · <span class="ap-key" style="background:#7b1fa2"></span>both</div>
+          <div style="margin-top:6px"><b>${nS || nW ? `${Math.round(nS * 15 * YD)} yd in view, ${Math.round(nW * 15 * YD)} yd where your scent reaches them` : 'Clean approach: hidden by terrain and downwind all the way.'}</b>${first ? ` First problem ${fmtDist(first.dist)} from the deer spot.` : ''}</div>
+          <div>Wind from ${cardinal(WIND.from)} ${WIND.speed} mph (set in Wind &amp; weather)${WIND.speed < 5 ? '; light wind, so thermals matter: cool air sinks in the morning and evening, warm air rises midday' : ''}. Route length ${fmtDist(len)}.</div>
+          <div>Fix red stretches by dropping below a ridge or bench; fix orange ones by coming in from downwind or waiting for a better wind.</div>`;
+        map.fitBounds(L.latLngBounds(res.map(r => r.P).concat([D])).pad(0.15));
+      } catch (err) { $('apOut').textContent = 'Could not load the terrain data. This needs signal, or an area saved for offline.'; }
+      finally { $('apRun').disabled = false; }
+    });
+
+    // ---------- 9. elevation profile and pack-out ----------
+    async function showProfile(pts, title) {
+      if (!pts || pts.length < 2) { toast('Need a line with at least two points.'); return; }
+      if (tool !== 'profile') setTool('profile'); $('pfTitle').textContent = title || 'Elevation profile'; $('pfOut').textContent = 'Reading the terrain…'; $('pfSvg').innerHTML = '';
+      try {
+        const P = resample(pts.map(p => Array.isArray(p) ? [p[0], p[1]] : [p.lat, p.lng]), 10).slice(0, 1500), E = [];
+        for (const q of P) E.push(await elevM(q));
+        let up = 0, dn = 0, maxG = 0, tDrag = 0, dist = [0];
+        for (let i = 1; i < P.length; i++) { const d = P[i - 1].distanceTo(P[i]), de = E[i] - E[i - 1]; dist.push(dist[i - 1] + d); if (de > 0) up += de; else dn -= de; const g = d ? de / d : 0; if (Math.abs(g) > Math.abs(maxG) && d > 5) maxG = g; tDrag += d / 0.27 * (1 + Math.max(0, g) * 9 + Math.max(0, -g - 0.25) * 2); }
+        const tot = dist[dist.length - 1], lo = Math.min(...E), hi = Math.max(...E), W = 340, H = 140, px = d => 30 + d / tot * (W - 38), py = e => H - 18 - (e - lo) / Math.max(5, hi - lo) * (H - 34);
+        const path = P.map((_, i) => `${i ? 'L' : 'M'}${px(dist[i]).toFixed(1)} ${py(E[i]).toFixed(1)}`).join(' '), fti = m => Math.round(m * 3.281);
+        $('pfSvg').innerHTML = `<path d="${path} L${px(tot)} ${H - 18} L30 ${H - 18} Z" fill="rgba(76,140,60,.22)"/><path d="${path}" fill="none" stroke="#3d7a2a" stroke-width="2"/>
+          <text x="4" y="${py(hi) + 4}" font-size="9" fill="currentColor">${fti(hi)} ft</text><text x="4" y="${py(lo) + 4}" font-size="9" fill="currentColor">${fti(lo)} ft</text><text x="30" y="${H - 4}" font-size="9" fill="currentColor">start</text><text x="${W - 8}" y="${H - 4}" font-size="9" text-anchor="end" fill="currentColor">${fmtDist(tot)}</text>`;
+        $('pfOut').innerHTML = `${fmtDist(tot)} · <b>${fti(up)} ft up, ${fti(dn)} ft down</b> · steepest ${Math.round(Math.abs(maxG) * 100)}% ${maxG > 0 ? 'uphill' : 'downhill'} · walking about ${fmtMin(tot / WOODS / 60 + up / 0.18 / 60)}<br><b>Dragging a deer this way: about ${fmtMin(tDrag / 60)}</b> (flat ground about 0.6 mph, much slower uphill). Downhill drags are easier; plan the pack-out downhill when you can.`;
+      } catch (e) { $('pfOut').textContent = 'Could not load the terrain data. This needs signal, or an area saved for offline.'; }
+    }
+    $('pfClose').addEventListener('click', () => setTool(null));
+    $('msProf').addEventListener('click', () => showProfile(msPts, 'Profile of your measured line'));
+    // ---------- 8. first-day scouting loop ----------
+    let scoutPts = null, scoutStops = [], scoutLayer = null, scoutIdx = 0, scoutExtra = [];
+    function fillScout() {
+      const pk = DB.markers.filter(inArea).filter(m => m.type === 'parking' || m.type === 'entry');
+      $('scFrom').innerHTML = `<option value="me">My location (GPS)</option>` + pk.map(m => `<option value="${m.id}">${esc(m.name || (MT[m.type] || MT.note)[0])}</option>`).join('');
+    }
+    function tourOrder(start, stops) { // nearest neighbour, then 2-opt
+      const rem = stops.slice(), ord = []; let cur = start;
+      while (rem.length) { let bi = 0; rem.forEach((s, i) => { if (cur.distanceTo(s.ll) < cur.distanceTo(rem[bi].ll)) bi = i; }); cur = rem[bi].ll; ord.push(rem.splice(bi, 1)[0]); }
+      const pts = () => [start, ...ord.map(s => s.ll), start], len = a => { let d = 0; for (let i = 1; i < a.length; i++) d += a[i - 1].distanceTo(a[i]); return d; };
+      for (let it = 0, imp = true; imp && it < 50; it++) { imp = false; for (let i = 0; i < ord.length - 1; i++) for (let j = i + 1; j < ord.length; j++) { const cand = ord.slice(0, i).concat(ord.slice(i, j + 1).reverse(), ord.slice(j + 1)), a = [start, ...cand.map(s => s.ll), start]; if (len(a) < len(pts()) - 1) { ord.splice(0, ord.length, ...cand); imp = true; } } }
+      return ord;
+    }
+    const windScore = pts => { let s = 0; for (let i = 1; i < pts.length; i++) { const d = pts[i - 1].distanceTo(pts[i]), b = bearing(pts[i - 1], pts[i]); s += d * Math.cos((b - WIND.from) * Math.PI / 180); } return s; }; // walking into the wind scores high
+    $('scPlan').addEventListener('click', async () => {
+      const v = $('scFrom').value, start = v === 'me' ? me : (DB.markers.find(m => m.id === v) ? L.latLng(DB.markers.find(m => m.id === v).lat, DB.markers.find(m => m.id === v).lon) : null);
+      if (!start) { toast('Turn on My location, or pick a parking pin as the start.'); startGPS(false); return; }
+      $('scPlan').disabled = true; $('scOut').textContent = 'Finding the best stops…';
+      try {
+        let cand = [];
+        if ($('scAi').checked) { try { const r = await findSpots(start, 1300); cand = cand.concat(r.spots.map(s => ({ ll: s.ll, name: (SPOT[s.t] || ['Spot'])[0], w: 1 + (s.w || 0) }))); } catch (e) {} }
+        if ($('scPins').checked) cand = cand.concat(DB.markers.filter(inArea).filter(m => deerish(m) && L.latLng(m.lat, m.lon).distanceTo(start) < 1700).map(m => ({ ll: L.latLng(m.lat, m.lon), name: m.name || (MT[m.type] || MT.note)[0], w: 2 })));
+        cand = cand.concat(scoutExtra.map(ll => ({ ll, name: 'Your stop', w: 3 })));
+        const pick = []; cand.sort((a, b) => b.w - a.w).forEach(c => { if (!pick.some(p => p.ll.distanceTo(c.ll) < 90)) pick.push(c); });
+        const max = Math.max(3, Math.min(20, +$('scMax').value || 10)), stops = pick.slice(0, max);
+        if (stops.length < 2) { $('scOut').textContent = 'Not enough stops nearby. Run AI spots, add pins, or tap the map to add stops.'; return; }
+        let ord = tourOrder(start, stops); const a = [start, ...ord.map(s => s.ll), start], b = [start, ...ord.slice().reverse().map(s => s.ll), start];
+        if (windScore(b) > windScore(a)) ord = ord.reverse();
+        scoutStops = ord; scoutPts = [start, ...ord.map(s => s.ll), start]; scoutIdx = 0;
+        if (scoutLayer) map.removeLayer(scoutLayer); scoutLayer = L.layerGroup().addTo(map);
+        L.polyline(scoutPts, { color: '#6d28d9', weight: 4, dashArray: '8 6', opacity: 0.9, interactive: false }).addTo(scoutLayer);
+        ord.forEach((s, i) => L.marker(s.ll, { icon: L.divIcon({ className: '', html: `<div class="sc-num">${i + 1}</div>`, iconSize: [24, 24], iconAnchor: [12, 12] }), title: s.name }).bindTooltip(`${i + 1}. ${esc(s.name)}`).addTo(scoutLayer));
+        let len = 0; for (let i = 1; i < scoutPts.length; i++) len += scoutPts[i - 1].distanceTo(scoutPts[i]);
+        $('scOut').innerHTML = `<b>${ord.length} stops, ${fmtDist(len)} loop</b>, about ${fmtMin(len / WOODS / 60 + ord.length * 6)} with 5–6 minutes looking around at each stop. Walked this way, you face into the ${cardinal(WIND.from)} wind on most of the loop.<br>${ord.map((s, i) => `${i + 1}. ${esc(s.name)}`).join(' · ')}<br>Straight lines between stops: follow the terrain, and use Approach check before walking near bedding.`;
+        map.fitBounds(L.latLngBounds(scoutPts).pad(0.15));
+      } finally { $('scPlan').disabled = false; }
+    });
+    $('scNext').addEventListener('click', () => { if (!scoutStops.length) { toast('Plan the loop first.'); return; } if (scoutIdx >= scoutStops.length) { setGoTo(scoutPts[0], 'back to the start'); scoutIdx = 0; return; } const s = scoutStops[scoutIdx++]; setGoTo(s.ll, `Stop ${scoutIdx}: ${s.name}`); });
+    $('scProf').addEventListener('click', () => scoutPts ? showProfile(scoutPts, 'Scouting loop profile') : toast('Plan the loop first.'));
+    $('scClear').addEventListener('click', () => { if (scoutLayer) map.removeLayer(scoutLayer); scoutLayer = null; scoutPts = null; scoutStops = []; scoutExtra = []; $('scOut').innerHTML = ''; });
+    // ---------- 3+4. sign visit history and acorn tally ----------
+    const VST = { fresh: ['Fresh', '#c62828'], active: ['Active', '#ef6c00'], old: ['Old', '#9e9e9e'], dead: ['Dead / gone', '#455a64'] };
+    const isMast = m => ['whiteoak', 'redoak', 'fruit'].includes(m.type);
+    const loggable = m => deerish(m) || ['note', 'landmark', 'camera', 'cellcam'].includes(m.type);
+    const sigT = m => { const v = (m.visits || []).filter(x => x.s === 'fresh' || x.s === 'active').sort((a, b) => b.t - a.t)[0]; return v ? v.t : m.t; };
+    function visitHtml(m) {
+      const vs = (m.visits || []).slice().sort((a, b) => b.t - a.t).slice(0, 5);
+      return vs.length ? `<div class="sec vis"><b>Visits</b>${vs.map(v => `<div style="border-color:${(VST[v.s] || VST.old)[1]}">${new Date(v.t).toLocaleDateString([], { month: 'short', day: 'numeric' })} · ${(VST[v.s] || ['Checked'])[0]}${v.c != null ? ` · ${v.c} ${m.type === 'fruit' ? 'fruit' : 'acorns'} per sq yd` : ''}${v.note ? ' · ' + esc(v.note) : ''}</div>`).join('')}</div>` : '';
+    }
+    function logForm(m, box, done) {
+      const f = document.createElement('div'); f.className = 'logf';
+      f.innerHTML = `<div class="sts">${Object.entries(VST).map(([k, v]) => `<button type="button" data-s="${k}" aria-pressed="false">${v[0]}</button>`).join('')}</div>`
+        + (isMast(m) ? `<input type="number" min="0" max="500" inputmode="numeric" placeholder="${m.type === 'fruit' ? 'Fruit' : 'Acorns'} on the ground in a 1-yard circle under it" data-c="1">` : '')
+        + `<input type="text" placeholder="Note (optional): opened up, licking branch broken…" data-n="1"><button type="button" class="btn primary" data-save="1">Save visit</button>`;
+      let st = null;
+      f.addEventListener('click', e => {
+        e.stopPropagation();
+        const b = e.target.closest('[data-s]'); if (b) { st = b.dataset.s; f.querySelectorAll('[data-s]').forEach(x => x.setAttribute('aria-pressed', x === b)); }
+        if (e.target.closest('[data-save]')) {
+          if (!st) { toast('Pick fresh, active, old or dead first.'); return; }
+          const cIn = f.querySelector('[data-c]'), c = cIn && cIn.value !== '' ? Math.max(0, Math.round(+cIn.value)) : null;
+          (m.visits = m.visits || []).push({ t: Date.now(), s: st, c, note: f.querySelector('[data-n]').value.trim() });
+          saveDB(); drawSaved(); toast('Visit logged.'); done && done();
+        }
+      });
+      box.appendChild(f);
+    }
+    // ---------- 7. public-land stand rules for the spot ----------
+    const inNJ = (lat, lon) => lat > 38.9 && lat < 41.36 && lon > -75.6 && lon < -73.88 && lat < 41.357 - (lon + 74.694) * (0.362 / 0.801);
+    function standRules(m) {
+      if (!['stand', 'ladder', 'saddle', 'blind', 'box'].includes(m.type)) return '';
+      const nj = inNJ(m.lat, m.lon), pull = m.pull ? Math.ceil((new Date(m.pull + 'T23:59:00') - Date.now()) / 864e5) : null;
+      const r = nj ? `<b>New Jersey public land (check which kind):</b> on <b>state parks and forests</b>, label the stand with your Conservation ID (CID) and contact info, put it up no more than 30 days before the season and take it down within 14 days after it closes, only one stand or blind at a time, nothing that pierces the tree (no screw-in steps or nails), no dead or diseased trees. <b>WMAs</b> have their own rules; check the NJ Hunting Digest for that WMA.`
+        : `<b>New York state land</b> (6 NYCRR 190.8): the stand must be labeled with your name and address or your hunting license number, may only be placed and used during big game, turkey or migratory game bird season, and nothing may injure the tree: no nails, screws or screw-in steps, no permanent stands.`;
+      return `<div class="sec" style="font-size:.8rem">${r}${pull != null ? `<div style="margin-top:4px"><b>${pull >= 0 ? `Remove by ${new Date(m.pull + 'T12:00:00').toLocaleDateString()}: ${pull} day${pull === 1 ? '' : 's'} left.` : 'Past your remove-by date: pull this stand.'}</b></div>` : ''}<div class="muted">Rules change; confirm with DEC or NJ Fish &amp; Wildlife. Private land: owner's permission.</div></div>`;
+    }
+    // ---------- 6. observed pressure on the map ----------
+    const PK = { trucks: ['Trucks at the lot', '#334155'], hunter: ['Hunter seen', '#ff6f00'], shot: ['Shot heard', '#c62828'], stand: ['Someone else’s stand', '#8d6e63'], people: ['Hikers / dogs / ATV', '#00838f'] };
+    const PressureLog = L.LayerGroup.extend({
+      onAdd(m) { L.LayerGroup.prototype.onAdd.call(this, m); this.redraw(); },
+      redraw() {
+        this.clearLayers(); const now = Date.now(), log = store.get('maps.pressure', []);
+        for (const x of log) { const age = (now - x.t) / 864e5; if (age > 120) continue; const k = PK[x.k] || PK.hunter, r = x.k === 'trucks' ? 40 + 25 * Math.min(8, x.n || 1) : 35;
+          L.circle([x.lat, x.lon], { radius: r, color: k[1], weight: 1, fillColor: k[1], fillOpacity: age < 7 ? 0.35 : age < 30 ? 0.2 : 0.1 }).bindPopup(`<b>${k[0]}${x.k === 'trucks' ? ': ' + (x.n || 0) : ''}</b><br>${new Date(x.t).toLocaleString([], { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}`).addTo(this); }
+        if (!log.length) toastOnce('No pressure logged yet. Log trucks and hunters in Scouting & sign.');
+      },
+    });
 
     // ---------- blood trail pins: numbered blood spots joined in order, so you can see where the deer ran ----------
     let BT = store.get('maps.blood', []), btActive = store.get('maps.bloodActive', null), btAmt = 'spots', btCol = '', bloodLayer = L.layerGroup();
@@ -7039,7 +7354,8 @@ details.drop > .dropbody { padding: 0 14px 14px; }
       tool = tool === t ? null : t;
       if (tool === 'layers') tool = null; // layers is a panel, not a map mode
       document.querySelectorAll('.mtools [data-tool]').forEach(b => b.classList.toggle('on', b.dataset.tool === tool));
-      for (const id of ['add', 'measure', 'track', 'saved', 'rules', 'ai', 'route', 'blood']) $('mp-' + id).hidden = tool !== id;
+      for (const id of ['add', 'measure', 'track', 'saved', 'rules', 'ai', 'route', 'blood', 'bearing', 'approach', 'scout', 'profile']) $('mp-' + id).hidden = tool !== id;
+      if (tool === 'approach') fillApproach(); if (tool === 'scout') fillScout(); if (tool === 'bearing' && compass.heading() != null && !$('brgDeg').value) $('brgDeg').value = Math.round(compass.heading()) % 360;
       if (tool === 'blood') { renderBlood(); if (curBT()) { startGPS(false); keepAwake(true); } }
       if (tool === 'route') fillRouteSelects();
       if (tool) $('mp-layers').hidden = true;
@@ -7069,7 +7385,7 @@ details.drop > .dropbody { padding: 0 14px 14px; }
       pending = L.marker(ll, { icon: mkIcon(pType, ' pending'), draggable: true, zIndexOffset: 900 }).addTo(map);
       pending.on('dragend', () => { pend.acc = null; pend.moved = 0; pendUI(); });
       pend.acc = m ? (m.acc || null) : null; pend.fixes = m ? (m.fixes || (m.acc ? 1 : 0)) : 0; pend.moved = 0; pend.photo = undefined;
-      $('mpHt').value = m && m.h ? m.h : ''; $('mpFace').value = m && m.face != null ? m.face : ''; pend.winds = new Set(m && m.winds ? m.winds : []);
+      $('mpHt').value = m && m.h ? m.h : ''; $('mpPull').value = m && m.pull ? m.pull : ''; $('mpFace').value = m && m.face != null ? m.face : ''; pend.winds = new Set(m && m.winds ? m.winds : []);
       $('mpFinal').value = m ? (m.final || '') : ''; $('mpCoord').value = '';
       $('mpPhotoImg').hidden = true; $('mpPhotoDel').hidden = true;
       if (m && m.photo) pinPhoto(m.id).then(src => { if (src && editing === m) { $('mpPhotoImg').src = src; $('mpPhotoImg').hidden = false; $('mpPhotoDel').hidden = false; } });
@@ -7139,7 +7455,7 @@ details.drop > .dropbody { padding: 0 14px 14px; }
       const ht = parseFloat($('mpHt').value), fc = parseFloat($('mpFace').value);
       const rec = { name: $('mpName').value.trim(), notes: $('mpNotes').value.trim(), type: pType, lat: +ll.lat.toFixed(7), lon: +ll.lng.toFixed(7),
         acc: pend.acc ? +pend.acc.toFixed(1) : null, fixes: pend.acc ? Math.max(1, pend.fixes) : 0, final: $('mpFinal').value.trim(),
-        h: isFinite(ht) ? ht : null, face: isFinite(fc) ? ((fc % 360) + 360) % 360 : null, winds: [...pend.winds] };
+        pull: $('mpPull').value || null, h: isFinite(ht) ? ht : null, face: isFinite(fc) ? ((fc % 360) + 360) % 360 : null, winds: [...pend.winds] };
       let target;
       if (editing) { target = DB.markers.find(x => x.id === editing.id) || {}; Object.assign(target, rec); }
       else { target = Object.assign({ id: uid(), area: newArea(), t: Date.now() }, rec); DB.markers.push(target); }
@@ -7396,6 +7712,7 @@ details.drop > .dropbody { padding: 0 14px 14px; }
       map.on('moveend', () => { const c = map.getCenter(); store.set('maps.view', { lat: +c.lat.toFixed(5), lon: +c.lng.toFixed(5), z: map.getZoom() }); onMove(); });
       map.on('click', e => {
         if (tool === 'measure') { msPts.push(e.latlng); drawMeasure(); return; }
+        if (tool === 'scout') { scoutExtra.push(e.latlng); L.circleMarker(e.latlng, { radius: 7, color: '#fff', weight: 2, fillColor: '#6d28d9', fillOpacity: 1 }).addTo(scoutLayer || (scoutLayer = L.layerGroup().addTo(map))); $('scOut').textContent = `${scoutExtra.length} stop${scoutExtra.length === 1 ? '' : 's'} of your own added. Tap Plan the loop.`; return; }
         if (tool === 'add' && pending) { pending.setLatLng(e.latlng); pend.acc = null; pend.moved = 0; pendUI(); return; }
         if (tool === 'blood' && curBT()) { if (tapMode === 'grid' && curBT().grid && toggleCell(e.latlng)) return; addBlood(e.latlng, 0, curBT().pts.length ? 'blood' : 'hit'); return; }
         landInfo(e.latlng);
@@ -7408,6 +7725,7 @@ details.drop > .dropbody { padding: 0 14px 14px; }
         if (!map) init(); setTimeout(() => map.invalidateSize(), 50);
         if (store.get('pendingBlood', 0)) { store.set('pendingBlood', 0); setTimeout(() => { if (tool !== 'blood') setTool('blood'); $('mp-blood').scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }, 150); }
         if (store.get('pendingSpots', 0)) { store.set('pendingSpots', 0); setTimeout(() => runSpots(true), 150); }
+        if (store.get('pendingScout', 0)) { store.set('pendingScout', 0); setTimeout(() => { setTool('scout'); startGPS(false); $('mp-scout').scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }, 150); }
         const pg = store.get('pendingGo', null);
         if (pg) { store.set('pendingGo', null); const ll = L.latLng(pg.lat, pg.lon); map.setView(ll, 16); setGoTo(ll, pg.name || 'Shared spot'); toast(`Navigating to ${pg.name || 'the shared spot'}`); }
       },
@@ -9140,9 +9458,119 @@ details.drop > .dropbody { padding: 0 14px 14px; }
   })();
 
   // =================================================================
+  // SCOUTING & SIGN, and EMERGENCY
+  // =================================================================
+  const geo = (() => {
+    const toUTM = (lat, lon) => {
+      const a = 6378137, f = 1 / 298.257223563, e2 = f * (2 - f), k0 = 0.9996, r = Math.PI / 180, zone = Math.floor((lon + 180) / 6) + 1, l0 = ((zone - 1) * 6 - 180 + 3) * r, ph = lat * r;
+      const N = a / Math.sqrt(1 - e2 * Math.sin(ph) ** 2), T = Math.tan(ph) ** 2, ep = e2 / (1 - e2), C = ep * Math.cos(ph) ** 2, A = Math.cos(ph) * (lon * r - l0);
+      const M = a * ((1 - e2 / 4 - 3 * e2 ** 2 / 64 - 5 * e2 ** 3 / 256) * ph - (3 * e2 / 8 + 3 * e2 ** 2 / 32 + 45 * e2 ** 3 / 1024) * Math.sin(2 * ph) + (15 * e2 ** 2 / 256 + 45 * e2 ** 3 / 1024) * Math.sin(4 * ph) - (35 * e2 ** 3 / 3072) * Math.sin(6 * ph));
+      const E = k0 * N * (A + (1 - T + C) * A ** 3 / 6 + (5 - 18 * T + T * T + 72 * C - 58 * ep) * A ** 5 / 120) + 500000;
+      let Nn = k0 * (M + N * Math.tan(ph) * (A * A / 2 + (5 - T + 9 * C + 4 * C * C) * A ** 4 / 24 + (61 - 58 * T + T * T + 600 * C - 330 * ep) * A ** 6 / 720)); if (lat < 0) Nn += 1e7;
+      return `${zone}${'CDEFGHJKLMNPQRSTUVWXX'[Math.floor((lat + 80) / 8)] || 'Z'} ${Math.round(E)} ${Math.round(Nn)}`;
+    };
+    const dms = (v, p, n) => { const a = Math.abs(v), d = Math.floor(a), m = Math.floor((a - d) * 60), s = ((a - d) * 60 - m) * 60; return `${d}°${String(m).padStart(2, '0')}'${s.toFixed(1).padStart(4, '0')}"${v >= 0 ? p : n}`; };
+    const dist = (a, b) => { const r = Math.PI / 180, dl = (b.lat - a.lat) * r, dn = (b.lon - a.lon) * r, h = Math.sin(dl / 2) ** 2 + Math.cos(a.lat * r) * Math.cos(b.lat * r) * Math.sin(dn / 2) ** 2; return 12742018 * Math.asin(Math.sqrt(h)); };
+    const brg = (a, b) => { const r = Math.PI / 180, y = Math.sin((b.lon - a.lon) * r) * Math.cos(b.lat * r), x = Math.cos(a.lat * r) * Math.sin(b.lat * r) - Math.sin(a.lat * r) * Math.cos(b.lat * r) * Math.cos((b.lon - a.lon) * r); return (Math.atan2(y, x) / r + 360) % 360; };
+    const pos = () => new Promise(res => { if (!navigator.geolocation) return res(null); navigator.geolocation.getCurrentPosition(p => res({ lat: p.coords.latitude, lon: p.coords.longitude, acc: p.coords.accuracy }), () => res(null), { enableHighAccuracy: true, timeout: 12000, maximumAge: 60000 }); });
+    const yd = m => m < 1609 ? Math.round(m * 1.0936) + ' yd' : (m / 1609.344).toFixed(2) + ' mi';
+    return { toUTM, dms, dist, brg, pos, yd };
+  })();
+
+  const scouting = (() => {
+    const esc = t => String(t == null ? '' : t).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    let wxDone = false;
+    async function wx() {
+      if (wxDone || IN_CLAUDE) { if (IN_CLAUDE) $('scWx').textContent = 'Rain and snow timing works on the website version.'; return; }
+      const p = (await geo.pos()) || { lat: LOC.lat, lon: LOC.lon };
+      try {
+        const r = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${p.lat.toFixed(3)}&longitude=${p.lon.toFixed(3)}&hourly=rain,snowfall,precipitation&past_days=7&forecast_days=1&timezone=auto`); const j = await r.json(), h = j.hourly, now = Date.now();
+        const lastEnd = arr => { for (let i = h.time.length - 1; i >= 0; i--) { const t = new Date(h.time[i]).getTime(); if (t > now) continue; if ((arr[i] || 0) > 0.05) return t + 36e5; } return null; };
+        const ago = t => { const hh = Math.round((now - t) / 36e5); return hh < 1 ? 'less than an hour ago' : hh < 48 ? `${hh} hours ago` : `${Math.round(hh / 24)} days ago`; };
+        const when = t => new Date(t).toLocaleString([], { weekday: 'short', hour: 'numeric' });
+        const rain = lastEnd(h.rain), snow = lastEnd(h.snowfall), raining = (h.precipitation[h.time.findIndex(t => new Date(t).getTime() > now) - 1] || 0) > 0.05;
+        let out = '';
+        out += rain ? `<div><b>Last rain ended ${when(rain)} (${ago(rain)}).</b> Crisp tracks with no raindrop pits, and scrapes pawed clean with no rain-spatter, are newer than that.</div>` : '<div><b>No rain here in the last 7 days.</b> Dry dirt ages tracks slowly: look at the edges, not the color.</div>';
+        out += snow ? `<div><b>Last snowfall ended ${when(snow)} (${ago(snow)}).</b> A track with no new snow inside was made after that; one with snow in it is older.</div>` : '';
+        if (raining) out += '<div><b>It is raining or snowing now:</b> fresh sign is being washed out; tracks you find with sharp edges are very fresh.</div>';
+        $('scWx').innerHTML = out + '<div class="caption">Weather record for your location (Open-Meteo), about a 1–2 mile grid.</div>'; wxDone = true;
+      } catch (e) { $('scWx').textContent = 'No weather record right now (no signal?). Use the guide below.'; }
+    }
+    function mast() {
+      const ms = store.get('maps.markers', []).filter(m => ['whiteoak', 'redoak', 'fruit'].includes(m.type)), now = Date.now();
+      if (!ms.length) { $('scMast').innerHTML = '<div class="caption">No oak or fruit tree pins yet. In Maps, add a White oak or Red oak pin under trees you find dropping.</div>'; return; }
+      const rows = ms.map(m => { const v = (m.visits || []).filter(x => x.c != null).sort((a, b) => b.t - a.t); return { m, last: v[0], prev: v[1] }; })
+        .sort((a, b) => (b.last && now - b.last.t < 14 * 864e5 ? b.last.c : -1) - (a.last && now - a.last.t < 14 * 864e5 ? a.last.c : -1));
+      const name = { whiteoak: 'White oak', redoak: 'Red oak', fruit: 'Fruit tree' };
+      $('scMast').innerHTML = '<div class="sc-mast">' + rows.map(({ m, last, prev }) => {
+        const age = last ? Math.round((now - last.t) / 864e5) : null, tr = last && prev ? last.c - prev.c : null;
+        const txt = !last ? 'not counted yet' : `${last.c} per sq yd, ${age === 0 ? 'today' : age + ' day' + (age === 1 ? '' : 's') + ' ago'}${tr != null ? (tr > 0 ? ' · dropping more ▲' : tr < 0 ? ' · slowing ▼' : ' · steady') : ''}${age > 14 ? ' · old count' : ''}`;
+        return `<a href="#go=${m.lat},${m.lon},${encodeURIComponent(m.name || name[m.type])}"><span><b>${esc(m.name || name[m.type])}</b> · ${name[m.type]}</span><span>${txt}</span></a>`;
+      }).join('') + '</div><div class="caption">Tap a tree to walk to it. Hot trees: more than about 5 per square yard and rising.</div>';
+    }
+    function plSum() {
+      const log = store.get('maps.pressure', []), now = Date.now(); if (!log.length) { $('plSum').textContent = 'Nothing logged yet.'; return; }
+      const tr = log.filter(x => x.k === 'trucks'), days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'], bins = {};
+      tr.forEach(x => { const d = new Date(x.t), part = d.getHours() < 11 ? 'morning' : d.getHours() < 15 ? 'midday' : 'evening', k = days[d.getDay()] + ' ' + part; (bins[k] = bins[k] || []).push(x.n || 0); });
+      const top = Object.entries(bins).map(([k, v]) => [k, v.reduce((a, b) => a + b, 0) / v.length, v.length]).sort((a, b) => b[1] - a[1]);
+      const recent = log.filter(x => now - x.t < 30 * 864e5), cnt = k => recent.filter(x => x.k === k).length;
+      $('plSum').innerHTML = `<b>${log.length} entries.</b> Last 30 days: ${cnt('hunter')} hunters seen, ${cnt('shot')} shots heard, ${cnt('stand')} other stands, ${cnt('people')} hikers/dogs/ATVs.`
+        + (top.length ? `<br>Trucks at your lots: ${top.slice(0, 4).map(([k, a, n]) => `${k} ≈ ${a.toFixed(1)} (${n}×)`).join(' · ')}${top.length > 1 ? `<br><b>Quietest logged:</b> ${top[top.length - 1][0]}.` : ''}` : '');
+    }
+    document.querySelectorAll('[data-pl]').forEach(b => b.addEventListener('click', async () => {
+      const k = b.dataset.pl; b.disabled = true; const p = await geo.pos(); b.disabled = false;
+      if (!p) { toast('Needs your GPS position. Allow location and try again.'); return; }
+      const log = store.get('maps.pressure', []); log.push({ t: Date.now(), k, lat: +p.lat.toFixed(5), lon: +p.lon.toFixed(5), n: k === 'trucks' ? Math.max(0, +$('plN').value || 0) : 1 }); store.set('maps.pressure', log.slice(-2000));
+      toast('Logged.'); plSum();
+    }));
+    return { show() { wx(); mast(); plSum(); } };
+  })();
+
+  const sos = (() => {
+    const esc = t => String(t == null ? '' : t).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    let wid = null, cur = null, road = null, roadAt = null;
+    const dec = p => `${p.lat.toFixed(5)}, ${p.lon.toFixed(5)}`;
+    function render() {
+      if (!cur) return;
+      $('sosDec').textContent = dec(cur);
+      $('sosAlt').textContent = `${geo.dms(cur.lat, 'N', 'S')} ${geo.dms(cur.lon, 'E', 'W')}\nUTM ${geo.toUTM(cur.lat, cur.lon)} · GPS ±${Math.round(cur.acc * 1.0936)} yd`;
+      const pins = store.get('maps.markers', []).filter(m => m.type === 'parking' || m.type === 'entry'), truck = pins.map(m => ({ m, d: geo.dist(cur, m) })).sort((a, b) => a.d - b.d)[0];
+      let h = truck ? `<div><b>Truck / parking "${esc(truck.m.name || 'Parking')}":</b> ${geo.yd(truck.d)} at ${Math.round(geo.brg(cur, truck.m))}° ${cardinal(geo.brg(cur, truck.m))}</div>` : '<div>No parking pin saved. Next time, drop a Parking pin at your truck.</div>';
+      h += road ? `<div><b>Nearest road${road.name ? ' (' + esc(road.name) + ')' : ''}:</b> ${geo.yd(geo.dist(cur, road))} at ${Math.round(geo.brg(cur, road))}° ${cardinal(geo.brg(cur, road))}${roadAt && geo.dist(cur, roadAt) > 400 ? ' (from where you were a while ago)' : ''}</div>` : '<div>Nearest road: looking it up (needs a little signal)…</div>';
+      $('sosOut').innerHTML = h; sos.truck = truck ? truck.m : null;
+    }
+    async function findRoad() {
+      if (!cur || (roadAt && geo.dist(cur, roadAt) < 300)) return;
+      const R = 3500, q = `[out:json][timeout:20];way["highway"~"^(motorway|trunk|primary|secondary|tertiary|unclassified|residential|service)$"](around:${R},${cur.lat},${cur.lon});out geom;`;
+      try { const r = await fetch('https://overpass-api.de/api/interpreter', { method: 'POST', body: 'data=' + encodeURIComponent(q), headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }); const j = await r.json(); let best = null;
+        const k = Math.cos(cur.lat * Math.PI / 180);
+        for (const w of j.elements || []) { const g = w.geometry || []; for (let i = 1; i < g.length; i++) { // nearest point on each segment
+          const ax = (g[i - 1].lon - cur.lon) * k, ay = g[i - 1].lat - cur.lat, bx = (g[i].lon - cur.lon) * k, by = g[i].lat - cur.lat, dx = bx - ax, dy = by - ay, t = Math.max(0, Math.min(1, -(ax * dx + ay * dy) / (dx * dx + dy * dy || 1))), px = ax + t * dx, py = ay + t * dy, d = px * px + py * py;
+          if (!best || d < best.d) best = { d, lat: cur.lat + py, lon: cur.lon + px / k, name: (w.tags && (w.tags.name || w.tags.ref)) || '' }; } }
+        if (best) { road = best; roadAt = { lat: cur.lat, lon: cur.lon }; store.set('sos.road', { road, roadAt }); } else road = null;
+      } catch (e) { const c = store.get('sos.road', null); if (c) { road = c.road; roadAt = c.roadAt; } }
+      render();
+    }
+    $('sosSms').addEventListener('click', () => { if (!cur) return; const t = `I need help. My location: ${dec(cur)} (UTM ${geo.toUTM(cur.lat, cur.lon)}), GPS ±${Math.round(cur.acc * 1.0936)} yd. Map: https://maps.google.com/?q=${cur.lat.toFixed(5)},${cur.lon.toFixed(5)}`; location.href = `sms:?&body=${encodeURIComponent(t)}`; });
+    $('sosCopy').addEventListener('click', async () => { if (!cur) return; const t = `${dec(cur)} · UTM ${geo.toUTM(cur.lat, cur.lon)}`; try { await navigator.clipboard.writeText(t); toast('Copied ' + t); } catch (e) { toast(t); } });
+    $('sosSay').addEventListener('click', () => { if (!cur || !window.speechSynthesis) return; const sp = v => String(Math.abs(v).toFixed(5)).split('').map(c => c === '.' ? 'point' : c).join(' ');
+      const u = new SpeechSynthesisUtterance(`Latitude ${sp(cur.lat)} north. Longitude ${sp(cur.lon)} west. Accuracy ${Math.round(cur.acc * 1.0936)} yards.`); u.rate = 0.8; try { speechSynthesis.cancel(); speechSynthesis.speak(u); } catch (e) {} });
+    $('sosTruck').addEventListener('click', () => { if (!sos.truck) { toast('No parking pin saved.'); return; } location.hash = `go=${sos.truck.lat},${sos.truck.lon},${encodeURIComponent('Your truck')}`; });
+    $('sosRoad').addEventListener('click', () => { if (!road) { toast('Nearest road not found yet (needs a little signal).'); return; } location.hash = `go=${road.lat.toFixed(6)},${road.lon.toFixed(6)},${encodeURIComponent('Nearest road')}`; });
+    return {
+      show() {
+        if (IN_CLAUDE || !navigator.geolocation) { $('sosDec').textContent = 'GPS works on the website version.'; return; }
+        const c = store.get('sos.road', null); if (c && !road) { road = c.road; roadAt = c.roadAt; }
+        wid = navigator.geolocation.watchPosition(p => { cur = { lat: p.coords.latitude, lon: p.coords.longitude, acc: p.coords.accuracy }; render(); findRoad(); }, () => { $('sosDec').textContent = 'No GPS yet: step into an opening and hold still.'; }, { enableHighAccuracy: true, maximumAge: 0, timeout: 30000 });
+      },
+      hide() { if (wid != null) navigator.geolocation.clearWatch(wid); wid = null; },
+    };
+  })();
+
+  // =================================================================
   // ROUTER
   // =================================================================
-  const TOOLS = { vision, maps, predict, stats, blood, track, camo, movement, wind, compass, sun: sunmoon, shine, skyline, checklist, fov, guide: {}, mikecon, journal, shot, backup, cams, tags, buck, dress, chrono, arrowbuild, meat: meatlog, tracking: { show: () => { dress.trackShow(); trkKit(); }, hide: () => {} } };
+  const TOOLS = { vision, maps, predict, stats, blood, track, camo, movement, wind, compass, sun: sunmoon, shine, skyline, checklist, fov, guide: {}, mikecon, journal, shot, backup, cams, tags, buck, dress, chrono, arrowbuild, meat: meatlog, scouting, sos, tracking: { show: () => { dress.trackShow(); trkKit(); }, hide: () => {} } };
   function trkKit() {
     const st = store.get('track.kit', {}), box = $('trkKit'), boxes = [...box.querySelectorAll('[data-kit]')];
     const upd = () => { const n = boxes.filter(b => b.checked).length; $('trkKitN').textContent = n === boxes.length ? 'All packed. Good hunting.' : `${n} of ${boxes.length} packed`; };
@@ -9158,6 +9586,7 @@ details.drop > .dropbody { padding: 0 14px 14px; }
     if (go) { store.set('pendingGo', { lat: +go[1], lon: +go[2], name: decodeURIComponent(go[3] || '') }); location.replace('#maps'); return; }
     if (location.hash === '#bloodmap') { store.set('pendingBlood', 1); location.replace('#maps'); return; }
     if (location.hash === '#spots') { store.set('pendingSpots', 1); location.replace('#maps'); return; }
+    if (location.hash === '#scoutloop') { store.set('pendingScout', 1); location.replace('#maps'); return; }
     const name = (location.hash || '').replace('#', '');
     const next = TOOLS[name] ? name : 'home';
     if (current !== next && TOOLS[current] && TOOLS[current].hide) TOOLS[current].hide();
