@@ -312,6 +312,11 @@ html.night body { background: #000; }
 .kt-hit button[aria-pressed="true"] { background: #b3261e; border-color: #b3261e; color: #fff; }
 .kt-signs summary { cursor: pointer; font-size: .88rem; font-weight: 600; padding: 4px 0; }
 .kt-signs ul { margin: 4px 0 0; padding-left: 1.2rem; display: grid; gap: 4px; font-size: .86rem; }
+.ka-row { display: flex; gap: 10px; align-items: center; }
+.ka-row canvas { width: 96px; height: auto; border-radius: 8px; border: 1px solid var(--line); flex: none; }
+.ka-sw { width: 34px; height: 34px; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 0 0 1px var(--line); flex: none; }
+.ka-q { display: flex; flex-wrap: wrap; gap: 8px 14px; font-size: .88rem; }
+.ka-q label { display: flex; gap: 6px; align-items: center; }
 .kt-hours { display: flex; gap: 6px; overflow-x: auto; }
 .kt-hours span { flex: none; display: grid; justify-items: center; padding: 6px 8px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); font-size: .75rem; color: var(--muted); }
 .kt-hours b { font-size: 1rem; color: var(--fg); }
@@ -1807,6 +1812,8 @@ details.drop > .dropbody { padding: 0 14px 14px; }
       <div class="k" style="margin-top:6px">Where did the arrow hit?</div>
       <div class="kt-hit" id="kHit" role="group" aria-label="Where did the arrow hit"></div>
       <details class="kt-signs"><summary>How to tell where you hit</summary><div id="kSigns"></div></details>
+      <div class="actions"><label class="btn" for="kPhoto" style="gap:6px"><svg style="width:18px;height:18px"><use href="#i-cam"/></svg>Check my arrow (photo)</label><input type="file" id="kPhoto" accept="image/*" capture="environment" hidden></div>
+      <div id="kArrow" style="display:grid;gap:8px"></div>
       <div id="kOut" style="display:grid;gap:8px"></div></div>
     <nav class="fd-nav" id="fdNav" aria-label="Sections"></nav>
     <div id="fdGuide" class="fd-guide"></div>
@@ -7965,6 +7972,63 @@ details.drop > .dropbody { padding: 0 14px 14px; }
     const fmtW = h => h < 1 ? Math.round(h * 60) + ' min' : h + ' h';
     const fmtR = w => w[0] === w[1] ? fmtW(w[0]) : w[0] >= 1 ? `${w[0]}–${w[1]} h` : `${fmtW(w[0])} to ${fmtW(w[1])}`;
     $('kHit').addEventListener('click', e => { const b = e.target.closest('[data-hit]'); if (!b) return; store.set('dress.hit', hitKey() === b.dataset.hit ? null : b.dataset.hit); hitUI(); hangCheck(); });
+    // ---- arrow photo: read the blood color against the white marker ----
+    let KA = null; // last photo stats
+    function arrowStats(img) {
+      const W = 360, sc = Math.min(1, W / Math.max(img.width, img.height)), w = Math.max(1, Math.round(img.width * sc)), h = Math.max(1, Math.round(img.height * sc));
+      const cv = document.createElement('canvas'); cv.width = w; cv.height = h; const cx = cv.getContext('2d'); cx.drawImage(img, 0, 0, w, h);
+      const d = cx.getImageData(0, 0, w, h), px = d.data, n = w * h;
+      // white reference: the brightest, least colorful pixels (the white marker or wrap)
+      const lum = new Float32Array(n); for (let i = 0; i < n; i++) { const r = px[i * 4], g = px[i * 4 + 1], b = px[i * 4 + 2]; lum[i] = 0.299 * r + 0.587 * g + 0.114 * b; }
+      const sorted = Array.from(lum).sort((a, b) => b - a), cut = sorted[Math.floor(n * 0.15)] || 200;
+      let wr = 0, wg = 0, wb = 0, wc = 0;
+      for (let i = 0; i < n; i++) if (lum[i] >= cut) { const r = px[i * 4], g = px[i * 4 + 1], b = px[i * 4 + 2], mx = Math.max(r, g, b), mn = Math.min(r, g, b); if (mx > 60 && (mx - mn) / mx < 0.45) { wr += r; wg += g; wb += b; wc++; } }
+      if (!wc) return { err: 'nowhite' };
+      wr /= wc; wg /= wc; wb /= wc; const whiteOk = Math.min(wr, wg, wb) > 120 && (Math.max(wr, wg, wb) - Math.min(wr, wg, wb)) / Math.max(wr, wg, wb) < 0.2;
+      let red = 0, gut = 0, Ls = [], Ss = [], R = 0, G = 0, B = 0;
+      const mark = cx.createImageData(w, h);
+      for (let i = 0; i < n; i++) {
+        let r = Math.min(1, px[i * 4] / wr), g = Math.min(1, px[i * 4 + 1] / wg), b = Math.min(1, px[i * 4 + 2] / wb);
+        const mx = Math.max(r, g, b), mn = Math.min(r, g, b), L = (mx + mn) / 2, dl = mx - mn, S = dl === 0 ? 0 : dl / (1 - Math.abs(2 * L - 1));
+        if (dl < 0.12 || S < 0.25 || L < 0.06 || L > 0.94) continue; // white, gray, black shaft, glare
+        let H = 0; if (mx === r) H = 60 * (((g - b) / dl) % 6); else if (mx === g) H = 60 * ((b - r) / dl + 2); else H = 60 * ((r - g) / dl + 4); if (H < 0) H += 360;
+        if (H >= 335 || H <= 22) { red++; Ls.push(L); Ss.push(S); R += r; G += g; B += b; mark.data.set([255, 255, 255, 255], i * 4); }
+        else if (H > 22 && H <= 160 && L < 0.7) { gut++; mark.data.set([255, 210, 0, 255], i * 4); }
+      }
+      // preview: photo with the blood pixels outlined
+      cx.globalAlpha = .35; const mc = document.createElement('canvas'); mc.width = w; mc.height = h; mc.getContext('2d').putImageData(mark, 0, 0); cx.drawImage(mc, 0, 0); cx.globalAlpha = 1;
+      const med = a => { if (!a.length) return 0; const s2 = a.slice().sort((x, y) => x - y); return s2[Math.floor(s2.length / 2)]; };
+      return { cv, n, red, gut, cover: (red + gut) / n, L: med(Ls), S: med(Ss), rgb: red ? [R / red, G / red, B / red].map(v => Math.round(v * 255)) : null, whiteOk };
+    }
+    function arrowRead() {
+      const st = KA; if (!st) { $('kArrow').innerHTML = ''; return; }
+      const bub = $('kBub') ? $('kBub').checked : false, smell = $('kSmell') ? $('kSmell').checked : false, hair = $('kHair') ? $('kHair').checked : false;
+      let guess, alt = [], why, conf = 'medium';
+      const gutFrac = st.red + st.gut ? st.gut / (st.red + st.gut) : 0;
+      if (st.err === 'nowhite') { $('kArrow').innerHTML = '<div class="fd-tip no">I can’t find the white marker in this photo. Put the arrow or blood on something white (wrap, fletching, paper towel, white tape) and fill most of the photo with it.</div>'; return; }
+      if (smell || gutFrac > 0.3) { guess = 'gut'; why = smell ? 'You noticed a sour smell or green bits: that is stomach or intestine.' : `About ${Math.round(gutFrac * 100)}% of the stain is brown, olive or green, not red: that usually means stomach contents.`; alt = ['liver']; conf = smell ? 'high' : 'medium'; }
+      else if (st.cover < 0.004 || st.red < 40) { guess = 'unsure'; why = 'Almost no blood on the white marker. It may be a miss, a grazing hit, or blood that wiped off on the way through. Look for hair, fat or blood on the ground at the shot spot.'; alt = ['muscle']; conf = 'low'; }
+      else if (bub) { guess = 'lungs'; why = 'Bubbles in the blood mean air: a lung hit.'; alt = ['heart']; conf = 'high'; }
+      else if (st.L >= 0.58) { guess = 'lungs'; why = 'The blood is light, pinkish red, which is typical of lung blood mixed with air.'; alt = ['heart', 'muscle']; }
+      else if (st.L < 0.27) { guess = 'liver'; why = 'The blood is dark red, almost maroon, which is typical of a liver hit.'; alt = ['gut']; }
+      else { guess = 'heart'; why = 'Bright, rich red blood: heart, lungs or a big muscle or artery. Check for bubbles (lungs) and watch how the deer ran off.'; alt = ['lungs', 'muscle']; }
+      if (hair) why += ' Hair color helps too: brown hair is from the side, white hair from the belly or chest (low hit), dark coarse hair from the back (high hit).';
+      const sw = st.rgb ? `rgb(${st.rgb.join(',')})` : '#999';
+      $('kArrow').innerHTML = `<div class="ka-row"><span id="kaImg"></span><span class="ka-sw" style="background:${sw}" title="measured blood color"></span><div><b>Best guess: ${HITS[guess].n}</b> <span class="caption">(${conf} confidence)</span><div class="caption">${alt.length ? 'Also possible: ' + alt.map(a => HITS[a].n).join(', ') : ''}</div></div></div>
+        <div class="caption">${why}${!st.whiteOk ? ' The light was dim or colored, so the color reading is less sure.' : ''}</div>
+        <div class="ka-q"><label><input type="checkbox" id="kBub" ${bub ? 'checked' : ''}> Bubbles in the blood</label><label><input type="checkbox" id="kSmell" ${smell ? 'checked' : ''}> Sour smell or green/brown bits</label><label><input type="checkbox" id="kHair" ${hair ? 'checked' : ''}> Hair on the arrow</label></div>
+        <div class="actions"><button class="btn primary" type="button" data-kause="${guess}">Use: ${HITS[guess].n}</button>${alt.map(a => `<button class="btn" type="button" data-kause="${a}">${HITS[a].n}</button>`).join('')}</div>
+        <div class="caption">A photo can’t be sure: light, the camera, and drying (blood darkens within minutes) change the color. Take it right after the shot, in daylight or with a white flashlight, with the white marker filling most of the photo. Use it with what you saw and heard.</div>`;
+      $('kaImg').appendChild(st.cv);
+    }
+    $('kPhoto').addEventListener('change', async e => {
+      const f = e.target.files && e.target.files[0]; if (!f) return; e.target.value = '';
+      $('kArrow').innerHTML = '<div class="caption">Reading the photo…</div>';
+      try { const bmp = await createImageBitmap(f, { imageOrientation: 'from-image' }).catch(() => null) || await new Promise((res, rej) => { const im = new Image(); im.onload = () => res(im); im.onerror = rej; im.src = URL.createObjectURL(f); }); KA = arrowStats(bmp); arrowRead(); }
+      catch (err) { $('kArrow').innerHTML = '<div class="fd-tip no">Couldn’t open that photo. Try again.</div>'; }
+    });
+    $('kArrow').addEventListener('change', e => { if (e.target.matches('input[type=checkbox]')) arrowRead(); });
+    $('kArrow').addEventListener('click', e => { const b = e.target.closest('[data-kause]'); if (!b) return; store.set('dress.hit', b.dataset.kause); hitUI(); hangCheck(); $('kOut').scrollIntoView({ behavior: 'smooth', block: 'nearest' }); });
     // ---- kill-time timer and "can I hang it overnight?" from the hourly forecast ----
     let killT = null;
     const hm2 = d => d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
