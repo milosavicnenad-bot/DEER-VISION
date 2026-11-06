@@ -1172,6 +1172,19 @@ svg.leaflet-image-layer.leaflet-interactive path {
 .nav-acts { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
 #navVoice[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); }
 .nav-acts .btn { padding: 9px 4px; font-size: .85rem; }
+.nav-wind { display: grid; grid-template-columns: 46px 1fr; gap: 10px; align-items: center; width: 100%; text-align: left; margin: 8px 0 2px; padding: 7px 10px; border-radius: 12px; border: 1px solid var(--line, #ccc); background: rgba(21,101,192,.08); color: inherit; font: inherit; }
+.nav-wind svg { width: 46px; height: 46px; }
+.nav-wind circle { fill: #fff; stroke: #1565c0; stroke-width: 2; }
+.nav-wind path { fill: none; stroke: #1565c0; stroke-width: 3.2; stroke-linecap: round; stroke-linejoin: round; }
+.nav-wind #navWindArr { transform-origin: 20px 20px; transition: transform .4s; }
+.nav-wind .nw-txt { display: grid; line-height: 1.25; }
+.nav-wind .nw-txt b { font-size: 1.02rem; }
+.nav-wind .nw-txt span { font-size: .86rem; }
+.nav-wind.good { border-color: #2e7d32; background: rgba(46,125,50,.10); }
+.nav-wind.bad { border-color: #c62828; background: rgba(198,40,40,.10); }
+.nav-wind.bad .nw-txt span { color: #c62828; font-weight: 700; }
+.navcard.big .nav-wind { max-width: 520px; justify-self: center; }
+.navcard.big .nav-wind .nw-txt b { font-size: 1.2rem; }
 .navcard.big { position: fixed; inset: 0; z-index: 3000; border-radius: 0; border-width: 0; align-content: center; padding: max(16px, env(safe-area-inset-top)) 18px max(16px, env(safe-area-inset-bottom)); }
 .navcard.big .nav-top { grid-template-columns: 1fr; justify-items: center; text-align: center; }
 .navcard.big .nav-dial { width: min(78vw, 46vh); height: min(78vw, 46vh); }
@@ -1213,8 +1226,8 @@ body.nav-big { overflow: hidden; }
 .mtools { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 5px; }
 .mtools button { display: grid; justify-items: center; gap: 3px; padding: 8px 2px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); color: var(--fg); font: 600 .74rem var(--font-body); cursor: pointer; }
 .mtools button svg { width: 22px; height: 22px; color: var(--h-moss); }
-.mtools button.on, .mtools button[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); }
-.mtools button.on svg, .mtools button[aria-pressed="true"] svg { color: var(--accent); }
+.mtools button.on, .mtools button[aria-pressed="true"] { background: #1565c0 !important; border-color: #0d47a1 !important; color: #fff !important; font-weight: 800; box-shadow: 0 2px 6px rgba(13,71,161,.45), inset 0 0 0 2px rgba(255,255,255,.25); }
+.mtools button.on svg, .mtools button[aria-pressed="true"] svg { color: #fff !important; }
 .lyrs { display: grid; gap: 6px; }
 .lyr { display: grid; grid-template-columns: 22px 1fr; gap: 10px; align-items: start; padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); cursor: pointer; }
 .lyr input { width: 20px; height: 20px; margin: 2px 0 0; accent-color: var(--accent); }
@@ -2122,6 +2135,7 @@ details.drop > .dropbody { padding: 0 14px 14px; }
             <div class="nav-say" id="navSay"></div>
           </div>
         </div>
+        <button type="button" class="nav-wind" id="navWind" aria-label="Wind"><svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="18"/><g id="navWindArr"><path d="M20 33 V9 M12 16 L20 7 L28 16"/><path d="M15 33 h10" /></g></svg><span class="nw-txt"><b id="navWindTop">Wind</b><span id="navWindSub"></span></span></button>
         <div class="nav-final" id="navFinal" hidden></div>
         <div class="nav-final" id="navSum" hidden></div>
         <dl class="nav-dl">
@@ -6511,6 +6525,7 @@ details.drop > .dropbody { padding: 0 14px 14px; }
       if (goTo.trail) { const st = trailStep(); goTo.ll = st.tgt; d = st.total; b = bearing(me, st.tgt); if (goLine) goLine.setLatLngs([me, st.tgt]); }
       else { d = me.distanceTo(goTo.ll); b = bearing(me, goTo.ll); }
       const hd = headingNow(), near = Math.max(9, Math.min(meAcc, 25));
+      navWind(b, hd);
       $('navDist').textContent = fmtDist(d);
       $('navBrg').textContent = `${Math.round(b)}° ${cardinal(b)}`;
       $('navBack').textContent = `${Math.round((b + 180) % 360)}° ${cardinal((b + 180) % 360)}`;
@@ -6552,6 +6567,39 @@ details.drop > .dropbody { padding: 0 14px 14px; }
       } catch (e) { navWake = null; }
     }
     document.addEventListener('visibilitychange', () => { if (goTo && document.visibilityState === 'visible') keepAwake(true); });
+    // wind on the navigation screen the whole walk
+    let windT = 0, windBusy = false;
+    async function windRefresh(force) {
+      if (windBusy || !me || (!force && Date.now() - windT < 10 * 6e4) || !navigator.onLine) return; windBusy = true; windT = Date.now();
+      try {
+        const r = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${me.lat.toFixed(3)}&longitude=${me.lng.toFixed(3)}&current=wind_speed_10m,wind_direction_10m,wind_gusts_10m&wind_speed_unit=mph`);
+        const j = await r.json(); if (j && j.current && j.current.wind_direction_10m != null) {
+          WIND.from = Math.round(j.current.wind_direction_10m); WIND.speed = Math.round(j.current.wind_speed_10m); WIND.gust = Math.round(j.current.wind_gusts_10m || 0); WIND.t = Date.now(); store.set('wind', WIND);
+          if (force) toast(`Wind updated: from ${cardinal(WIND.from)} at ${WIND.speed} mph.`);
+        }
+      } catch (e) { if (force) toast('No signal for a wind update. Showing the last wind.'); } finally { windBusy = false; }
+    }
+    $('navWind').addEventListener('click', () => windRefresh(true));
+    let windWarned = null;
+    function navWind(b, hd) {
+      const box = $('navWind'), to = (WIND.from + 180) % 360, up = hd != null ? hd : b;
+      $('navWindArr').setAttribute('transform', `rotate(${Math.round(((to - up) % 360 + 360) % 360)} 20 20)`);
+      const rel = ((WIND.from - b) % 360 + 540) % 360 - 180, a = Math.abs(rel);
+      const age = WIND.t ? Math.round((Date.now() - WIND.t) / 6e4) : null;
+      $('navWindTop').textContent = `Wind from ${cardinal(WIND.from)} ${WIND.speed} mph${WIND.gust > WIND.speed + 4 ? `, gusts ${WIND.gust}` : ''}`;
+      let sub, cls = '';
+      if (WIND.speed < 3) sub = 'Calm: thermals rule. Cool air sinks in the morning and evening, rises midday.';
+      else if (a <= 45) { sub = 'In your face: your scent goes behind you. Good.'; cls = 'good'; }
+      else if (a >= 135) { sub = `At your back: your scent goes ahead of you toward ${goTo ? goTo.name : 'where you are going'}.`; cls = 'bad'; }
+      else sub = `Crosswind from your ${rel < 0 ? 'left' : 'right'}: your scent drifts ${rel < 0 ? 'right' : 'left'} of your path.`;
+      // bedding or deer pins downwind of you
+      const half = coneHalf(WIND.speed); let hit = null;
+      if (me) for (const m of DB.markers) { if (!['bed', 'sighting', 'buck', 'doe'].includes(m.type)) continue; const P = L.latLng(m.lat, m.lon), d = me.distanceTo(P); if (d > 400) continue; if (Math.abs(((bearing(me, P) - to) % 360 + 540) % 360 - 180) < half && (!hit || d < hit.d)) hit = { m, d }; }
+      if (hit) { sub = `Your scent is blowing toward "${hit.m.name || (MT[hit.m.type] || MT.note)[0]}" ${Math.round(hit.d * YD)} yd away.`; cls = 'bad'; if (windWarned !== hit.m.id) { windWarned = hit.m.id; bz([300, 150, 300]); } }
+      $('navWindSub').textContent = sub + (age == null ? ' (wind set by hand)' : age > 30 ? ` (updated ${age > 120 ? Math.round(age / 60) + ' h' : age + ' min'} ago, tap to update)` : '');
+      box.className = 'nav-wind' + (cls ? ' ' + cls : '');
+      windRefresh(false);
+    }
     function navUI(on) {
       $('mpNav').hidden = !on;
       clearInterval(navTimer); navTimer = null;
