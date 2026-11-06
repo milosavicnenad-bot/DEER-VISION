@@ -374,6 +374,23 @@ html.night body { background: #000; }
 .sc-mast { display: grid; gap: 6px; } .sc-mast a { display: flex; justify-content: space-between; gap: 8px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 10px; color: var(--fg); text-decoration: none; background: var(--bg); font-size: .88rem; }
 .sos-card { border: 2px solid #c62828; } .sos-big { font: 700 1.5rem var(--font-mono); word-break: break-word; } .sos-sub { font: 500 .9rem var(--font-mono); color: var(--muted); white-space: pre-line; }
 .sos-call { background: #c62828 !important; border-color: #c62828 !important; color: #fff !important; font-weight: 800; }
+.wp-out { display: grid; gap: 6px; font-size: .9rem; } .wp-out > div { padding: 8px 10px; border: 1px solid var(--line); border-radius: 10px; background: var(--bg); }
+.wp-out .big { font: 700 1.35rem var(--font-display); } .wp-out .warn { border-color: #c62828; } .wp-out .good { border-color: #2e7d32; }
+.leaflet-popup-pane:has(.pm-pop) { z-index: 1001; }
+.pm-pop .leaflet-popup-content { margin: 10px 10px 8px; }
+.pin-menu .pm-h { font-weight: 800; font-size: 15px; margin-bottom: 6px; }
+.pin-menu .pm-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.pin-menu .pm-grid button { display: flex; flex-direction: column; align-items: center; gap: 5px; padding: 8px 2px 6px; border: 1px solid var(--line, #ccc); border-radius: 10px; background: var(--card, #fff); color: inherit; font: inherit; font-size: 11.5px; line-height: 1.15; text-align: center; min-height: 64px; }
+.pin-menu .pm-grid .mk { width: 26px; height: 26px; border-width: 1.5px; }
+.pin-menu .pm-grid .mk svg { width: 14px; height: 14px; }
+.pin-menu .pm-acts { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 8px; }
+.pin-menu .pm-acts button { padding: 10px 6px; border-radius: 10px; border: 1px solid var(--line, #ccc); background: var(--card, #fff); color: inherit; font: inherit; font-size: 13px; font-weight: 700; }
+.pin-menu .pm-tip { margin-top: 6px; font-size: 11px; opacity: .7; }
+.hold-ring { position: absolute; z-index: 800; width: 64px; height: 64px; margin: -32px 0 0 -32px; border-radius: 50%; pointer-events: none; background: conic-gradient(#d9530f var(--p, 0%), rgba(255,255,255,.35) 0); -webkit-mask: radial-gradient(circle, transparent 23px, #000 24px); mask: radial-gradient(circle, transparent 23px, #000 24px); animation: holdfill 3s linear forwards, holdshow .35s ease-in forwards; opacity: 0; }
+@property --p { syntax: '<percentage>'; inherits: false; initial-value: 0%; }
+@keyframes holdfill { from { --p: 0%; } to { --p: 100%; } }
+@keyframes holdshow { 0%, 60% { opacity: 0; } to { opacity: 1; } }
+.mtools .out-btn { border-color: #c62828 !important; color: #c62828 !important; font-weight: 800; }
 .ch-legs { display: grid; gap: 4px; font-size: .86rem; } .ch-legs div { display: grid; grid-template-columns: 26px 1fr auto; gap: 6px; padding: 6px 8px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); align-items: center; }
 .ch-legs b.n { background: #6d28d9; color: #fff; border-radius: 50%; width: 22px; height: 22px; display: grid; place-items: center; font-size: .75rem; }
 .rd-list { display: grid; gap: 6px; } .rd-list div { display: grid; grid-template-columns: 24px 1fr auto; gap: 8px; align-items: center; padding: 8px 10px; border: 1px solid var(--line); border-radius: 10px; background: var(--bg); font-size: .88rem; }
@@ -2106,15 +2123,16 @@ details.drop > .dropbody { padding: 0 14px 14px; }
           </div>
         </div>
         <div class="nav-final" id="navFinal" hidden></div>
+        <div class="nav-final" id="navSum" hidden></div>
         <dl class="nav-dl">
           <div><dt>Bearing to it</dt><dd id="navBrg">—</dd></div>
           <div><dt>Back bearing</dt><dd id="navBack">—</dd></div>
           <div><dt>On foot</dt><dd id="navWalk">—</dd></div>
           <div><dt>GPS accuracy</dt><dd id="navAcc">—</dd></div>
         </dl>
-        <div class="nav-acts"><button type="button" class="btn" id="navPace" aria-pressed="false"><svg style="width:18px;height:18px"><use href="#i-track"/></svg><span>Pace mode</span></button><button type="button" class="btn" id="navVoice" aria-pressed="false"><svg style="width:18px;height:18px"><use href="#i-speaker"/></svg><span>Voice</span></button><button type="button" class="btn" id="navBuzz" aria-pressed="false">Buzz</button><button type="button" class="btn" id="navSaver" aria-pressed="false">Battery saver</button><button type="button" class="btn" id="navCam">Camera finder</button><button type="button" class="btn" id="navTack">Tack here</button><button type="button" class="btn" id="navBig">Full screen</button><button type="button" class="btn" id="navMap">Show on map</button><button type="button" class="btn" id="navStop">Stop</button></div>
+        <div class="nav-acts"><button type="button" class="btn" id="navPace" aria-pressed="false"><svg style="width:18px;height:18px"><use href="#i-track"/></svg><span>Pace mode</span></button><button type="button" class="btn" id="navVoice" aria-pressed="false"><svg style="width:18px;height:18px"><use href="#i-speaker"/></svg><span>Voice</span></button><button type="button" class="btn" id="navBuzz" aria-pressed="false">Buzz</button><button type="button" class="btn" id="navSaver" aria-pressed="false">Battery saver</button><button type="button" class="btn" id="navCam">Camera finder</button><button type="button" class="btn" id="navTack">Tack here</button><button type="button" class="btn" id="navOut">Take me out</button><button type="button" class="btn" id="navBig">Full screen</button><button type="button" class="btn" id="navMap">Show on map</button><button type="button" class="btn" id="navStop">Stop</button></div>
       </div>
-      <div class="mapinfo" id="mpInfo">Tap the map to see who owns the land and the hunting rules there. Long-press to drop a marker.</div>
+      <div class="mapinfo" id="mpInfo">Tap the map to drop a pin. Press and hold 3 seconds for info about that spot (owner, hunting rules).</div>
       <div class="mtools" role="group" aria-label="Map tools">
         <button type="button" data-tool="add"><svg><use href="#i-pinadd"/></svg>Marker</button>
         <button type="button" data-tool="measure"><svg><use href="#i-ruler"/></svg>Measure</button>
@@ -2130,6 +2148,7 @@ details.drop > .dropbody { padding: 0 14px 14px; }
         <button type="button" data-tool="scout"><svg><use href="#i-track"/></svg>Scout loop</button>
         <button type="button" data-tool="chain"><svg><use href="#i-route"/></svg>Chains</button>
         <button type="button" data-tool="ready"><svg><use href="#i-check"/></svg>Ready?</button>
+        <button type="button" id="mpOutBtn" class="out-btn"><svg><use href="#i-route"/></svg>Take me out</button>
       </div>
 
       <div class="panel mp" id="mp-layers" hidden>
@@ -2302,6 +2321,11 @@ details.drop > .dropbody { padding: 0 14px 14px; }
         <div class="row"><span class="k">Hunt</span><div class="seg full" id="rtWhen"><button type="button" data-w="morning">Morning</button><button type="button" data-w="evening">Evening</button></div><span class="v"></span></div>
         <div class="actions"><button class="btn primary" id="rtEasy" type="button">Easiest walk</button><button class="btn primary" id="rtPlan" type="button">Quiet routes (deer)</button><button class="btn" id="rtNav" type="button">Navigate route in</button><button class="btn" id="rtClear" type="button">Clear</button></div>
         <div id="rtOut" class="rt-out"></div>
+        <div class="k">Walk plan</div>
+        <div class="caption">For the route above (or a straight line if you haven't planned one): when to leave the truck, the wind while you walk, how loud the leaves are, and whether the moon lights your way.</div>
+        <div class="row"><label for="wpSettle">In the stand</label><input type="number" id="wpSettle" min="0" max="90" value="20" class="full" inputmode="numeric"><span class="v">min before legal light</span></div>
+        <div class="actions"><button class="btn primary" id="wpRun" type="button">Plan my walk</button><button class="btn" id="wpIcs" type="button">Alarm in my calendar</button><button class="btn" id="wpShare" type="button">Text my plan</button></div>
+        <div id="wpOut" class="wp-out"></div>
       </div>
       <div class="panel mp" id="mp-ai" hidden>
         <h2 style="margin:0">AI hunt spots</h2>
@@ -6394,12 +6418,13 @@ details.drop > .dropbody { padding: 0 14px 14px; }
       L.popup({ maxWidth: 260 }).setLatLng(ll).setContent(box).openOn(map);
     }
     function setGoTo(ll, name, trail) {
+      if (goTo && goTo.plan && !goTo.sumShown && !ll && typeof walkSummary === 'function') { goTo.sumShown = true; walkSummary(goTo); }
       goTo = ll ? { ll, name, end: ll, trail: trail || null, idx: null } : null;
       if (!goTo && goLine) { map.removeLayer(goLine); goLine = null; }
       if (goTo && watchId == null) startGPS(false);
       V.started = false; V.mile = null; V.arrived = false; V.cat = '';
       if (!goTo) { try { window.speechSynthesis && speechSynthesis.cancel(); } catch (e) {} }
-      navUI(!!goTo); if (!goTo) $('navFinal').hidden = true;
+      navUI(!!goTo); if (!goTo) { $('navFinal').hidden = true; if (!$('navSum').hidden) $('mpNav').hidden = false; } else $('navSum').hidden = true;
       onMove();
     }
 
@@ -6961,7 +6986,7 @@ details.drop > .dropbody { padding: 0 14px 14px; }
         if (direct) L.polyline(direct.pts, { color: '#555', weight: 2, dashArray: '2 6', interactive: false }).addTo(routeLayer);
         L.polyline(inn.pts, { color: '#1565c0', weight: 5, opacity: 0.9, interactive: false }).addTo(routeLayer);
         if (out) L.polyline(out.pts, { color: '#8e24aa', weight: 4, dashArray: '8 6', opacity: 0.9, interactive: false }).addTo(routeLayer);
-        routeIn = inn.pts;
+        routeIn = inn.pts; routeOut = out ? out.pts : null; routeInfo = { pts: inn.pts, len: inn.len, climb: inn.climb, tMin: inn.len / WOODS / 60 + inn.climb / 0.18 / 60, kind: 'quiet route', toId: $('rtTo').value };
         const ft = m => Math.round(m * 3.28084);
         const extra = direct ? Math.max(0, inn.len - direct.len) : 0;
         $('rtOut').innerHTML = `<div><span class="rt-key" style="background:#1565c0"></span><b>Route in:</b> ${fmtDist(inn.len)}, about ${fmtMin(inn.len / WOODS / 60)}, ${ft(inn.climb)} ft of climbing${extra > 30 ? ` (${fmtDist(extra)} longer than straight, to keep your scent off the deer)` : ''}.</div>`
@@ -6971,7 +6996,7 @@ details.drop > .dropbody { padding: 0 14px 14px; }
       } catch (e) { $('rtOut').textContent = e.message === 'far' ? 'Start and stand are more than 3 miles apart. Pick a closer start.' : 'Could not load the terrain data. This needs signal, or an area saved for offline.'; }
       finally { $('rtPlan').disabled = false; }
     });
-    $('rtNav').addEventListener('click', () => { if (!routeIn) { toast('Plan a route first.'); return; } setGoTo(routeIn[routeIn.length - 1], 'your stand (along the planned route)', routeIn.slice().reverse().map(p => [p.lat, p.lng])); });
+    $('rtNav').addEventListener('click', () => { if (!routeIn) { toast('Plan a route first.'); return; } setGoTo(routeIn[routeIn.length - 1], 'your stand (along the planned route)', routeIn.slice().reverse().map(p => [p.lat, p.lng])); if (goTo) { goTo.cues = buildCues(routeIn, routeInfo && routeInfo.cues); goTo.plan = goTo.trail; goTo.toId = $('rtTo').value; } });
     $('rtClear').addEventListener('click', () => { clearRoutes(); routeIn = null; $('rtOut').innerHTML = ''; });
     // ---------- easiest walk: fine terrain grid + creeks, rivers, ponds, swamps and trails ----------
     async function easyRoute(from, to) {
@@ -7027,16 +7052,22 @@ details.drop > .dropbody { padding: 0 14px 14px; }
       const G = { W, cm, toLL, toIJ, z: (i, j) => Z[j * W + i] };
       const p = pathGrid(G, from, to, cost); if (!p) return null;
       // describe the route
-      let crossings = 0, onTrail = 0, steep = 0, scramble = 0, prevC = 0, maxG = 0;
+      let crossings = 0, onTrail = 0, steep = 0, scramble = 0, prevC = 0, maxG = 0, prevS = 0; const cues = [];
       for (let k = 1; k < p.pts.length; k++) {
         const [i, j] = toIJ(p.pts[k]), v = j * W + i, d = p.pts[k - 1].distanceTo(p.pts[k]), cc = cls[v] || 0, s = SL[v] || 0;
+        const P = p.pts[k];
+        if (cc === 2 && prevC !== 2) cues.push({ ll: P, txt: 'Creek crossing. Look for the narrowest spot or a log' });
+        if (cc === 4 && prevC !== 4 && k > 2) cues.push({ ll: P, txt: 'Join the trail here' });
+        if (cc !== 4 && prevC === 4 && k < p.pts.length - 2) cues.push({ ll: P, txt: 'Leave the trail here' });
+        if (s > 0.35 && prevS <= 0.35) cues.push({ ll: P, txt: s > 0.6 ? 'Very steep ground starts. Go slow' : 'Steep climb starts' });
+        prevS = s;
         if (cc === 2 && prevC !== 2) crossings++; prevC = cc; if (cc === 4) onTrail += d; if (s > 0.35) steep += d; if (s > 0.6) scramble += d; maxG = Math.max(maxG, s);
       }
       // what a straight line would hit
       let sCross = 0, sCliff = 0, sWater = 0, sp = 0; const nS = Math.ceil(D / (cm * 0.7));
       for (let k = 0; k <= nS; k++) { const ll = L.latLng(from.lat + (to.lat - from.lat) * k / nS, from.lng + (to.lng - from.lng) * k / nS), [i, j] = toIJ(ll); if (i < 0 || j < 0 || i >= W || j >= W) continue; const cc = cls[j * W + i]; if (cc === 2 && sp !== 2) sCross++; if (cc === 1 && sp !== 1) sWater++; if (SL[j * W + i] > 0.9 && sp !== 9) { sCliff++; sp = 9; } else sp = cc; }
       const tMin = p.pts.reduce((a, q2, k) => k ? a + (() => { const d = p.pts[k - 1].distanceTo(q2), [i0, j0] = toIJ(p.pts[k - 1]), [i1, j1] = toIJ(q2), g = ((Z[j1 * W + i1] || 0) - (Z[j0 * W + i0] || 0)) / Math.max(1, d); return d / (6 * Math.exp(-3.5 * Math.abs(g + 0.05)) / 3.6) / 60 * 1.25; })() : 0, 0);
-      return Object.assign(p, { crossings, onTrail, steep, scramble, maxG, tMin, osm, sCross, sCliff, sWater, cellM: cm });
+      return Object.assign(p, { cues, crossings, onTrail, steep, scramble, maxG, tMin, osm, sCross, sCliff, sWater, cellM: cm });
     }
     $('rtEasy').addEventListener('click', async () => {
       const from = await llOfSel($('rtFrom').value), to = await llOfSel($('rtTo').value);
@@ -7049,14 +7080,14 @@ details.drop > .dropbody { padding: 0 14px 14px; }
         L.polyline([from, to], { color: '#555', weight: 2, dashArray: '2 6', interactive: false }).addTo(routeLayer);
         L.polyline(r.pts, { color: '#fff', weight: 8, opacity: 0.85, interactive: false }).addTo(routeLayer);
         L.polyline(r.pts, { color: '#2e7d32', weight: 5, opacity: 0.95, interactive: false }).addTo(routeLayer);
-        routeIn = r.pts; const ft = m => Math.round(m * 3.28084);
+        routeIn = r.pts; routeInfo = { pts: r.pts, len: r.len, climb: r.climb, tMin: r.tMin, kind: 'easiest walk', toId: $('rtTo').value, cues: r.cues }; const ft = m => Math.round(m * 3.28084);
         const avoided = [r.sCliff ? `${r.sCliff} cliff or ledge band${r.sCliff > 1 ? 's' : ''}` : '', r.sWater ? `${r.sWater} pond or river` : '', r.sCross > r.crossings ? `${r.sCross - r.crossings} creek crossing${r.sCross - r.crossings > 1 ? 's' : ''}` : ''].filter(Boolean);
         $('rtOut').innerHTML = `<div><span class="rt-key" style="background:#2e7d32"></span><b>Easiest walk:</b> ${fmtDist(r.len)}, about ${fmtMin(r.tMin)}, ${ft(r.climb)} ft up and ${ft(r.drop)} ft down.</div>
           <div>${r.crossings ? `<b>${r.crossings} creek crossing${r.crossings > 1 ? 's' : ''}</b> (look for the narrowest spot or a log)` : 'No creek crossings'}${r.onTrail > 40 ? ` · ${fmtDist(r.onTrail)} on trails or woods roads` : ''}${r.steep > 20 ? ` · ${fmtDist(r.steep)} steep (over 19°)` : ''}${r.scramble > 10 ? ` · <b>${fmtDist(r.scramble)} very steep: go slow</b>` : ''}.</div>
           ${avoided.length ? `<div>The straight line (gray dashes) would hit ${avoided.join(', ')}: this route goes around.</div>` : ''}
           <div class="caption">Built from elevation (about ${Math.round(r.cellM * YD)}-yard detail)${r.osm ? ' and mapped creeks, ponds, swamps and trails (OpenStreetMap)' : '; creeks and trails could not be loaded (no signal?), so only the terrain was used'}. Small ledges, blowdowns and unmapped creeks can still surprise you: check it on the satellite photos and walk it once in daylight.</div>
           <div class="actions"><button class="btn primary" type="button" id="rtEasyGo">Navigate this route</button><button class="btn" type="button" id="rtEasyProf">Elevation profile</button></div>`;
-        $('rtEasyGo').onclick = () => setGoTo(r.pts[r.pts.length - 1], 'your stand (easiest walk)', r.pts.slice().reverse().map(q2 => [q2.lat, q2.lng]));
+        $('rtEasyGo').onclick = () => { setGoTo(r.pts[r.pts.length - 1], 'your stand (easiest walk)', r.pts.slice().reverse().map(q2 => [q2.lat, q2.lng])); if (goTo) { goTo.cues = buildCues(r.pts, r.cues); goTo.plan = goTo.trail; goTo.toId = $('rtTo').value; } };
         $('rtEasyProf').onclick = () => showProfile(r.pts, 'Easiest walk profile');
         map.fitBounds(L.latLngBounds(r.pts).pad(0.15));
       } catch (e) { $('rtOut').textContent = e.message === 'far' ? 'Start and stand are more than 3 miles apart. Pick a closer start.' : 'Could not load the terrain data. This needs signal, or an area saved for offline.'; }
@@ -7307,6 +7338,8 @@ details.drop > .dropbody { padding: 0 14px 14px; }
     }
     function microNav(dEnd, near, hd, b) {
       if (!goTo || !me) return;
+      cueCheck(); walkLog();
+      if (dEnd <= near && goTo.plan && !goTo.sumShown && !goTo.chain) { goTo.sumShown = true; walkSummary(goTo); }
       const r = hd ? ((((b - hd.h) % 360) + 540) % 360) - 180 : 0, arrived = dEnd <= near, now = Date.now();
       // off-route warning: planned route, breadcrumb trail, tack line or chain
       const line = goTo.line || (goTo.trail ? goTo.trail : null); let off = null;
@@ -7423,7 +7456,7 @@ details.drop > .dropbody { padding: 0 14px 14px; }
     function chainLeg(c, idx) {
       const p = c.pts[idx], line = c.pts.map(q => [q.lat, q.lon]);
       setGoTo(L.latLng(p.lat, p.lon), `${idx + 1}/${c.pts.length}: ${p.name || (MT[p.type] || MT.note)[0]}`);
-      if (!goTo) return; goTo.chain = { pts: c.pts, idx, moving: false }; goTo.line = line; goTo.pin = p;
+      if (!goTo) return; goTo.chain = { pts: c.pts, idx, moving: false }; goTo.line = line; goTo.pin = p; goTo.cues = (p.final ? [{ ll: L.latLng(p.lat, p.lon), txt: `${p.name || 'Point ' + (idx + 1)}. ${p.final}` }] : []);
       if (idx > 0) { const a = c.pts[idx - 1], d = L.latLng(a.lat, a.lon).distanceTo([p.lat, p.lon]), br = bearing(L.latLng(a.lat, a.lon), L.latLng(p.lat, p.lon)); const t = `Next: ${p.name || 'point ' + (idx + 1)}, ${Math.round(d / paceM())} paces at ${Math.round(br)} degrees.`; toast(t); if (voiceOn) speak(t, true); }
     }
     function chainGo(back) {
@@ -7496,6 +7529,167 @@ details.drop > .dropbody { padding: 0 14px 14px; }
       } finally { $('rdRun').disabled = false; }
     });
     $('rdOut').addEventListener('click', e => { if (e.target.closest('[data-rd=dl]')) { const m = DB.markers.find(x => x.id === $('rdPin').value); if (m) map.setView([m.lat, m.lon], 16); setTimeout(() => $('mpOffline').click(), 400); } });
+
+    // =========== walk in / walk out ===========
+    let routeInfo = null, routeOut = null; // last planned route: { pts, len, climb, tMin, kind, toId, fromId, cues }
+    const hhmm = d => d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+    // sunrise / sunset from the sun position (scan by minute)
+    function sunTimes(day, lat, lon) {
+      const base = new Date(day); base.setHours(0, 0, 0, 0); let rise = null, set = null, prev = null;
+      for (let m = 180; m <= 1320; m += 1) { const t = new Date(base.getTime() + m * 6e4), a = sunPos(t, lat, lon).alt; if (prev != null) { if (prev < -0.833 && a >= -0.833) rise = t; if (prev >= -0.833 && a < -0.833) set = t; } prev = a; }
+      return { rise, set };
+    }
+    // moon: position (suncalc-style, about 1° accuracy) and how much is lit
+    function moonInfo(t, lat, lon) {
+      const r = Math.PI / 180, d = t.getTime() / 864e5 - 10957.5, Lm = (218.316 + 13.176396 * d) * r, M = (134.963 + 13.064993 * d) * r, F = (93.272 + 13.229350 * d) * r;
+      const l = Lm + 6.289 * r * Math.sin(M), b = 5.128 * r * Math.sin(F), e = 23.4397 * r;
+      const ra = Math.atan2(Math.sin(l) * Math.cos(e) - Math.tan(b) * Math.sin(e), Math.cos(l)), dec = Math.asin(Math.sin(b) * Math.cos(e) + Math.cos(b) * Math.sin(e) * Math.sin(l));
+      const H = (280.16 + 360.9856235 * d) * r + lon * r - ra, ph = lat * r, alt = Math.asin(Math.sin(ph) * Math.sin(dec) + Math.cos(ph) * Math.cos(dec) * Math.cos(H)) / r;
+      const SYN = 29.530588853, age = (((t.getTime() - Date.UTC(2000, 0, 6, 18, 14)) / 864e5) % SYN + SYN) % SYN, ill = (1 - Math.cos(2 * Math.PI * age / SYN)) / 2;
+      return { alt, ill, age };
+    }
+    async function wxHours(lat, lon) {
+      const r = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat.toFixed(3)}&longitude=${lon.toFixed(3)}&hourly=temperature_2m,relative_humidity_2m,precipitation,wind_speed_10m,wind_direction_10m&wind_speed_unit=mph&temperature_unit=fahrenheit&past_days=3&forecast_days=2&timezone=auto`);
+      const j = await r.json(), h = j.hourly; return h.time.map((t, i) => ({ t: new Date(t).getTime(), T: h.temperature_2m[i], rh: h.relative_humidity_2m[i], p: h.precipitation[i], ws: h.wind_speed_10m[i], wd: h.wind_direction_10m[i] }));
+    }
+    const atHour = (hrs, t) => hrs.reduce((a, x) => Math.abs(x.t - t) < Math.abs(a.t - t) ? x : a, hrs[0]);
+    function leafState(hrs, t) {
+      const past = hrs.filter(x => x.t <= t), lastRain = [...past].reverse().find(x => x.p >= 0.2), hSince = lastRain ? (t - lastRain.t) / 36e5 : 99, now = atHour(hrs, t);
+      if (now.p >= 0.2) return { k: 'wet', f: 1.0, txt: 'Raining: the leaves are soaked and quiet. Best walking you will get.' };
+      if (hSince < 10 || now.rh >= 92) return { k: 'wet', f: 1.0, txt: `Damp leaves${hSince < 10 ? ` (rain ${Math.round(hSince)} h ago)` : ' (heavy dew or fog)'}: quiet walking. Go now.` };
+      if (now.T <= 32 && now.rh >= 75) return { k: 'frost', f: 1.25, txt: 'Frost on the leaves: crunchy until the sun hits them. Walk slow and stop often.' };
+      if (hSince > 48 && now.rh < 65) return { k: 'dry', f: 1.35, txt: `Dry, crunchy leaves (no rain for ${hSince > 98 ? '4+ days' : Math.round(hSince / 24) + ' days'}): you will be loud. Allow extra time, walk slow, stop every 20–30 steps, and step on rocks, logs and moss.` };
+      return { k: 'mid', f: 1.15, txt: 'Leaves fairly dry: normal care. Slow down for the last 200 yards.' };
+    }
+    function routeForPlan() {
+      if (routeInfo && routeInfo.pts && routeInfo.pts.length > 1) return routeInfo;
+      const from = DB.markers.find(m => m.id === $('rtFrom').value), to = DB.markers.find(m => m.id === $('rtTo').value);
+      if (!to) return null; const a = from ? L.latLng(from.lat, from.lon) : me, b = L.latLng(to.lat, to.lon); if (!a) return null;
+      const len = a.distanceTo(b) * 1.25; return { pts: [a, b], len, climb: 0, tMin: len / WOODS / 60, kind: 'straight line (+25%)', toId: to.id };
+    }
+    let walkPlan = null;
+    $('wpRun').addEventListener('click', async () => {
+      const R = routeForPlan(); if (!R) { toast('Pick a stand as "To" first (and plan a route for the best answer).'); return; }
+      const st = DB.markers.find(m => m.id === (R.toId || $('rtTo').value)), end = R.pts[R.pts.length - 1], start = R.pts[0], morning = routeWhen === 'morning';
+      $('wpRun').disabled = true; $('wpOut').innerHTML = '<div>Checking the sun, moon, wind and leaves…</div>';
+      try {
+        const now = new Date(), day = new Date(now); if (morning && now.getHours() >= 9) day.setDate(day.getDate() + 1);
+        const sun = sunTimes(day, end.lat, end.lng), legalStart = new Date(sun.rise.getTime() - 30 * 6e4), legalEnd = new Date(sun.set.getTime() + 30 * 6e4);
+        let hrs = null; try { hrs = await wxHours(end.lat, end.lng); } catch (e) {}
+        const climbFt = (R.climb || 0) * 3.281, base = R.tMin || R.len / WOODS / 60;
+        const tGuess = morning ? legalStart.getTime() - (+$('wpSettle').value || 20) * 6e4 - base * 6e4 : legalEnd.getTime();
+        const leaf = hrs ? leafState(hrs, tGuess) : { k: '?', f: 1.15, txt: 'No weather data (no signal?): plan for normal leaves.' };
+        const sweat = climbFt > 150 ? Math.round(climbFt / 50) : 0, walkMin = Math.round(base * leaf.f + sweat + 4); // +4 min: last 100 yd extra slow
+        let out = [], leave, arrive, back;
+        if (morning) { arrive = new Date(legalStart.getTime() - (+$('wpSettle').value || 20) * 6e4); leave = new Date(arrive.getTime() - (walkMin + 5) * 6e4);
+          out.push(`<div class="good"><div class="big">Leave the truck by ${hhmm(leave)}</div>${walkMin} min walk${sweat ? ` (slow on the ${Math.round(climbFt)} ft climb so you don't sweat: +${sweat} min)` : ''} + 5 min to gear up. In the stand by ${hhmm(arrive)}; legal light ${hhmm(legalStart)} (sunrise ${hhmm(sun.rise)}).</div>`); }
+        else { leave = new Date(legalEnd.getTime() - 3 * 36e5); arrive = new Date(leave.getTime() + walkMin * 6e4); back = new Date(legalEnd.getTime() + (10 + Math.round(walkMin * 1.2)) * 6e4);
+          out.push(`<div class="good"><div class="big">Leave the truck by ${hhmm(new Date(leave.getTime() - 5 * 6e4))}</div>Shooting light ends ${hhmm(legalEnd)}. Sunset ${hhmm(sun.set)}. Walk in takes about ${walkMin} min (be in the stand by ${hhmm(arrive)} for a 3-hour sit). Climb down at ${hhmm(legalEnd)}, back at the truck about ${hhmm(back)} (night walking is slower).</div>`); }
+        out.push(`<div class="${leaf.k === 'dry' ? 'warn' : leaf.k === 'wet' ? 'good' : ''}"><b>Leaves:</b> ${leaf.txt}</div>`);
+        // wind during the walk
+        if (hrs) {
+          const wt = leave.getTime(), w = atHour(hrs, wt), wNow = WIND.from, shift = Math.abs(((w.wd - wNow) % 360 + 540) % 360 - 180);
+          let wtxt = `<b>Wind while you walk (${hhmm(new Date(wt))}):</b> from ${cardinal(w.wd)} at ${Math.round(w.ws)} mph.`;
+          if (st && st.winds && st.winds.length) { const WD = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'], k = WD[Math.round(w.wd / 45) % 8]; wtxt += st.winds.includes(k) ? ' Good wind for this stand.' : ` <b>Not one of this stand's winds (${st.winds.join(', ')}).</b>`; }
+          if (shift > 45) wtxt += ` That is different from the wind set now (${cardinal(wNow)}): re-plan the Quiet route for the new wind.`;
+          const beds = DB.markers.filter(m => m.type === 'bed'), down = (w.wd + 180) % 360, half = coneHalf(w.ws); let hit = null;
+          for (const P of resample(R.pts.map(p => [p.lat, p.lng]), 25)) for (const bd of beds) { const B = L.latLng(bd.lat, bd.lon), d = P.distanceTo(B); if (d < 350 && Math.abs(((bearing(P, B) - down + 540) % 360) - 180) < half) { hit = hit || { bd, d }; } }
+          if (hit) wtxt += ` <b>Your scent will drift toward "${esc(hit.bd.name || 'bedding')}" on this route.</b>`;
+          if (w.ws < 4) wtxt += ' Light wind: thermals rule (cool air sinks before sunrise and after sunset).';
+          out.push(`<div class="${hit || (st && st.winds && st.winds.length && !st.winds.includes(['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'][Math.round(w.wd / 45) % 8])) ? 'warn' : ''}">${wtxt}</div>`);
+          const later = hrs.filter(x => x.t > wt && x.t < wt + 4 * 36e5), turn = later.find(x => Math.abs(((x.wd - w.wd) % 360 + 540) % 360 - 180) > 60);
+          if (turn) out.push(`<div class="warn"><b>Wind shift:</b> turns to ${cardinal(turn.wd)} around ${hhmm(new Date(turn.t))}.</div>`);
+        }
+        // moonlight
+        const mt = morning ? leave : back || legalEnd, mo = moonInfo(mt, end.lat, end.lng), sAlt = sunPos(mt, end.lat, end.lng).alt;
+        const mtxt = sAlt > -6 ? 'Twilight: enough daylight to walk without a light.' : mo.alt > 15 && mo.ill > 0.55 ? `Moon ${Math.round(mo.ill * 100)}% lit and ${Math.round(mo.alt)}° up: enough light to walk open ground and trails without a headlamp. Use a dim red or green light under thick cover.` : mo.alt > 5 && mo.ill > 0.3 ? `Moon ${Math.round(mo.ill * 100)}% lit, low in the sky: some light in the open. Bring a red or green light for the woods.` : `Dark: moon ${mo.alt < 0 ? 'below the horizon' : Math.round(mo.ill * 100) + '% lit'}. Use a red or green headlamp, pointed at your feet.`;
+        out.push(`<div><b>Light:</b> ${mtxt}</div>`);
+        out.push(`<div class="caption">Route: ${R.kind || 'planned'} · ${fmtDist(R.len)}${climbFt ? `, ${Math.round(climbFt)} ft climb` : ''}. Legal hours here: 30 min before sunrise to 30 min after sunset (NY and NJ deer). Check your season's rules.</div>`);
+        $('wpOut').innerHTML = out.join('');
+        walkPlan = { leave, arrive, back, legalStart, legalEnd, morning, st, stName: st ? (st.name || 'my stand') : 'my stand', end, start, walkMin };
+      } finally { $('wpRun').disabled = false; }
+    });
+    $('wpIcs').addEventListener('click', () => {
+      if (!walkPlan) { toast('Tap Plan my walk first.'); return; }
+      const t = walkPlan.morning ? walkPlan.leave : new Date(walkPlan.legalEnd.getTime() - 15 * 6e4), f = d => `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}T${String(d.getHours()).padStart(2, '0')}${String(d.getMinutes()).padStart(2, '0')}00`;
+      const sum = walkPlan.morning ? `Leave the truck for ${walkPlan.stName}` : `15 min to end of shooting light (${walkPlan.stName})`;
+      const ics = `BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Deer Eyes//EN\r\nBEGIN:VEVENT\r\nUID:${Date.now()}@deereyes\r\nDTSTAMP:${f(new Date())}\r\nDTSTART:${f(t)}\r\nDTEND:${f(new Date(t.getTime() + 15 * 6e4))}\r\nSUMMARY:${sum}\r\nBEGIN:VALARM\r\nTRIGGER:-PT10M\r\nACTION:DISPLAY\r\nDESCRIPTION:${sum}\r\nEND:VALARM\r\nBEGIN:VALARM\r\nTRIGGER:PT0M\r\nACTION:DISPLAY\r\nDESCRIPTION:${sum}\r\nEND:VALARM\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n`;
+      const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([ics], { type: 'text/calendar' })); a.download = 'deer-eyes-alarm.ics'; document.body.appendChild(a); a.click(); a.remove();
+      toast('Open the downloaded file to add the alarm to your phone calendar.');
+    });
+    function planText() {
+      const p = walkPlan, pk = DB.markers.find(m => m.type === 'parking' && p && L.latLng(m.lat, m.lon).distanceTo(p.start) < 400);
+      return `Hunting plan: ${p.stName} (${p.end.lat.toFixed(5)}, ${p.end.lng.toFixed(5)} https://maps.google.com/?q=${p.end.lat.toFixed(5)},${p.end.lng.toFixed(5)}).`
+        + (p.morning ? ` Leaving the truck ${hhmm(p.leave)}, in the stand by ${hhmm(p.arrive)}.` : ` In the stand by ${hhmm(p.arrive)}, climbing down ${hhmm(p.legalEnd)}, back at the truck about ${hhmm(p.back)}.`)
+        + (pk ? ` Truck at ${pk.lat.toFixed(5)}, ${pk.lon.toFixed(5)}.` : '') + ` If you don't hear from me by ${hhmm(new Date((p.back || new Date(p.legalStart.getTime() + 5 * 36e5)).getTime() + 3600e3))}, call me, then 911 with these coordinates.`;
+    }
+    $('wpShare').addEventListener('click', async () => {
+      if (!walkPlan) { toast('Tap Plan my walk first.'); return; } const t = planText();
+      try { if (navigator.share) { await navigator.share({ title: 'My hunting plan', text: t }); return; } } catch (e) { return; }
+      location.href = `sms:?&body=${encodeURIComponent(t)}`;
+    });
+
+    // ---------- landmark cues along a route ----------
+    function buildCues(pts, extra) {
+      const cues = [], seen = new Set();
+      for (const m of DB.markers) { const ll = L.latLng(m.lat, m.lon); const n = nearLine(ll, pts); if (n && n.d < 25 && m.type !== 'parking' && ll.distanceTo(L.latLng(pts[0])) > 30 && ll.distanceTo(L.latLng(pts[pts.length - 1])) > 30) cues.push({ ll: n.ll, txt: `${m.name || (MT[m.type] || MT.note)[0]}${m.final ? '. ' + m.final : ''}` }); }
+      (extra || []).forEach(c => cues.push(c));
+      return cues.filter(c => { const k = Math.round(c.ll.lat * 3000) + ',' + Math.round(c.ll.lng * 3000); if (seen.has(k)) return false; seen.add(k); return true; });
+    }
+    function cueCheck() {
+      if (!goTo || !goTo.cues || !me) return;
+      for (const c of goTo.cues) { if (c.done) continue; const d = me.distanceTo(c.ll); if (d < 35) { c.done = true; const t = `${c.txt}${d > 8 ? `, ${Math.max(5, Math.round(d * YD / 5) * 5)} yards ahead` : ''}.`; toast(t); if (voiceOn) speak(t); if (buzzOn || saverOn) bz([200, 100, 200]); } }
+    }
+
+    // ---------- planned vs actual ----------
+    function walkLog() {
+      if (!goTo || !me || !goTo.plan) return; const a = goTo.actual || (goTo.actual = { t0: Date.now(), pts: [] }), last = a.pts[a.pts.length - 1];
+      if (!last || last.distanceTo(me) > 4) a.pts.push(me);
+    }
+    function walkSummary(g) {
+      if (!g || !g.plan || !g.actual || g.actual.pts.length < 6) return;
+      const A = g.actual.pts, P = g.plan, len = A.reduce((s, q, i) => i ? s + A[i - 1].distanceTo(q) : s, 0), plen = P.reduce((s, q, i) => i ? s + L.latLng(P[i - 1]).distanceTo(L.latLng(q)) : s, 0);
+      let maxD = 0, maxAt = null; for (const q of A) { const n = nearLine(q, P); if (n && n.d > maxD) { maxD = n.d; maxAt = q; } }
+      const mins = Math.round((Date.now() - g.actual.t0) / 6e4), box = $('navSum');
+      box.innerHTML = `<b>Walk done: ${fmtDist(len)} in ${mins} min</b> (planned ${fmtDist(plen)}). ${maxD > 20 ? `You drifted up to ${Math.round(maxD * YD)} yd off the plan.` : 'You stayed on the plan.'}
+        <div class="actions"><button class="btn" type="button" id="wsSave">Save my walk as a track</button>${g.toId ? '<button class="btn primary" type="button" id="wsPref">Use my walk as the route next time</button>' : ''}<button class="btn" type="button" id="wsX">Close</button></div>`;
+      box.hidden = false; $('mpNav').hidden = false;
+      const save = () => { const t = { id: uid(), area: newArea(), name: `${g.name} (walked ${new Date().toLocaleDateString([], { month: 'short', day: 'numeric' })})`, t: g.actual.t0, pts: A.map(q => [+q.lat.toFixed(6), +q.lng.toFixed(6), Date.now()]) }; DB.tracks.push(t); saveDB(); drawSaved(); return t; };
+      $('wsSave').onclick = () => { save(); toast('Saved in your tracks.'); box.hidden = true; };
+      const pf = $('wsPref'); if (pf) pf.onclick = () => { const t = save(), pr = store.get('route.pref', {}); pr[g.toId] = t.id; store.set('route.pref', pr); toast('Next time, Route will offer your own walk to this stand.'); box.hidden = true; };
+      $('wsX').onclick = () => { box.hidden = true; if (!goTo) $('mpNav').hidden = true; };
+    }
+    // your saved walk as the route next time
+    function prefOffer() {
+      const pr = store.get('route.pref', {}), t = DB.tracks.find(x => x.id === pr[$('rtTo').value]); if (!t) return;
+      const div = document.createElement('div'); div.innerHTML = `<div class="actions"><button class="btn" type="button" id="rtPrefGo">Use my own walk: ${esc(t.name)}</button></div>`; $('rtOut').prepend(div);
+      $('rtPrefGo').onclick = () => { const pts = t.pts.map(p => L.latLng(p[0], p[1])); routeIn = pts; routeInfo = { pts, len: trackLen(t.pts), climb: 0, tMin: trackLen(t.pts) / WOODS / 60, kind: 'your own walk', toId: $('rtTo').value }; clearRoutes(); routeLayer = L.layerGroup().addTo(map); L.polyline(pts, { color: '#00897b', weight: 5 }).addTo(routeLayer); map.fitBounds(L.latLngBounds(pts).pad(0.15)); toast('Your own walk is the route now. Tap Plan my walk, or navigate it.'); };
+    }
+    $('rtTo').addEventListener('change', () => { $('rtOut').innerHTML = ''; prefOffer(); });
+
+    // ---------- take me out ----------
+    async function takeMeOut() {
+      if (!me) { startGPS(false); toast('Getting your GPS position…'); await new Promise(r => setTimeout(r, 5000)); if (!me) { toast('No GPS yet. Step into an opening.'); return; } }
+      const pk = DB.markers.filter(m => m.type === 'parking').map(m => ({ m, d: me.distanceTo([m.lat, m.lon]) })).sort((a, b) => a.d - b.d)[0];
+      let how = '';
+      setTool(null); if (!voiceOn) setVoice(true); if (!buzzOn && navigator.vibrate) setBuzz(true);
+      const tk = TK.length > 1 ? TK.map(t => L.latLng(t.lat, t.lon)) : null, c = curChain(), cp = c ? chainPts(c) : [];
+      if (routeOut && routeOut.length > 1 && me.distanceTo(routeOut[0]) < 120) { setGoTo(routeOut[routeOut.length - 1], 'the truck (your route out)', routeOut.slice().reverse().map(q => [q.lat, q.lng])); how = 'your planned route out'; }
+      else if (cp.length > 1 && me.distanceTo([cp[cp.length - 1].lat, cp[cp.length - 1].lon]) < 150) { chainGo(true); how = `chain "${c.name}" backward`; }
+      else if (tk && Math.min(...tk.map(t => me.distanceTo(t))) < 80) { const p = TK.map(t => [t.lat, t.lon]); setGoTo(L.latLng(p[0]), 'the first tack (out)', p); how = 'your tack line'; }
+      else if (pk && pk.d < 4800) {
+        toast('Planning the easiest way to the truck…');
+        try { const r = await easyRoute(me, L.latLng(pk.m.lat, pk.m.lon)); if (r) { setGoTo(r.pts[r.pts.length - 1], `the truck (${pk.m.name || 'parking'})`, r.pts.slice().reverse().map(q => [q.lat, q.lng])); goTo.cues = buildCues(r.pts, r.cues); how = 'the easiest walk to the truck'; } } catch (e) {}
+        if (!how) { setGoTo(L.latLng(pk.m.lat, pk.m.lon), `the truck (${pk.m.name || 'parking'})`); how = 'straight to the truck (no terrain data offline)'; }
+      } else if (crumbs.length > 2) { walkBack(); how = 'your breadcrumb trail'; }
+      else { toast('No parking pin, route, tacks or trail to follow. Drop a Parking pin at your truck next time.'); return; }
+      if (goTo) { goTo.plan = goTo.trail || null; $('mpNav').classList.add('big'); document.body.classList.add('nav-big'); $('navBig').textContent = 'Small'; }
+      const eta = new Date(Date.now() + ((goTo && me ? me.distanceTo(goTo.end) : 800) * 1.3 / WOODS * 1.2 + 120) * 1000);
+      toast(`Taking you out by ${how}. ETA about ${hhmm(eta)}.`);
+      const msg = `Heading out now from ${walkPlan ? walkPlan.stName : 'my stand'}. Back at the truck about ${hhmm(eta)}. My location: ${me.lat.toFixed(5)}, ${me.lng.toFixed(5)}`;
+      $('navSum').innerHTML = `<b>Out by ${esc(how)}</b> · ETA ${hhmm(eta)} <div class="actions"><a class="btn" href="sms:?&body=${encodeURIComponent(msg)}">Text my partner</a><button class="btn" type="button" id="toX">Hide</button></div>`; $('navSum').hidden = false; $('toX').onclick = () => { $('navSum').hidden = true; };
+    }
+    $('navOut').addEventListener('click', takeMeOut); $('mpOutBtn').addEventListener('click', takeMeOut);
 
     // ---------- blood trail pins: numbered blood spots joined in order, so you can see where the deer ran ----------
     let BT = store.get('maps.blood', []), btActive = store.get('maps.bloodActive', null), btAmt = 'spots', btCol = '', bloodLayer = L.layerGroup();
@@ -7688,7 +7882,7 @@ details.drop > .dropbody { padding: 0 14px 14px; }
       const c = map.getCenter();
       const tl = trailSeg().length > 2 ? ` · trail ${fmtDist(trailLen())} · <a href="#maps" id="mpBackLink">Walk back my trail</a>` : '';
       $('mpInfo').innerHTML = me ? `You: <b>${me.lat.toFixed(5)}, ${me.lng.toFixed(5)}</b> (±${Math.round(meAcc * YD)} yd)${tl}`
-        : `Tap the map to see who owns the land and the hunting rules there. Long-press to drop a marker. Center ${c.lat.toFixed(4)}, ${c.lng.toFixed(4)}`;
+        : `Tap the map to drop a pin. Press and hold 3 seconds for info about that spot (owner, hunting rules). Center ${c.lat.toFixed(4)}, ${c.lng.toFixed(4)}`;
       if (scentOn) drawScent();
     }
 
@@ -7740,6 +7934,24 @@ details.drop > .dropbody { padding: 0 14px 14px; }
       if (!map.getBounds().contains(ll)) map.panTo(ll);
       $('mpInfo').innerHTML = 'Drag the orange pin or tap the map to place it, then press <b>Save marker</b>.';
       $('mp-add').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+    // tap on the map: quick pin menu right where you tapped
+    let popAtDown = false, holdFired = false, holdT = 0;
+    const QUICK = ['stand', 'camera', 'rub', 'scrape', 'bed', 'trail', 'sighting', 'buck', 'food', 'parking', 'blood', 'landmark'];
+    function pinMenu(ll) {
+      const rec = store.get('maps.recentTypes', []).filter(k => MT[k]), keys = [...new Set([...rec, ...QUICK])].slice(0, 12);
+      const box = document.createElement('div'); box.className = 'pin-menu';
+      box.innerHTML = `<div class="pm-h">Drop a pin here</div><div class="pm-grid">${keys.map(k => { const t = MT[k]; return `<button type="button" data-t="${k}"><span class="mk" style="--c:${t[2]}"><svg><use href="#${t[1]}"/></svg></span><span>${esc(t[0])}</span></button>`; }).join('')}</div>
+        <div class="pm-acts"><button type="button" data-a="all">All ${Object.keys(MT).length} pin types…</button><button type="button" data-a="info">Info about this spot</button></div>
+        <div class="pm-tip">${ll.lat.toFixed(5)}, ${ll.lng.toFixed(5)} · Tip: press and hold the map 3 seconds for spot info.</div>`;
+      const pop = L.popup({ maxWidth: 330, minWidth: 290, className: 'pm-pop', autoPanPadding: [12, 70] }).setLatLng(ll).setContent(box).openOn(map);
+      L.DomEvent.disableClickPropagation(box);
+      box.addEventListener('click', ev => {
+        const b = ev.target.closest('button'); if (!b) return; ev.stopPropagation(); map.closePopup(pop);
+        if (b.dataset.t) { pType = b.dataset.t; startAdd(null, ll); }
+        else if (b.dataset.a === 'all') { startAdd(null, ll); setTimeout(() => { const q = $('mpTypeQ'); if (q) q.focus(); }, 300); }
+        else if (b.dataset.a === 'info') landInfo(ll);
+      });
     }
     function cancelAdd() { if (pending) map.removeLayer(pending); pending = null; editing = null; }
     const pend = { acc: null, fixes: 0, moved: 0, winds: new Set(), photo: undefined };
@@ -7931,7 +8143,7 @@ details.drop > .dropbody { padding: 0 14px 14px; }
       $('mpCats').innerHTML = MTCAT.map(([c, n]) => `<button type="button" data-cat="${c}" aria-pressed="${!hideCats.has(c)}">${n} (${DB.markers.filter(inArea).filter(m => (MT[m.type] || MT.note)[3] === c).length})</button>`).join('');
       $('mpLabels').checked = pinLabels; $('mpRings').checked = pinRings;
       const pc = store.get('maps.pace', 0); $('mpPace').value = pc || ''; $('mpPaceV').textContent = `1 pace = ${(paceM() * 3.281).toFixed(1)} ft`;
-      if (!ms.length && !ts.length) { host.innerHTML = `<div class="caption">${q ? 'No pins match.' : 'Nothing saved here yet. Use Marker to save a stand, camera or sign, or long-press the map.'}</div>`; return; }
+      if (!ms.length && !ts.length) { host.innerHTML = `<div class="caption">${q ? 'No pins match.' : 'Nothing saved here yet. Use Marker to save a stand, camera or sign, or tap the map.'}</div>`; return; }
       host.innerHTML = '';
       const dist = o => me ? me.distanceTo(L.latLng(o.k === 'm' ? [o.o.lat, o.o.lon] : o.o.pts[0])) : 0;
       const items = [...ms.map(m => ({ k: 'm', o: m })), ...ts.map(t => ({ k: 't', o: t }))];
@@ -8062,9 +8274,27 @@ details.drop > .dropbody { padding: 0 14px 14px; }
         if (tool === 'scout') { scoutExtra.push(e.latlng); L.circleMarker(e.latlng, { radius: 7, color: '#fff', weight: 2, fillColor: '#6d28d9', fillOpacity: 1 }).addTo(scoutLayer || (scoutLayer = L.layerGroup().addTo(map))); $('scOut').textContent = `${scoutExtra.length} stop${scoutExtra.length === 1 ? '' : 's'} of your own added. Tap Plan the loop.`; return; }
         if (tool === 'add' && pending) { pending.setLatLng(e.latlng); pend.acc = null; pend.moved = 0; pendUI(); return; }
         if (tool === 'blood' && curBT()) { if (tapMode === 'grid' && curBT().grid && toggleCell(e.latlng)) return; addBlood(e.latlng, 0, curBT().pts.length ? 'blood' : 'hit'); return; }
-        landInfo(e.latlng);
+        if (holdFired || Date.now() - holdT < 400) return; // a 3-second hold just opened spot info
+        if (popAtDown) return;                              // this tap only closed a popup
+        pinMenu(e.latlng);
       });
-      map.on('contextmenu', e => { startAdd(null, e.latlng); });
+      map.on('contextmenu', e => { if (e.originalEvent) e.originalEvent.preventDefault(); });
+      // press and hold 3 seconds: info about that spot (owner, hunting rules, elevation)
+      const mc = map.getContainer(); let hold = null;
+      const holdCancel = () => { if (hold) { clearTimeout(hold.t); hold.ring.remove(); hold = null; } };
+      // the finger lifting after a hold must not close the info popup
+      const eatClick = () => { const f = ev => { if (mc.contains(ev.target) && !ev.target.closest('.leaflet-popup')) { ev.stopPropagation(); ev.preventDefault(); } }; window.addEventListener('click', f, true); setTimeout(() => window.removeEventListener('click', f, true), 1500); };
+      mc.addEventListener('pointerdown', ev => {
+        popAtDown = !!(map._popup && map.hasLayer(map._popup)); holdFired = false;
+        if (hold) { holdCancel(); return; } // second finger: pinch zoom
+        if (ev.button > 0 || ev.target.closest('.leaflet-control, .leaflet-marker-icon, .leaflet-popup, .leaflet-interactive')) return;
+        const r = mc.getBoundingClientRect(), pt = L.point(ev.clientX - r.left, ev.clientY - r.top), ll = map.containerPointToLatLng(pt);
+        const ring = document.createElement('div'); ring.className = 'hold-ring'; ring.style.left = pt.x + 'px'; ring.style.top = pt.y + 'px'; mc.appendChild(ring);
+        hold = { x: ev.clientX, y: ev.clientY, ll, ring, t: setTimeout(() => { const h = hold; hold = null; h.ring.remove(); holdFired = true; holdT = Date.now(); bz(60); map.closePopup(); landInfo(h.ll); eatClick(); }, 3000) };
+      });
+      mc.addEventListener('pointermove', ev => { if (hold && Math.hypot(ev.clientX - hold.x, ev.clientY - hold.y) > 12) holdCancel(); });
+      ['pointerup', 'pointercancel', 'pointerleave'].forEach(n => mc.addEventListener(n, holdCancel));
+      map.on('movestart zoomstart', holdCancel);
       onMove();
     }
     return {
