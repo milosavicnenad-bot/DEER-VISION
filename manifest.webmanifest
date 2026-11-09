@@ -30,6 +30,26 @@
   ],
   "shortcuts": [
     {
+      "name": "Maps",
+      "url": "./#maps",
+      "icons": [
+        {
+          "src": "icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Take me out",
+      "url": "./?go=out#maps",
+      "icons": [
+        {
+          "src": "icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
       "name": "Blood trail",
       "url": "./#blood",
       "icons": [
@@ -40,28 +60,8 @@
       ]
     },
     {
-      "name": "Track finder",
-      "url": "./#track",
-      "icons": [
-        {
-          "src": "icon-192.png",
-          "sizes": "192x192"
-        }
-      ]
-    },
-    {
-      "name": "Compass",
-      "url": "./#compass",
-      "icons": [
-        {
-          "src": "icon-192.png",
-          "sizes": "192x192"
-        }
-      ]
-    },
-    {
-      "name": "Deer vision",
-      "url": "./#vision",
+      "name": "Emergency",
+      "url": "./#sos",
       "icons": [
         {
           "src": "icon-192.png",

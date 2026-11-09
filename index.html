@@ -81,6 +81,24 @@ h2 { font-family: var(--font-display); font-weight: 600; font-size: 1.25rem; let
 .home-head { display: grid; gap: 6px; padding-top: 6px; }
 .tiles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
 @media (min-width: 640px) { .tiles { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+#v-home { min-width: 0; }
+.hfind { position: sticky; top: 0; z-index: 20; min-width: 0; margin: 0 0 6px; padding: 8px 52px 8px 0; background: var(--bg); }
+@media (min-width: 640px) { .hfind { padding-right: 0; } }
+.hq { display: grid; grid-template-columns: 22px 1fr auto; align-items: center; gap: 8px; padding: 0 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
+.hq svg { width: 20px; height: 20px; color: var(--muted); }
+.hq input { border: 0; background: transparent; color: var(--fg); font: inherit; font-size: 1rem; padding: 12px 0; min-width: 0; outline: none; }
+.hq input::-webkit-search-cancel-button { display: none; }
+.hq button { border: 0; background: none; color: var(--muted); font-size: 1.5rem; line-height: 1; padding: 4px 2px; cursor: pointer; }
+.hjump { display: flex; gap: 6px; min-width: 0; overflow-x: auto; padding-top: 8px; scrollbar-width: none; }
+.hjump::-webkit-scrollbar { display: none; }
+.hjump button { flex: none; padding: 7px 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--fg); font: 600 .82rem var(--font-body); cursor: pointer; }
+.hjump button.on { background: #1565c0; border-color: #0d47a1; color: #fff; }
+.hsec { margin: 18px 0 4px; scroll-margin-top: 112px; }
+.hsec-h { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin: 0 2px 8px; padding-bottom: 6px; border-bottom: 1px solid var(--line); }
+.hsec-h h2 { margin: 0; font-family: var(--font-display); font-size: 1.05rem; letter-spacing: .08em; text-transform: uppercase; }
+.hsec-h span { font-size: .8rem; color: var(--muted); }
+.hnone { padding: 18px 6px; color: var(--muted); }
+@media (max-width: 639px) { .tile.wide { grid-column: 1 / -1; } }
 .tile {
   --h: var(--h-moss);
   display: grid; grid-template-columns: minmax(0, 1fr); align-content: start; row-gap: 4px;
@@ -1641,37 +1659,70 @@ details.drop > .dropbody { padding: 0 14px 14px; }
     </div>
     <div class="ck-home" id="ckHome" hidden></div>
     <div class="ck-home" id="seasonHome" hidden></div>
-    <nav class="tiles" aria-label="Tools">
-      <a class="tile hero" href="#vision" style="--h: var(--h-blaze)"><span class="ic"><svg><use href="#i-deer"/></svg></span><span class="tt">Deer vision</span><span class="td">See any scene the way a whitetail does: colors, sharpness, light and headlamps.</span></a>
-      <a class="tile hero" href="#maps" style="--h: var(--h-moss)"><span class="ic"><svg><use href="#i-map"/></svg></span><span class="tt">Maps</span><span class="td">Topo, satellite and property lines, with your stands, sign, tracks, measuring and scent cone.</span></a>
-      <a class="tile hero ai" href="#spots" style="--h: #7b3fd1"><span class="ic"><svg><use href="#i-ai"/></svg></span><span class="tt">AI hunt spots</span><span class="td">Where to hunt around you right now: food, water, cover, funnels, saddles, benches and bedding, with today's wind. Tap a spot to see why.</span></a>
-      <a class="tile hero" href="#predict" style="--h: var(--h-gold)"><span class="ic"><svg><use href="#i-predict"/></svg></span><span class="tt">Deer movement</span><span class="td">When deer are most likely on their feet: best days, best hours and why.</span></a>
-      <a class="tile hero" href="#scouting" style="--h: var(--h-moss)"><span class="ic"><svg><use href="#i-track"/></svg></span><span class="tt">Scouting &amp; sign</span><span class="td">How old is this sign (with the real last rain and snow), mast report, pressure log, scouting loop and public-land stand rules.</span></a>
-      <a class="tile hero" href="#tracking" style="--h: var(--h-blood)"><span class="ic"><svg><use href="#i-blood"/></svg></span><span class="tt">Deer tracking</span><span class="td">After the shot: what you hit (check your arrow with a photo), when to start tracking, blood pins and search grid, blood camera and track finder.</span></a>
-      <a class="tile hero" href="#sos" style="--h: #c62828"><span class="ic"><svg><use href="#i-hazard"/></svg></span><span class="tt">Emergency</span><span class="td">Your exact position in every format, call or text 911 with it, and the way out to your truck or the nearest road.</span></a>
-      <a class="tile hero" href="#journal" style="--h: var(--h-bark)"><span class="ic"><svg><use href="#i-journal"/></svg></span><span class="tt">Hunt journal</span><span class="td">Log each sit in two taps, see which stand to hunt on today's wind, last-light alarm and harvest reporting.</span></a>
-      <a class="tile" href="#camo" style="--h: var(--h-moss)"><span class="ic"><svg><use href="#i-camo"/></svg></span><span class="tt">Camo check</span><span class="td">Score how well you blend in</span></a>
-      <a class="tile" href="#movement" style="--h: var(--h-gold)"><span class="ic"><svg><use href="#i-move"/></svg></span><span class="tt">Movement</span><span class="td">See what motion gives away</span></a>
-      <a class="tile" href="#wind" style="--h: var(--h-sky)"><span class="ic"><svg><use href="#i-wind"/></svg></span><span class="tt">Wind &amp; weather</span><span class="td">Scent, temperature, pressure</span></a>
-      <a class="tile" href="#compass" style="--h: var(--h-slate)"><span class="ic"><svg><use href="#i-compass"/></svg></span><span class="tt">Compass</span><span class="td">Heading and scent direction</span></a>
-      <a class="tile" href="#sun" style="--h: var(--h-gold)"><span class="ic"><svg><use href="#i-sunmoon"/></svg></span><span class="tt">Sun &amp; moon</span><span class="td">Sunrise, sunset, moon phase</span></a>
-      <a class="tile" href="#shine" style="--h: var(--h-sky)"><span class="ic"><svg><use href="#i-shine"/></svg></span><span class="tt">Shine finder</span><span class="td">Spot glare on your gear</span></a>
-      <a class="tile" href="#skyline" style="--h: var(--h-bark)"><span class="ic"><svg><use href="#i-sky"/></svg></span><span class="tt">Skyline check</span><span class="td">Outlines against the sky</span></a>
-      <a class="tile" href="#checklist" style="--h: var(--h-moss)"><span class="ic"><svg><use href="#i-check"/></svg></span><span class="tt">Gear checklist</span><span class="td">Ready before you head out</span></a>
-      <a class="tile" href="#fov" style="--h: var(--h-blaze)"><span class="ic"><svg><use href="#i-fov"/></svg></span><span class="tt">Field of view</span><span class="td">Where a deer can see you</span></a>
-      <a class="tile" href="#cams" style="--h: var(--h-slate)"><span class="ic"><svg><use href="#i-cam"/></svg></span><span class="tt">Trail cams</span><span class="td">Add SD-card photos, tag deer, see when they pass and your buck list.</span></a>
-      <a class="tile" href="#tags" style="--h: var(--h-gold)"><span class="ic"><svg><use href="#i-tag"/></svg></span><span class="tt">Tags &amp; seasons</span><span class="td">Your tags, what's filled, and countdowns to each opener.</span></a>
-      <a class="tile" href="#chrono" style="--h: var(--h-sky)"><span class="ic"><svg><use href="#i-bow"/></svg></span><span class="tt">Arrow speed &amp; string jump</span><span class="td">Your phone hears the shot and the hit: arrow speed, energy, momentum and how far a deer can duck.</span></a>
-      <a class="tile" href="#arrowbuild" style="--h: var(--h-sky)"><span class="ic"><svg><use href="#i-arrowb"/></svg></span><span class="tt">Arrow build</span><span class="td">Total weight, FOC, grains per pound, and speed, energy and momentum for any build.</span></a>
-      <a class="tile" href="#shot" style="--h: var(--h-blaze)"><span class="ic"><svg><use href="#i-shot"/></svg></span><span class="tt">Shot distance</span><span class="td">Tree-stand angle, true distance and shot placement.</span></a>
-      <a class="tile" href="#buck" style="--h: var(--h-bark)"><span class="ic"><svg><use href="#i-rack"/></svg></span><span class="tt">Buck age &amp; score</span><span class="td">Judge age from the body; gross and net score from measurements.</span></a>
-      <a class="tile" href="#dress" style="--h: var(--h-blood)"><span class="ic"><svg><use href="#i-knife"/></svg></span><span class="tt">Field dressing</span><span class="td">Step by step, meat yield and how fast to cool it for today's temperature.</span></a>
-      <a class="tile" href="#meat" style="--h: var(--h-sky)"><span class="ic"><svg><use href="#i-freezer"/></svg></span><span class="tt">Meat &amp; freezer</span><span class="td">Log every cut, see what's in the freezer, burger and jerky calculators, CWD testing and donating.</span></a>
-      <a class="tile" href="#guide" style="--h: var(--h-bark)"><span class="ic"><svg><use href="#i-guide"/></svg></span><span class="tt">Hunter's guide</span><span class="td">Detergents, UV check, science</span></a>
-      <a class="tile hero" href="#stats" style="--h: var(--h-sky)"><span class="ic"><svg><use href="#i-stats"/></svg></span><span class="tt">Hunting stats</span><span class="td">Deer harvest in New York and New Jersey: last season, 10 years, and by method.</span></a>
-      <a class="tile hero" href="#backup" style="--h: var(--h-slate)"><span class="ic"><svg><use href="#i-backup"/></svg></span><span class="tt">Backup &amp; share</span><span class="td">Save all your spots and logs to a file, restore, or swap spots with a partner.</span></a>
-          <a class="tile mikecon" href="#mikecon"><span class="mk-badge"><svg><use href="#i-mikecon"/></svg></span><span class="mk-text"><span class="mk-name">MIKECON</span></span><span class="mk-arrow" aria-hidden="true">›</span><span class="mk-warn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="currentColor"/><path d="M12 9.5v5M12 17.2v.3" stroke="#a83a06" stroke-width="2.4" stroke-linecap="round"/></svg><span>WARNING: JUST FOR EXPERT<span class="mk-bigs">S</span></span></span></a>
-    </nav>
+    <div class="hfind" id="hFind">
+      <label class="hq"><svg aria-hidden="true"><use href="#i-search"/></svg><input id="homeQ" type="search" placeholder="Find a tool… (blood, wind, pins)" autocomplete="off" enterkeyhint="search" aria-label="Find a tool"><button type="button" id="homeQx" aria-label="Clear" hidden>×</button></label>
+      <div class="hjump" role="group" aria-label="Jump to section"><button type="button" data-s="hunt">Hunt day</button><button type="button" data-s="track">After the shot</button><button type="button" data-s="scout">Scout</button><button type="button" data-s="hidden">Stay hidden</button><button type="button" data-s="bow">Bow</button><button type="button" data-s="more">More</button></div>
+    </div>
+    <div class="hnone" id="homeNone" hidden>Nothing found. Try another word, like “trail”, “meat” or “arrow”.</div>
+    <section class="hsec" id="hs-hunt" aria-labelledby="hs-hunt-t">
+      <div class="hsec-h"><h2 id="hs-hunt-t">Hunt day</h2><span>In the woods today</span></div>
+      <nav class="tiles" aria-label="Hunt day">
+        <a data-k="pins pin route measure navigate navigation take me out walk in out plan leaves moonlight property lines satellite topo 3d tacks chains easiest walk ready scent cone approach scout loop bearing ai spots blood map" class="tile hero" href="#maps" style="--h: var(--h-moss)"><span class="ic"><svg><use href="#i-map"/></svg></span><span class="tt">Maps</span><span class="td">Topo, satellite and property lines, with your stands, sign, tracks, measuring and scent cone.</span></a>
+        <a data-k="weather scent temperature pressure barometer forecast rain thermals" class="tile" href="#wind" style="--h: var(--h-sky)"><span class="ic"><svg><use href="#i-wind"/></svg></span><span class="tt">Wind &amp; weather</span><span class="td">Scent, temperature, pressure</span></a>
+        <a data-k="heading calibrate calibration north declination" class="tile" href="#compass" style="--h: var(--h-slate)"><span class="ic"><svg><use href="#i-compass"/></svg></span><span class="tt">Compass</span><span class="td">Heading and scent direction</span></a>
+        <a data-k="sunrise sunset moon phase legal shooting hours light" class="tile" href="#sun" style="--h: var(--h-gold)"><span class="ic"><svg><use href="#i-sunmoon"/></svg></span><span class="tt">Sun &amp; moon</span><span class="td">Sunrise, sunset, moon phase</span></a>
+        <a data-k="deer movement rut activity best time to hunt" class="tile" href="#predict" style="--h: var(--h-gold)"><span class="ic"><svg><use href="#i-predict"/></svg></span><span class="tt">Deer movement</span><span class="td">When deer are most likely on their feet: best days, best hours and why.</span></a>
+        <a data-k="range distance angle tree stand yardage" class="tile" href="#shot" style="--h: var(--h-blaze)"><span class="ic"><svg><use href="#i-shot"/></svg></span><span class="tt">Shot distance</span><span class="td">Tree-stand angle, true distance and shot placement.</span></a>
+        <a data-k="log sit diary check-in timer hunting partner notes" class="tile" href="#journal" style="--h: var(--h-bark)"><span class="ic"><svg><use href="#i-journal"/></svg></span><span class="tt">Hunt journal</span><span class="td">Log each sit in two taps, see which stand to hunt on today's wind, last-light alarm and harvest reporting.</span></a>
+        <a data-k="emergency 911 help lost injured position coordinates" class="tile hero" href="#sos" style="--h: #c62828"><span class="ic"><svg><use href="#i-hazard"/></svg></span><span class="tt">Emergency</span><span class="td">Your exact position in every format, call or text 911 with it, and the way out to your truck or the nearest road.</span></a>
+      </nav>
+    </section>
+    <section class="hsec" id="hs-track" aria-labelledby="hs-track-t">
+      <div class="hsec-h"><h2 id="hs-track-t">After the shot</h2><span>Track, recover, process</span></div>
+      <nav class="tiles" aria-label="After the shot">
+        <a data-k="blood trail arrow blood check track finder hoof print shot timer hit lung heart liver gut kit hydrogen peroxide led light recovery" class="tile hero" href="#tracking" style="--h: var(--h-blood)"><span class="ic"><svg><use href="#i-blood"/></svg></span><span class="tt">Deer tracking</span><span class="td">After the shot: what you hit (check your arrow with a photo), when to start tracking, blood pins and search grid, blood camera and track finder.</span></a>
+        <a data-k="field dressing gutting cuts butcher quarters back leg front leg shoulder venison meat timer chart" class="tile" href="#dress" style="--h: var(--h-blood)"><span class="ic"><svg><use href="#i-knife"/></svg></span><span class="tt">Field dressing</span><span class="td">Step by step, meat yield and how fast to cool it for today's temperature.</span></a>
+        <a data-k="freezer venison cuts packages recipes processing" class="tile" href="#meat" style="--h: var(--h-sky)"><span class="ic"><svg><use href="#i-freezer"/></svg></span><span class="tt">Meat &amp; freezer</span><span class="td">Log every cut, see what's in the freezer, burger and jerky calculators, CWD testing and donating.</span></a>
+        <a data-k="age score antler rack judge" class="tile" href="#buck" style="--h: var(--h-bark)"><span class="ic"><svg><use href="#i-rack"/></svg></span><span class="tt">Buck age &amp; score</span><span class="td">Judge age from the body; gross and net score from measurements.</span></a>
+        <a data-k="seasons license tag dates regulations ny nj" class="tile" href="#tags" style="--h: var(--h-gold)"><span class="ic"><svg><use href="#i-tag"/></svg></span><span class="tt">Tags &amp; seasons</span><span class="td">Your tags, what's filled, and countdowns to each opener.</span></a>
+      </nav>
+    </section>
+    <section class="hsec" id="hs-scout" aria-labelledby="hs-scout-t">
+      <div class="hsec-h"><h2 id="hs-scout-t">Scout &amp; plan</h2><span>Before the hunt</span></div>
+      <nav class="tiles" aria-label="Scout &amp; plan">
+        <a data-k="ai where to hunt funnels pinch points saddles benches bedding" class="tile hero ai" href="#spots" style="--h: #7b3fd1"><span class="ic"><svg><use href="#i-ai"/></svg></span><span class="tt">AI hunt spots</span><span class="td">Where to hunt around you right now: food, water, cover, funnels, saddles, benches and bedding, with today's wind. Tap a spot to see why.</span></a>
+        <a data-k="sign rubs scrapes droppings beds tracks age" class="tile" href="#scouting" style="--h: var(--h-moss)"><span class="ic"><svg><use href="#i-track"/></svg></span><span class="tt">Scouting &amp; sign</span><span class="td">How old is this sign (with the real last rain and snow), mast report, pressure log, scouting loop and public-land stand rules.</span></a>
+        <a data-k="trail camera sd card photos" class="tile" href="#cams" style="--h: var(--h-slate)"><span class="ic"><svg><use href="#i-cam"/></svg></span><span class="tt">Trail cams</span><span class="td">Add SD-card photos, tag deer, see when they pass and your buck list.</span></a>
+        <a data-k="gear packing list" class="tile" href="#checklist" style="--h: var(--h-moss)"><span class="ic"><svg><use href="#i-check"/></svg></span><span class="tt">Gear checklist</span><span class="td">Ready before you head out</span></a>
+        <a data-k="scent control detergent uv tips" class="tile" href="#guide" style="--h: var(--h-bark)"><span class="ic"><svg><use href="#i-guide"/></svg></span><span class="tt">Hunter's guide</span><span class="td">Detergents, UV check, science</span></a>
+      </nav>
+    </section>
+    <section class="hsec" id="hs-hidden" aria-labelledby="hs-hidden-t">
+      <div class="hsec-h"><h2 id="hs-hidden-t">Stay hidden</h2><span>How deer see you</span></div>
+      <nav class="tiles" aria-label="Stay hidden">
+        <a data-k="deer eyes colors blaze orange uv how deer see" class="tile hero" href="#vision" style="--h: var(--h-blaze)"><span class="ic"><svg><use href="#i-deer"/></svg></span><span class="tt">Deer vision</span><span class="td">See any scene the way a whitetail does: colors, sharpness, light and headlamps.</span></a>
+        <a data-k="camouflage pattern blend" class="tile" href="#camo" style="--h: var(--h-moss)"><span class="ic"><svg><use href="#i-camo"/></svg></span><span class="tt">Camo check</span><span class="td">Score how well you blend in</span></a>
+        <a data-k="motion moving detection" class="tile" href="#movement" style="--h: var(--h-gold)"><span class="ic"><svg><use href="#i-move"/></svg></span><span class="tt">Movement</span><span class="td">See what motion gives away</span></a>
+        <a data-k="field of view eyes angle" class="tile" href="#fov" style="--h: var(--h-blaze)"><span class="ic"><svg><use href="#i-fov"/></svg></span><span class="tt">Field of view</span><span class="td">Where a deer can see you</span></a>
+        <a data-k="glare reflection" class="tile" href="#shine" style="--h: var(--h-sky)"><span class="ic"><svg><use href="#i-shine"/></svg></span><span class="tt">Shine finder</span><span class="td">Spot glare on your gear</span></a>
+        <a data-k="silhouette outline" class="tile wide" href="#skyline" style="--h: var(--h-bark)"><span class="ic"><svg><use href="#i-sky"/></svg></span><span class="tt">Skyline check</span><span class="td">Outlines against the sky</span></a>
+      </nav>
+    </section>
+    <section class="hsec" id="hs-bow" aria-labelledby="hs-bow-t">
+      <div class="hsec-h"><h2 id="hs-bow-t">Bow &amp; arrows</h2><span>Tune and build</span></div>
+      <nav class="tiles" aria-label="Bow &amp; arrows">
+        <a data-k="arrow speed fps chronograph string jump bow" class="tile" href="#chrono" style="--h: var(--h-sky)"><span class="ic"><svg><use href="#i-bow"/></svg></span><span class="tt">Arrow speed &amp; string jump</span><span class="td">Your phone hears the shot and the hit: arrow speed, energy, momentum and how far a deer can duck.</span></a>
+        <a data-k="arrow weight foc grains kinetic energy momentum broadhead" class="tile" href="#arrowbuild" style="--h: var(--h-sky)"><span class="ic"><svg><use href="#i-arrowb"/></svg></span><span class="tt">Arrow build</span><span class="td">Total weight, FOC, grains per pound, and speed, energy and momentum for any build.</span></a>
+      </nav>
+    </section>
+    <section class="hsec" id="hs-more" aria-labelledby="hs-more-t">
+      <div class="hsec-h"><h2 id="hs-more-t">My data &amp; fun</h2><span>Stats, backup, MIKECON</span></div>
+      <nav class="tiles" aria-label="My data &amp; fun">
+        <a data-k="harvest numbers wmu county" class="tile hero" href="#stats" style="--h: var(--h-sky)"><span class="ic"><svg><use href="#i-stats"/></svg></span><span class="tt">Hunting stats</span><span class="td">Deer harvest in New York and New Jersey: last season, 10 years, and by method.</span></a>
+        <a data-k="save restore export import share partner file" class="tile hero" href="#backup" style="--h: var(--h-slate)"><span class="ic"><svg><use href="#i-backup"/></svg></span><span class="tt">Backup &amp; share</span><span class="td">Save all your spots and logs to a file, restore, or swap spots with a partner.</span></a>
+        <a data-k="fun mission silly" class="tile mikecon" href="#mikecon"><span class="mk-badge"><svg><use href="#i-mikecon"/></svg></span><span class="mk-text"><span class="mk-name">MIKECON</span></span><span class="mk-arrow" aria-hidden="true">›</span><span class="mk-warn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="currentColor"/><path d="M12 9.5v5M12 17.2v.3" stroke="#a83a06" stroke-width="2.4" stroke-linecap="round"/></svg><span>WARNING: JUST FOR EXPERT<span class="mk-bigs">S</span></span></span></a>
+      </nav>
+    </section>
   </section>
 
   <!-- ============ DEER VISION ============ -->
@@ -7738,6 +7789,8 @@ details.drop > .dropbody { padding: 0 14px 14px; }
       $('navSum').innerHTML = `<b>Out by ${esc(how)}</b> · ETA ${hhmm(eta)} <div class="actions"><a class="btn" href="sms:?&body=${encodeURIComponent(msg)}">Text my partner</a><button class="btn" type="button" id="toX">Hide</button></div>`; $('navSum').hidden = false; $('toX').onclick = () => { $('navSum').hidden = true; };
     }
     $('navOut').addEventListener('click', takeMeOut); $('mpOutBtn').addEventListener('click', takeMeOut);
+    // phone shortcut: long-press the app icon → Take me out
+    if (new URLSearchParams(location.search).get('go') === 'out') { history.replaceState(null, '', location.pathname + '#maps'); setTimeout(takeMeOut, 1500); }
 
     // ---------- blood trail pins: numbered blood spots joined in order, so you can see where the deer ran ----------
     let BT = store.get('maps.blood', []), btActive = store.get('maps.bloodActive', null), btAmt = 'spots', btCol = '', bloodLayer = L.layerGroup();
@@ -10225,6 +10278,23 @@ details.drop > .dropbody { padding: 0 14px 14px; }
   }
   const PARENT = { blood: 'tracking', track: 'tracking' };
   document.querySelectorAll('.back').forEach(b => b.addEventListener('click', () => { location.hash = PARENT[current] || ''; }));
+  // ---------- home: search and section jump ----------
+  (() => {
+    const q = $('homeQ'), x = $('homeQx'), secs = [...document.querySelectorAll('#v-home .hsec')];
+    const norm = t => t.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    const run = () => {
+      const words = norm(q.value.trim()).split(/\s+/).filter(Boolean); let any = false; x.hidden = !words.length;
+      secs.forEach(sec => { let n = 0; sec.querySelectorAll('.tile').forEach(t => { const hay = norm(t.textContent + ' ' + (t.dataset.k || '')); const ok = words.every(w => hay.includes(w)); t.hidden = !ok; if (ok) n++; }); sec.hidden = !n; if (n) any = true; });
+      $('homeNone').hidden = any; document.querySelector('#v-home .hjump').hidden = !!words.length;
+    };
+    q.addEventListener('input', run);
+    q.addEventListener('keydown', e => { if (e.key === 'Enter') { const vis = [...document.querySelectorAll('#v-home .tile:not([hidden])')], w = norm(q.value.trim()), t = vis.find(v => norm(v.querySelector('.tt, .mk-name')?.textContent || '').includes(w)) || vis[0]; if (t) { q.blur(); location.hash = t.getAttribute('href'); } } });
+    x.addEventListener('click', () => { q.value = ''; run(); q.focus(); });
+    window.addEventListener('hashchange', () => { if (q.value) { q.value = ''; run(); } });
+    document.querySelectorAll('#v-home .hjump button').forEach(b => b.addEventListener('click', () => { const s = $('hs-' + b.dataset.s); if (s) s.scrollIntoView({ behavior: 'smooth', block: 'start' }); }));
+    if ('IntersectionObserver' in window) { const io = new IntersectionObserver(es => { es.forEach(e => { if (e.isIntersecting) document.querySelectorAll('#v-home .hjump button').forEach(b => { const on = 'hs-' + b.dataset.s === e.target.id; b.classList.toggle('on', on); if (on) { const r = b.parentElement; r.scrollTo({ left: b.offsetLeft - r.clientWidth / 2 + b.offsetWidth / 2, behavior: 'smooth' }); } }); }); }, { rootMargin: '-120px 0px -65% 0px' }); secs.forEach(s => io.observe(s)); }
+  })();
+
   window.addEventListener('hashchange', route);
   document.addEventListener('visibilitychange', () => { if (document.hidden && TOOLS[current] && TOOLS[current].hide) TOOLS[current].hide(); });
 
