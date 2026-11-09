@@ -1208,9 +1208,9 @@ svg.leaflet-image-layer.leaflet-interactive path {
 .nav-wind.bad .nw-txt span { color: #c62828; font-weight: 700; }
 .navcard.big .nav-wind { max-width: 520px; justify-self: center; }
 .navcard.big .nav-wind .nw-txt b { font-size: 1.2rem; }
-.navcard.big { position: fixed; inset: 0; z-index: 3000; border-radius: 0; border-width: 0; align-content: center; padding: max(16px, env(safe-area-inset-top)) 18px max(16px, env(safe-area-inset-bottom)); }
+.navcard.big { position: fixed; inset: 0; z-index: 3000; border-radius: 0; border-width: 0; align-content: start; overflow-y: auto; overscroll-behavior: contain; padding: max(16px, env(safe-area-inset-top)) 18px max(16px, env(safe-area-inset-bottom)); }
 .navcard.big .nav-top { grid-template-columns: 1fr; justify-items: center; text-align: center; }
-.navcard.big .nav-dial { width: min(78vw, 46vh); height: min(78vw, 46vh); }
+.navcard.big .nav-dial { width: min(72vw, 36vh); height: min(72vw, 36vh); flex-shrink: 0; }
 .navcard.big .nav-dist { font-size: 3.2rem; }
 .navcard.big .nav-say { font-size: 1.15rem; }
 .navcard.big .nav-to { white-space: normal; font-size: .95rem; }
