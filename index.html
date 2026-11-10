@@ -1215,7 +1215,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
 .mv-leg b { color: #111; background: #ffd54f; border-radius: 50%; padding: 0 4px; margin-right: 4px; }
 .mv-t { display: grid; gap: 4px; font-weight: 700; font-size: .85rem; }
 .mv-t input { width: 100%; accent-color: #7b3fd1; }
-.mv-arr { font-size: 13px; line-height: 16px; text-align: center; text-shadow: 0 0 2px #fff, 0 0 2px #fff; }
+.mv-arr { font-size: 15px; line-height: 16px; text-align: center; text-shadow: 0 0 2px #000, 0 0 3px #000, 0 0 1px #000; }
 .mv-pinch { width: 28px; height: 28px; border-radius: 50%; background: #ffd54f; border: 2px solid #111; display: grid; place-items: center; font-size: 16px; color: #111; box-shadow: 0 1px 4px rgba(0,0,0,.4); }
 #mpVoiceBtn.rec { background: #c62828 !important; color: #fff !important; animation: recp 1s infinite; }
 @keyframes recp { 50% { box-shadow: 0 0 0 6px rgba(198,40,40,.3); } }
@@ -1256,6 +1256,23 @@ svg.leaflet-image-layer.leaflet-interactive path {
 .db-t { border-collapse: collapse; width: 100%; font-size: .85rem; } .db-t th, .db-t td { border-bottom: 1px solid var(--line, #ddd); padding: 4px 6px; text-align: left; } .db-t th { font-size: .75rem; color: var(--muted, #666); }
 .ai-here { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); z-index: 1000; display: flex; align-items: center; gap: 6px; padding: 8px 12px; white-space: nowrap; font-size: .88rem; border-radius: 22px; border: 0; background: #7b3fd1; color: #fff; font: inherit; font-weight: 800; box-shadow: 0 2px 8px rgba(0,0,0,.35); cursor: pointer; }
 .ai-here svg { width: 18px; height: 18px; }
+.ai-pin.feat { width: 22px !important; height: 22px !important; font-size: .7rem !important; opacity: .92; border-width: 1.5px !important; }
+.ai-hunt { position: relative; width: 30px; height: 30px; border-radius: 50%; background: #ff6d00; border: 3px solid #fff; box-shadow: 0 0 0 2px #1b1b1b, 0 3px 10px rgba(0,0,0,.55); display: grid; place-items: center; box-sizing: border-box; }
+.ai-hunt.top { width: 40px; height: 40px; animation: huntp 1.6s ease-in-out infinite; }
+@keyframes huntp { 50% { box-shadow: 0 0 0 2px #1b1b1b, 0 0 0 9px rgba(255,109,0,.35), 0 3px 10px rgba(0,0,0,.55); } }
+.ai-hunt svg { position: absolute; inset: 3px; width: auto; height: auto; fill: none; stroke: #fff; stroke-width: 1.6; opacity: .55; }
+.ai-hunt b { position: relative; color: #fff; font-weight: 900; font-size: .85rem; text-shadow: 0 1px 2px rgba(0,0,0,.6); }
+.ai-hunt.top b { font-size: 1.1rem; }
+.ai-hunt.sm { width: 20px; height: 20px; border-width: 2px; display: inline-grid; vertical-align: middle; box-shadow: 0 0 0 1px #1b1b1b; }
+.ai-hunt.sm svg { opacity: .9; }
+.ai-hunt-leg { display: flex; gap: 10px; align-items: center; border: 2px solid #ff6d00; border-radius: 10px; padding: 8px 10px; background: rgba(255,109,0,.08); font-size: .88rem; }
+.ai-hunt-leg .ai-hunt { flex: none; width: 36px; height: 36px; }
+.mv-leg i.on { background: #ffd600; box-shadow: 0 0 0 1.5px #1b1b1b; height: 5px; }
+.mv-leg i.off { background: #fff; box-shadow: 0 0 0 1.5px #1b1b1b; }
+.mv-leg i.dash { background: repeating-linear-gradient(90deg, #ffd600 0 6px, #1b1b1b 6px 10px) !important; }
+.mv-on { font-weight: 700; color: #8a6d00; }
+:root[data-theme="dark"] .mv-on { color: #ffd600; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .mv-on { color: #ffd600; } }
 .navcard { border: 2px solid #2f8cff; border-radius: 12px; background: var(--surface); padding: 12px; display: grid; gap: 10px; }
 .navcard.here { border-color: #2e9e5b; box-shadow: 0 0 0 3px rgba(46,158,91,.25); }
 .nav-top { display: grid; grid-template-columns: 132px minmax(0, 1fr); gap: 12px; align-items: center; }
@@ -2512,7 +2529,7 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
       <div class="panel mp" id="mp-ai" hidden>
         <h2 style="margin:0">AI hunt spots</h2>
         <div class="caption" id="aiStatus">Finds the places where deer are most likely to move or bed within about 1 km, from the shape of the land, satellite land cover (food, water, cover), today's wind and the rut.</div>
-        <div class="ai-legend"><span><i class="ai-pin sm" style="--c:#c2185b">N</i>Funnel</span><span><i class="ai-pin sm" style="--c:#7b3fd1">S</i>Saddle</span><span><i class="ai-pin sm" style="--c:#c9a227">F</i>Food (field edge)</span><span><i class="ai-pin sm" style="--c:#1b8a8a">B</i>Bench</span><span><i class="ai-pin sm" style="--c:#d9530f">P</i>Ridge point</span><span><i class="ai-pin sm" style="--c:#1e88e5">W</i>Water</span><span><i class="ai-pin sm" style="--c:#2e7d32">C</i>Thick cover</span><span><i class="ai-pin sm" style="--c:#7cb342">Y</i>Young growth</span><span><i class="ai-pin sm" style="--c:#3949ab">D</i>Draw</span><span><i class="ai-pin sm" style="--c:#a0522d">A</i>Hardwoods (acorns?)</span><span><i class="ai-pin sm" style="--c:#6d4c41">Z</i>Bedding</span><span><i class="ai-dot"></i>Stand spot (downwind)</span></div>
+        <div class="ai-legend"><span><i class="ai-pin sm" style="--c:#c2185b">N</i>Funnel</span><span><i class="ai-pin sm" style="--c:#7b3fd1">S</i>Saddle</span><span><i class="ai-pin sm" style="--c:#c9a227">F</i>Food (field edge)</span><span><i class="ai-pin sm" style="--c:#1b8a8a">B</i>Bench</span><span><i class="ai-pin sm" style="--c:#d9530f">P</i>Ridge point</span><span><i class="ai-pin sm" style="--c:#1e88e5">W</i>Water</span><span><i class="ai-pin sm" style="--c:#2e7d32">C</i>Thick cover</span><span><i class="ai-pin sm" style="--c:#7cb342">Y</i>Young growth</span><span><i class="ai-pin sm" style="--c:#3949ab">D</i>Draw</span><span><i class="ai-pin sm" style="--c:#a0522d">A</i>Hardwoods (acorns?)</span><span><i class="ai-pin sm" style="--c:#6d4c41">Z</i>Bedding</span></div><div class="ai-hunt-leg"><span class="ai-hunt"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.5"/><path d="M12 1v5M12 18v5M1 12h5M18 12h5"/></svg><b>1</b></span><div><b>Hunt here.</b> Where to set up for each spot, numbered by rank, already placed downwind of today's wind. The small letters are the deer features (food, water, bedding…) it is hunting.</div></div>
         <div class="k">How are you hunting?</div>
         <div class="ai-meth" id="aiMeth" role="group" aria-label="How are you hunting"><button type="button" data-m="ground"><svg><use href="#i-blind"/></svg>Ground / blind</button><button type="button" data-m="saddle"><svg><use href="#i-tether"/></svg>Saddle</button><button type="button" data-m="stand"><svg><use href="#i-stand"/></svg>Tree stand</button></div>
         <div class="caption" id="aiMethTip"></div>
@@ -2520,7 +2537,7 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
         <div id="aiBestOut" class="ai-best" hidden></div>
         <button class="btn ai-movebtn" id="aiMove" type="button"><svg><use href="#i-track"/></svg>Deer movement lines</button>
         <div id="aiMoveBox" class="ai-move" hidden>
-          <div class="mv-leg"><span><i style="background:#ef6c00"></i>Morning: food → bed</span><span><i style="background:#7b3fd1"></i>Evening: bed → food</span><span><i class="dash"></i>Rut cruising</span><span><b>★</b> Pinch point</span></div>
+          <div class="mv-leg"><span><i class="on"></i>Deer moving now (arrows show direction)</span><span><i class="off"></i>Route not active at this time</span><span><i class="dash"></i>Rut cruising</span><span><b>★</b> Pinch point</span><span><span class="ai-hunt sm"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.5"/></svg></span> Hunt here</span></div>
           <label class="mv-t"><span>Time of day</span><input type="range" id="aiMoveT" min="240" max="1260" step="10" value="1020"></label>
           <div class="caption" id="aiMoveNow"></div>
           <div class="caption" id="aiMoveSum"></div>
@@ -6980,8 +6997,11 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
       const bm = await createImageBitmap(await r.blob()), c = document.createElement('canvas'); c.width = c.height = 256;
       const g = c.getContext('2d'); g.drawImage(bm, 0, 0); return (demCache[key] = g.getImageData(0, 0, 256, 256).data);
     }
-    const spotIcon = t => L.divIcon({ className: '', iconSize: [30, 30], iconAnchor: [15, 15], popupAnchor: [0, -14],
-      html: `<div class="ai-pin" style="--c:${SPOT[t][1]}">${SPOT[t][2]}</div>` });
+    const spotIcon = t => L.divIcon({ className: '', iconSize: [24, 24], iconAnchor: [12, 12], popupAnchor: [0, -12],
+      html: `<div class="ai-pin feat" style="--c:${SPOT[t][1]}">${SPOT[t][2]}</div>` });
+    // where to hunt from: big blaze-orange target with its rank, so it stands out from the food/water/bedding letters
+    const huntIcon = (n, top) => L.divIcon({ className: '', iconSize: top ? [40, 40] : [30, 30], iconAnchor: top ? [20, 20] : [15, 15], popupAnchor: [0, -20],
+      html: `<div class="ai-hunt${top ? ' top' : ''}"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.5"/><path d="M12 1v5M12 18v5M1 12h5M18 12h5"/></svg><b>${n}</b></div>` });
     async function findSpots(center, R = 1100) { // analyse about 1.1 km around you
       const Z = 14, n = 2 ** Z;
       const mpp = 40075016.7 * Math.cos(center.lat * Math.PI / 180) / (256 * n), STEP = Math.max(4, Math.ceil(2 * R / mpp / 160)), cm = mpp * STEP;
@@ -7157,10 +7177,11 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
       spotLayer = L.layerGroup().addTo(map);
       spots.forEach((s, k) => {
         const x = spotText(s);
-        L.polyline([s.ll, x.stand], { color: SPOT[s.t][1], weight: 2, dashArray: '3 4', interactive: false }).addTo(spotLayer);
-        L.circleMarker(x.stand, { radius: 4, color: '#fff', weight: 1.5, fillColor: SPOT[s.t][1], fillOpacity: 1, interactive: false }).addTo(spotLayer);
-        const lb = bearing(x.stand, s.ll), lr = mDef().yd / YD; L.polygon([x.stand, destPoint(x.stand, lb - 10, lr), destPoint(x.stand, lb + 10, lr)], { color: SPOT[s.t][1], weight: 1, fillOpacity: 0.18, interactive: false }).addTo(spotLayer);
-        L.marker(s.ll, { icon: spotIcon(s.t), zIndexOffset: 800, title: `${SPOT[s.t][0]} #${k + 1}` }).on('click', () => spotPopup(s, k)).addTo(spotLayer);
+        L.polyline([s.ll, x.stand], { color: '#ff6d00', weight: 2, dashArray: '3 4', interactive: false }).addTo(spotLayer);
+        const lb = bearing(x.stand, s.ll), lr = mDef().yd / YD; L.polygon([x.stand, destPoint(x.stand, lb - 10, lr), destPoint(x.stand, lb + 10, lr)], { color: '#ff6d00', weight: 1.5, fillColor: '#ffab40', fillOpacity: 0.3, interactive: false }).addTo(spotLayer);
+        L.marker(s.ll, { icon: spotIcon(s.t), zIndexOffset: 600, title: `${SPOT[s.t][0]} #${k + 1}` }).on('click', () => spotPopup(s, k)).addTo(spotLayer);
+        if (k < 8) L.marker(x.stand, { icon: huntIcon(k + 1, k < 3), zIndexOffset: 1200 - k, title: `Hunt here: ${SPOT[s.t][0]} #${k + 1}` }).on('click', () => spotPopup(s, k)).addTo(spotLayer);
+        else L.circleMarker(x.stand, { radius: 6, color: '#fff', weight: 2, fillColor: '#ff6d00', fillOpacity: 1, bubblingMouseEvents: false }).on('click', () => spotPopup(s, k)).addTo(spotLayer);
       });
       const list = $('aiList');
       list.innerHTML = spots.length ? spots.map((s, k) => `<button type="button" class="sitem" data-k="${k}"><span class="ai-pin" style="--c:${SPOT[s.t][1]}">${SPOT[s.t][2]}</span><div><b>${SPOT[s.t][0]} #${k + 1}</b><span>${spotText(s).conf} confidence${s.press ? ` · ${s.press.lvl.toLowerCase()} pressure` : ''}${s.sign && s.sign.score > 0.5 ? ' · your sign nearby' : ''}${s.house != null && s.house < 152 ? ' · near a building' : ''}</span></div><span>${me ? fmtDist(me.distanceTo(s.ll)) : ''}</span></button>`).join('')
@@ -7381,7 +7402,7 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
 
     // ---------- deer movement lines: bedding <-> food and water along the route deer most likely take, with times ----------
     let moveLayer = null, moves = [], movePinch = [], moveSun = null;
-    const MCOL = { morning: '#ef6c00', evening: '#7b3fd1', rut: '#c62828' };
+    const MCOL = { morning: '#ffd600', evening: '#ffd600', rut: '#ffd600' }, MIDLE = '#ffffff', MEDGE = '#1b1b1b';
     const BEDT = ['bedding', 'cover', 'point'], FOODT = ['food', 'browse', 'mast', 'water'];
     const MBED = ['bed'], MFOOD = ['food', 'plot', 'whiteoak', 'redoak', 'fruit', 'browse', 'water', 'spring', 'mineral'];
     function rasterMask(G, arr, wM) {
@@ -7454,8 +7475,9 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
       if (moveLayer) map.removeLayer(moveLayer); moveLayer = L.layerGroup().addTo(map);
       const t = moveTimeAt(); let nAct = { morning: 0, evening: 0, rut: 0 };
       moves.forEach((m, k) => {
-        const act = activeKind(m, t), col = act ? MCOL[act] : (m.kind === 'rut' ? MCOL.rut : '#7d7d7d');
-        const ln = L.polyline(m.pts, { color: col, weight: act ? 5 : 3, opacity: act ? 0.9 : 0.35, dashArray: m.kind === 'rut' ? '8 7' : null, bubblingMouseEvents: false }).addTo(moveLayer);
+        const act = activeKind(m, t), col = act ? MCOL[act] : MIDLE;
+        L.polyline(m.pts, { color: MEDGE, weight: act ? 9 : 6, opacity: act ? 0.75 : 0.45, dashArray: m.kind === 'rut' ? '10 8' : null, interactive: false }).addTo(moveLayer);
+        const ln = L.polyline(m.pts, { color: col, weight: act ? 5 : 3, opacity: act ? 1 : 0.85, dashArray: m.kind === 'rut' ? '10 8' : null, bubblingMouseEvents: false }).addTo(moveLayer);
         ln.on('click', e => movePopup(m, e.latlng));
         if (!act) return; nAct[act]++;
         const path = act === 'morning' ? m.pts.slice().reverse() : m.pts; // morning: food -> bed
@@ -7464,7 +7486,8 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
       const wTo = (WIND.from + 180) % 360;
       movePinch.forEach(p => {
         const sp = destPoint(p.ll, wTo, mDef().yd / YD);
-        L.polyline([p.ll, sp], { color: '#111', weight: 1.5, dashArray: '2 4', interactive: false }).addTo(moveLayer);
+        L.polyline([p.ll, sp], { color: '#ff6d00', weight: 2, dashArray: '3 4', interactive: false }).addTo(moveLayer);
+        L.marker(sp, { icon: huntIcon('★', false), zIndexOffset: 1300, title: 'Hunt here: pinch point setup' }).on('click', () => { map.setView(sp); setGoTo(sp, 'pinch point (setup spot)'); }).addTo(moveLayer);
         L.marker(p.ll, { icon: L.divIcon({ className: '', iconSize: [28, 28], iconAnchor: [14, 14], html: `<div class="mv-pinch">★</div>` }), zIndexOffset: 900 }).on('click', () => {
           const box = document.createElement('div'); box.className = 'pop';
           box.innerHTML = `<h4>★ Pinch point</h4><div class="sec"><b>${p.n} predicted deer routes</b> come together here. Deer moving between bedding and food funnel through this spot, morning and evening.</div><div class="sec">Today's wind is from the ${cardinal(WIND.from)}: set up on the <b>${cardinal(wTo)}</b> side, about ${mDef().yd} yd off (${mDef().n.toLowerCase()}).</div><div class="sec muted">A prediction from terrain and land cover: look for trails, rubs and tracks here first.</div><div class="acts"><button type="button" data-a="go">Navigate to the setup spot</button><button type="button" data-a="save">Save as marker</button></div>`;
@@ -7474,7 +7497,7 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
         }).addTo(moveLayer);
       });
       const tt = hhmm(t), tot = nAct.morning + nAct.evening + nAct.rut;
-      $('aiMoveNow').innerHTML = `<b>${tt}</b> · ` + (tot ? [nAct.morning && `<span style="color:${MCOL.morning}">morning: ${nAct.morning} route${nAct.morning > 1 ? 's' : ''} active, deer heading from food back to bed</span>`, nAct.evening && `<span style="color:${MCOL.evening}">evening: ${nAct.evening} route${nAct.evening > 1 ? 's' : ''} active, deer leaving bed for food</span>`, nAct.rut && `<span style="color:${MCOL.rut}">rut: ${nAct.rut} buck cruising route${nAct.rut > 1 ? 's' : ''}</span>`].filter(Boolean).join(' · ')
+      $('aiMoveNow').innerHTML = `<b>${tt}</b> · ` + (tot ? [nAct.morning && `<span class="mv-on">morning: ${nAct.morning} route${nAct.morning > 1 ? 's' : ''} active, deer heading from food back to bed</span>`, nAct.evening && `<span class="mv-on">evening: ${nAct.evening} route${nAct.evening > 1 ? 's' : ''} active, deer leaving bed for food</span>`, nAct.rut && `<span class="mv-on">rut: ${nAct.rut} buck cruising route${nAct.rut > 1 ? 's' : ''}</span>`].filter(Boolean).join(' · ')
         : (t.getHours() >= 10 && t.getHours() < 15 ? 'Midday: most deer are bedded.' + (moves.rutSeason ? ' Rut lines show when bucks cruise (about 9:30 am to 2 pm).' : '') : t.getHours() >= 15 ? 'Deer still bedded; evening movement starts closer to sunset.' : 'Dark: deer are feeding or moving at night.'));
     }
     function movePopup(m, at) {
@@ -7486,10 +7509,10 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
       const side = cardinal((WIND.from + 180) % 360);
       const wtxt = wa > 50 ? `Today's ${cardinal(WIND.from)} wind blows across this route: a good wind. Sit on the <b>${side}</b> side, ${mDef().yd} yd off.` : `Today's ${cardinal(WIND.from)} wind blows along this route, so deer walking into it smell you before they reach you. Pick a spot where the route turns across the wind.`;
       const box = document.createElement('div'); box.className = 'pop';
-      const head = m.kind === 'rut' ? `<h4 style="color:${MCOL.rut}">Rut cruising route</h4><div class="muted">${esc(m.a.n)} ↔ ${esc(m.b.n)} · ${fmtDist(m.len)}</div><div class="sec">Bucks check one bedding area after another during the rut${moves.rutNow ? ` (now: ${moves.rutNow.toLowerCase()})` : ''}, often midday: about <b>${hhmm(m.ru1)}–${hhmm(m.ru2)}</b>. They travel the easiest, most hidden way, often through saddles and along benches.</div>`
+      const head = m.kind === 'rut' ? `<h4>Rut cruising route</h4><div class="muted">${esc(m.a.n)} ↔ ${esc(m.b.n)} · ${fmtDist(m.len)}</div><div class="sec">Bucks check one bedding area after another during the rut${moves.rutNow ? ` (now: ${moves.rutNow.toLowerCase()})` : ''}, often midday: about <b>${hhmm(m.ru1)}–${hhmm(m.ru2)}</b>. They travel the easiest, most hidden way, often through saddles and along benches.</div>`
         : `<h4>Deer route: ${esc(m.a.n)} ↔ ${esc(m.b.n)}</h4><div class="muted">${fmtDist(m.len)} · about ${Math.round(m.dur)} min at deer pace · ${m.press.toLowerCase()} hunting pressure</div>`
-          + `<div class="sec"><b style="color:${MCOL.evening}">Evening</b> (bed → ${m.b.t === 'water' ? 'water' : 'food'}): deer leave the bedding about <b>${at2(m.ev1, m.ev2, 0)}</b> and pass this point about <b>${at2(m.ev1, m.ev2, f)}</b>. Sunset ${moveSun && moveSun.set ? hhmm(moveSun.set) : '—'}.</div>`
-          + `<div class="sec"><b style="color:${MCOL.morning}">Morning</b> (back to bed): deer pass here about <b>${at2(m.am1, m.am2, 1 - f)}</b>, mostly in the first hour of light.</div>`
+          + `<div class="sec"><b>Evening</b> (bed → ${m.b.t === 'water' ? 'water' : 'food'}): deer leave the bedding about <b>${at2(m.ev1, m.ev2, 0)}</b> and pass this point about <b>${at2(m.ev1, m.ev2, f)}</b>. Sunset ${moveSun && moveSun.set ? hhmm(moveSun.set) : '—'}.</div>`
+          + `<div class="sec"><b>Morning</b> (back to bed): deer pass here about <b>${at2(m.am1, m.am2, 1 - f)}</b>, mostly in the first hour of light.</div>`
           + (m.press === 'High' ? `<div class="sec ai-warn">High pressure nearby: these deer may wait until dark. Hunt closer to the bedding, or midweek.</div>` : '');
       box.innerHTML = head + `<div class="sec"><b>Wind here</b><div>${wtxt}</div></div><div class="sec muted">Predicted from terrain, land cover, roads and your own sign. Confirm with tracks and trails before you hang a stand.</div><div class="acts"><button type="button" data-a="go">Navigate to a setup here</button></div>`;
       box.querySelector('[data-a=go]').onclick = () => { map.closePopup(); setGoTo(destPoint(m.pts[bi], (WIND.from + 180) % 360, mDef().yd / YD), 'setup beside the deer route'); };
