@@ -1176,6 +1176,36 @@ svg.leaflet-image-layer.leaflet-interactive path {
 .mapfab button[aria-pressed="true"] { background: #2f6fae; color: #fff; }
 .crosshair { position: absolute; left: 50%; top: 50%; width: 30px; height: 30px; margin: -15px 0 0 -15px; z-index: 450; pointer-events: none;
   background: linear-gradient(#ff7a1a,#ff7a1a) center/2px 100% no-repeat, linear-gradient(#ff7a1a,#ff7a1a) center/100% 2px no-repeat; filter: drop-shadow(0 0 1px #000); }
+.ai-meth { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.ai-meth button { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 10px 4px; border: 2px solid var(--line, #ccc); border-radius: 10px; background: var(--surface); color: var(--fg); font: inherit; font-weight: 700; font-size: .85rem; cursor: pointer; }
+.ai-meth button svg { width: 24px; height: 24px; }
+.ai-meth button[aria-pressed="true"] { background: #7b3fd1; border-color: #7b3fd1; color: #fff; }
+.ai-bestbtn { width: 100%; justify-content: center; display: flex; align-items: center; gap: 8px; background: #7b3fd1; color: #fff; border-color: #7b3fd1; font-weight: 800; font-size: 1rem; padding: 12px; margin: 4px 0; }
+.ai-bestbtn svg { width: 22px; height: 22px; }
+.ai-best { display: grid; gap: 8px; }
+.ai-best .ab-h { font-size: .9rem; }
+.ab-c { border: 1px solid var(--line, #ccc); border-radius: 10px; padding: 10px; }
+.ab-c.top { border: 2px solid #7b3fd1; box-shadow: 0 0 0 3px rgba(123,63,209,.15); }
+.ab-t { display: flex; align-items: center; gap: 8px; }
+.ab-t b { flex: 1; min-width: 0; }
+.ab-n { width: 24px; height: 24px; border-radius: 50%; background: #7b3fd1; color: #fff; display: grid; place-items: center; font-weight: 800; font-size: .85rem; flex: none; }
+.ab-s { font-weight: 800; font-size: 1.15rem; color: #7b3fd1; }
+.ab-c ul { margin: 6px 0; padding-left: 18px; font-size: .85rem; }
+.ab-c li.w { color: #b3261e; }
+.ab-c .acts { display: flex; gap: 6px; }
+.ai-chips { display: flex; flex-wrap: wrap; gap: 4px; margin: 6px 0; }
+.ai-chips span { background: rgba(123,63,209,.12); border-radius: 8px; padding: 3px 7px; font-size: .78rem; }
+.ai-setup { border-left: 3px solid #7b3fd1; padding-left: 7px; }
+.nav-quiet { border-radius: 10px; padding: 10px; background: #12261a; color: #e8f5e9; display: grid; gap: 6px; }
+.nav-quiet .qa-h { font-size: .8rem; text-transform: uppercase; letter-spacing: .06em; opacity: .8; }
+.nav-quiet .qa-s { font-size: 1.35rem; font-weight: 800; color: #7ee2a0; }
+.nav-quiet .qa-s.stop { color: #ffcc66; }
+.nav-quiet .qa-w { font-size: .9rem; }
+.nav-quiet .qa-w.bad { color: #ffb4a8; }
+.navcard.big .nav-quiet { max-width: 520px; justify-self: center; width: 100%; box-sizing: border-box; text-align: center; }
+.nav-offr { border: 2px solid #d9530f; background: rgba(217,83,15,.1); border-radius: 10px; padding: 10px; display: grid; gap: 8px; font-weight: 600; }
+.navcard.big .nav-offr { max-width: 520px; justify-self: center; width: 100%; box-sizing: border-box; }
+#navPocket[aria-pressed="true"], #navDl:disabled { background: #1565c0; color: #fff; border-color: #1565c0; }
 .navcard { border: 2px solid #2f8cff; border-radius: 12px; background: var(--surface); padding: 12px; display: grid; gap: 10px; }
 .navcard.here { border-color: #2e9e5b; box-shadow: 0 0 0 3px rgba(46,158,91,.25); }
 .nav-top { display: grid; grid-template-columns: 132px minmax(0, 1fr); gap: 12px; align-items: center; }
@@ -1579,6 +1609,7 @@ details.drop > .dropbody { padding: 0 14px 14px; }
     <symbol id="i-pin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
       <path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.3"/>
     </symbol>
+    <symbol id="i-tether" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 2v20"/><path d="M17 8c-4 0-7 2-8 5"/><circle cx="8" cy="9" r="1.6"/><path d="M8 11v5l-2 4M8 16l2 4"/><path d="M11 18h6"/></symbol>
     <symbol id="i-stand" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
       <path d="M6 21 9 4M14 21 11 4M7.7 9.5h4.6M7 14h6M6.4 18h7.2"/><path d="M9 4h8v3.2h-8"/><path d="M17 7.2 19 12"/>
     </symbol>
@@ -1673,6 +1704,7 @@ details.drop > .dropbody { padding: 0 14px 14px; }
       <div class="hsec-h"><span class="hsec-ic"><svg aria-hidden="true"><use href="#i-map"/></svg></span><div><h2 id="hs-hunt-t">Hunt day</h2><p>Maps · wind & weather · compass · sun & moon · deer movement · shot distance · hunt journal · emergency</p></div></div>
       <nav class="tiles" aria-label="Hunt day">
         <a data-k="pins pin route measure navigate navigation take me out walk in out plan leaves moonlight property lines satellite topo 3d tacks chains easiest walk ready scent cone approach scout loop bearing ai spots blood map" class="tile hero" href="#maps" style="--h: var(--h-moss)"><span class="ic"><svg><use href="#i-map"/></svg></span><span class="tt">Maps</span><span class="td">Topo, satellite and property lines, with your stands, sign, tracks, measuring and scent cone.</span></a>
+        <a data-k="best spot right now tonight where should i sit hunt today stand wind ai" class="tile hero ai" href="#best" style="--h: #7b3fd1"><span class="ic"><svg><use href="#i-ai"/></svg></span><span class="tt">Best spot right now</span><span class="td">One tap: your stands and the AI spots ranked for today's wind, the time of day, the rut, hunting pressure and your own journal.</span></a>
         <a data-k="weather scent temperature pressure barometer forecast rain thermals" class="tile" href="#wind" style="--h: var(--h-sky)"><span class="ic"><svg><use href="#i-wind"/></svg></span><span class="tt">Wind &amp; weather</span><span class="td">Scent, temperature, pressure</span></a>
         <a data-k="heading calibrate calibration north declination" class="tile" href="#compass" style="--h: var(--h-slate)"><span class="ic"><svg><use href="#i-compass"/></svg></span><span class="tt">Compass</span><span class="td">Heading and scent direction</span></a>
         <a data-k="sunrise sunset moon phase legal shooting hours light" class="tile" href="#sun" style="--h: var(--h-gold)"><span class="ic"><svg><use href="#i-sunmoon"/></svg></span><span class="tt">Sun &amp; moon</span><span class="td">Sunrise, sunset, moon phase</span></a>
@@ -2191,6 +2223,8 @@ details.drop > .dropbody { padding: 0 14px 14px; }
             <div class="nav-say" id="navSay"></div>
           </div>
         </div>
+        <div class="nav-quiet" id="navQuiet" hidden></div>
+        <div class="nav-offr" id="navOffR" hidden><div id="navOffT"></div><button type="button" class="btn" id="navReroute">New route from here</button></div>
         <button type="button" class="nav-wind" id="navWind" aria-label="Wind"><svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="18"/><g id="navWindArr"><path d="M20 33 V9 M12 16 L20 7 L28 16"/><path d="M15 33 h10" /></g></svg><span class="nw-txt"><b id="navWindTop">Wind</b><span id="navWindSub"></span></span></button>
         <div class="nav-final" id="navFinal" hidden></div>
         <div class="nav-final" id="navSum" hidden></div>
@@ -2200,7 +2234,7 @@ details.drop > .dropbody { padding: 0 14px 14px; }
           <div><dt>On foot</dt><dd id="navWalk">—</dd></div>
           <div><dt>GPS accuracy</dt><dd id="navAcc">—</dd></div>
         </dl>
-        <div class="nav-acts"><button type="button" class="btn" id="navPace" aria-pressed="false"><svg style="width:18px;height:18px"><use href="#i-track"/></svg><span>Pace mode</span></button><button type="button" class="btn" id="navVoice" aria-pressed="false"><svg style="width:18px;height:18px"><use href="#i-speaker"/></svg><span>Voice</span></button><button type="button" class="btn" id="navBuzz" aria-pressed="false">Buzz</button><button type="button" class="btn" id="navSaver" aria-pressed="false">Battery saver</button><button type="button" class="btn" id="navCam">Camera finder</button><button type="button" class="btn" id="navTack">Tack here</button><button type="button" class="btn" id="navOut">Take me out</button><button type="button" class="btn" id="navBig">Full screen</button><button type="button" class="btn" id="navMap">Show on map</button><button type="button" class="btn" id="navStop">Stop</button></div>
+        <div class="nav-acts"><button type="button" class="btn" id="navPace" aria-pressed="false"><svg style="width:18px;height:18px"><use href="#i-track"/></svg><span>Pace mode</span></button><button type="button" class="btn" id="navVoice" aria-pressed="false"><svg style="width:18px;height:18px"><use href="#i-speaker"/></svg><span>Voice</span></button><button type="button" class="btn" id="navPocket" aria-pressed="false">Pocket mode</button><button type="button" class="btn" id="navBuzz" aria-pressed="false">Buzz</button><button type="button" class="btn" id="navSaver" aria-pressed="false">Battery saver</button><button type="button" class="btn" id="navCam">Camera finder</button><button type="button" class="btn" id="navTack">Tack here</button><button type="button" class="btn" id="navOut">Take me out</button><button type="button" class="btn" id="navDl">Save route offline</button><button type="button" class="btn" id="navBig">Full screen</button><button type="button" class="btn" id="navMap">Show on map</button><button type="button" class="btn" id="navStop">Stop</button></div>
       </div>
       <div class="mapinfo" id="mpInfo">Tap the map to drop a pin. Press and hold 3 seconds for info about that spot (owner, hunting rules).</div>
       <div class="mtools" role="group" aria-label="Map tools">
@@ -2394,16 +2428,21 @@ details.drop > .dropbody { padding: 0 14px 14px; }
         <div class="k">Walk plan</div>
         <div class="caption">For the route above (or a straight line if you haven't planned one): when to leave the truck, the wind while you walk, how loud the leaves are, and whether the moon lights your way.</div>
         <div class="row"><label for="wpSettle">In the stand</label><input type="number" id="wpSettle" min="0" max="90" value="20" class="full" inputmode="numeric"><span class="v">min before legal light</span></div>
-        <div class="actions"><button class="btn primary" id="wpRun" type="button">Plan my walk</button><button class="btn" id="wpIcs" type="button">Alarm in my calendar</button><button class="btn" id="wpShare" type="button">Text my plan</button></div>
+        <div class="actions"><button class="btn primary" id="wpRun" type="button">Plan my walk</button><button class="btn" id="wpIcs" type="button">Alarm in my calendar</button><button class="btn" id="wpShare" type="button">Text my plan</button><button class="btn" id="wpDl" type="button">Save route offline</button></div>
         <div id="wpOut" class="wp-out"></div>
       </div>
       <div class="panel mp" id="mp-ai" hidden>
         <h2 style="margin:0">AI hunt spots</h2>
         <div class="caption" id="aiStatus">Finds the places where deer are most likely to move or bed within about 1 km, from the shape of the land, satellite land cover (food, water, cover), today's wind and the rut.</div>
         <div class="ai-legend"><span><i class="ai-pin sm" style="--c:#c2185b">N</i>Funnel</span><span><i class="ai-pin sm" style="--c:#7b3fd1">S</i>Saddle</span><span><i class="ai-pin sm" style="--c:#c9a227">F</i>Food (field edge)</span><span><i class="ai-pin sm" style="--c:#1b8a8a">B</i>Bench</span><span><i class="ai-pin sm" style="--c:#d9530f">P</i>Ridge point</span><span><i class="ai-pin sm" style="--c:#1e88e5">W</i>Water</span><span><i class="ai-pin sm" style="--c:#2e7d32">C</i>Thick cover</span><span><i class="ai-pin sm" style="--c:#7cb342">Y</i>Young growth</span><span><i class="ai-pin sm" style="--c:#3949ab">D</i>Draw</span><span><i class="ai-pin sm" style="--c:#a0522d">A</i>Hardwoods (acorns?)</span><span><i class="ai-pin sm" style="--c:#6d4c41">Z</i>Bedding</span><span><i class="ai-dot"></i>Stand spot (downwind)</span></div>
+        <div class="k">How are you hunting?</div>
+        <div class="ai-meth" id="aiMeth" role="group" aria-label="How are you hunting"><button type="button" data-m="ground"><svg><use href="#i-blind"/></svg>Ground / blind</button><button type="button" data-m="saddle"><svg><use href="#i-tether"/></svg>Saddle</button><button type="button" data-m="stand"><svg><use href="#i-stand"/></svg>Tree stand</button></div>
+        <div class="caption" id="aiMethTip"></div>
+        <button class="btn ai-bestbtn" id="aiBest" type="button"><svg><use href="#i-ai"/></svg>Best spot right now</button>
+        <div id="aiBestOut" class="ai-best" hidden></div>
         <div class="slist" id="aiList"></div>
         <div class="actions"><button class="btn primary" id="aiRun" type="button">Find spots around me</button><button class="btn" id="aiRunMap" type="button">Around map center</button><button class="btn" id="aiClear" type="button">Clear</button></div>
-        <p class="caption" style="margin:0">How it works: a model on your phone reads the elevation data the way an experienced hunter reads a topo map, and the yearly satellite land-cover map (Annual NLCD, from Landsat, 30 m detail) for fields, crops, young growth, thick cover and water. Then it adds today's wind (set in Wind &amp; weather), thermals, the rut phase and nearby houses. It can't see deer, this year's crops or acorns, so treat the spots as places to scout first.</p>
+        <p class="caption" style="margin:0">How it works: a model on your phone reads the elevation data the way an experienced hunter reads a topo map, and the yearly satellite land-cover map (Annual NLCD, from Landsat, 30 m detail) for fields, crops, young growth, thick cover and water. Then it adds today's wind (set in Wind &amp; weather), thermals, the rut phase and nearby houses. It also weighs hunting pressure (distance from parking, trails and roads, plus pressure you log) and your own scouting: sign markers, camera checks and journal sits near a spot push it up. It can't see deer, this year's crops or acorns, so treat the spots as places to scout first.</p>
       </div>
       <div class="panel mp" id="mp-saved" hidden>
         <h2 style="margin:0">Saved markers and tracks</h2>
@@ -6493,7 +6532,7 @@ details.drop > .dropbody { padding: 0 14px 14px; }
       if (!goTo && goLine) { map.removeLayer(goLine); goLine = null; }
       if (goTo && watchId == null) startGPS(false);
       V.started = false; V.mile = null; V.arrived = false; V.cat = '';
-      if (!goTo) { try { window.speechSynthesis && speechSynthesis.cancel(); } catch (e) {} }
+      if (!goTo) { try { window.speechSynthesis && speechSynthesis.cancel(); } catch (e) {} if (pocketOn) setPocket(false, true); $('navOffR').hidden = true; $('navQuiet').hidden = true; }
       navUI(!!goTo); if (!goTo) { $('navFinal').hidden = true; if (!$('navSum').hidden) $('mpNav').hidden = false; } else $('navSum').hidden = true;
       onMove();
     }
@@ -6501,7 +6540,7 @@ details.drop > .dropbody { padding: 0 14px 14px; }
 
     // ---------- navigate on foot to a pin ----------
     const WOODS = 0.67; // m per pace (two steps); woods walking speed m/s (~1.5 mph)
-    let gpsCourse = null, navTimer = null, navArrived = false, navWake = null, navRot = 0, navRing = 0;
+    let pocketOn = false, gpsCourse = null, navTimer = null, navArrived = false, navWake = null, navRot = 0, navRing = 0;
     (function buildNavDial() {
       let g = '<g id="navRing">';
       g += '<circle cx="100" cy="100" r="92" fill="none" stroke="currentColor" stroke-opacity=".35" stroke-width="2"/>';
@@ -6513,6 +6552,7 @@ details.drop > .dropbody { padding: 0 14px 14px; }
     })();
     const turnShort = (cur, target) => cur + (((target - cur + 540) % 360) - 180);
     function headingNow() {
+      if (pocketOn) return gpsCourse && Date.now() - gpsCourse.t < 15000 ? { h: gpsCourse.h, src: 'walk' } : null;
       const h = compass.heading(); if (h != null) return { h, src: 'compass' };
       if (gpsCourse && Date.now() - gpsCourse.t < 15000) return { h: gpsCourse.h, src: 'walk' };
       return null;
@@ -6916,22 +6956,33 @@ details.drop > .dropbody { padding: 0 14px 14px; }
         browse: 'All day in late season and cold weather; evenings in the fall.',
         mast: 'Mornings and evenings while acorns are falling (Sept to Nov). Once they are gone, move on.',
       }[s.t];
-      const stand = destPoint(s.ll, wTo, 35);
-      const wind = `Today's wind is from the ${cardinal(WIND.from)} at ${WIND.speed} mph. Set up on the ${cardinal(wTo)} (downwind) side, about 40 yd off, so your scent blows away from where the deer come through.`;
+      const M = mDef(), stand = destPoint(s.ll, wTo, M.yd / YD);
+      const wind = `Today's wind is from the ${cardinal(WIND.from)} at ${WIND.speed} mph. Set up on the ${cardinal(wTo)} (downwind) side, about ${M.yd} yd off, so your scent blows away from where the deer come through.`;
       const extra = { food: ' Sit just inside the woods, not out in the field.', water: ' Approach from downwind and stay back in the cover.', cover: ' Stay on the edge; never walk into it.' }[s.t] || '';
       const tm = thermalMode(s.ll, now);
       const therm = tm ? ` ${tm.why}${tm.dir === 'down' ? ', so in calm air sit above or level with the trail, not below it.' : ', so in calm air sit below or level with the trail, not above it.'}` : '';
       let house = '';
       if (s.house != null) house = s.house < 152 ? `<div class="ai-warn">A building is about ${ft(s.house)} ft away. Inside 500 ft (NY) or 450 ft (NJ) you can't shoot a gun without the owner's permission; bows need 150 ft.</div>` : `<div class="muted">Nearest building about ${s.house > 1600 ? 'over a mile' : ft(s.house) + ' ft'} away.</div>`;
-      return { why, when, wind: wind + extra + therm, house, stand, conf: s.n > 0.75 ? 'High' : s.n > 0.45 ? 'Medium' : 'Low' };
+      const wi = c8i(WIND.from), best = [7, 0, 1].map(k => C8B[(wi + k) % 8]), avoid = C8B[(wi + 4) % 8];
+      const timeLbl = { saddle: rutHot ? 'Mid-morning to midday' : 'Morning & evening', bench: 'Morning', point: 'Evening (edges)', draw: 'Morning or evening', bedding: 'Evening', funnel: rutHot ? 'All day' : 'Morning & evening', food: 'Last hour of light', water: 'Warm afternoons', cover: 'Evening', browse: 'Evening; all day late season', mast: 'Morning & evening' }[s.t];
+      const lb = bearing(stand, s.ll), lane = `<b>Shooting lane:</b> face ${Math.round(lb)}° ${cardinal(lb)} toward the spot${aiMeth === 'saddle' ? ' (keep it off one side of your tree)' : ''} and trim one clear lane about ${M.yd} yd long.`;
+      const setup = {
+        ground: `Sit about ${M.yd} yd off on the ${cardinal(wTo)} side, tucked against a big tree, blowdown or brush so something breaks up your outline behind you.${s.t === 'food' || s.t === 'water' ? ' Stay just inside the cover, not out in the open.' : ''} Keep movement low: at ground level deer see you sooner and your scent stays at their nose height.${WIND.speed < 4 ? ` <b>The wind is light today (${WIND.speed} mph) and will swirl.</b> On the ground that's risky: thermals decide where your scent goes, so this spot is marginal today.` : WIND.speed > 18 ? ' Strong wind covers noise and movement: a good day to be on the ground.' : ''}`,
+        saddle: `Pick any straight tree about ${M.yd} yd off on the ${cardinal(wTo)} side with no big limbs in the way, and climb 18–22 ft. You face the tree and shoot around either side, so put the spot off one side. Go in light and quiet, hunt it on this wind, and take everything out when you leave.${s.press && s.press.lvl === 'Low' ? ' Far from other hunters: exactly where a mobile setup pays off.' : s.press && s.press.lvl === 'High' ? ' Pressure is high here: go deeper if you can, or hunt it midweek.' : ''}`,
+        stand: `A spot you can come back to. Hang the stand 18–22 ft up about ${M.yd} yd off on the ${cardinal(wTo)} side, with a tree trunk or cover behind you. Plan a walk in that never crosses where deer come from (Easiest walk or Quiet route), hunt it only on its good winds, and not more than about twice a week.${inNJ(s.ll.lat, s.ll.lng) ? ' NJ public land has its own stand rules: see Owner &amp; rules.' : ' NY state land: label the stand, no screw-in steps, and only during the season.'}`,
+      }[aiMeth];
+      return { why, when, wind: wind + extra + therm, house, stand, best, avoid, timeLbl, lane, setup, press: s.press ? pressText(s.press) : '', sign: s.sign ? signText(s.sign) : '', conf: (s.n + (s.sign ? Math.min(0.3, 0.1 * s.sign.score) : 0)) > 0.75 ? 'High' : s.n > 0.45 ? 'Medium' : 'Low' };
     }
     function spotPopup(s, k) {
       const x = spotText(s), box = document.createElement('div'); box.className = 'pop ai-pop';
       box.innerHTML = `<h4><span class="ai-pin sm" style="--c:${SPOT[s.t][1]}">${SPOT[s.t][2]}</span>${SPOT[s.t][0]} #${k + 1}</h4>`
         + `<div class="muted">Confidence: <b>${x.conf}</b> · elevation ${Math.round(s.elev * 3.28084).toLocaleString()} ft${me ? ` · ${fmtDist(me.distanceTo(s.ll))} ${cardinal(bearing(me, s.ll))} of you` : ''}</div>`
+        + `<div class="ai-chips"><span>Best wind <b>${x.best.join(' · ')}</b></span><span>Avoid <b>${x.avoid}</b></span><span>Best time <b>${x.timeLbl}</b></span></div>`
         + `<div class="sec"><b>Why here</b><div>${x.why}</div>${s.lc > 0 && !['food', 'water', 'cover'].includes(s.t) ? `<div class="muted">Ground cover here: ${LC_NAME[s.lc]}.</div>` : ''}</div>`
         + `<div class="sec"><b>When</b><div>${x.when}</div></div>`
-        + `<div class="sec"><b>Wind and setup</b><div>${x.wind}</div>${x.house}</div>`
+        + `<div class="sec ai-setup"><b>${mDef().n} setup</b><div>${x.setup}</div><div>${x.lane}</div></div>`
+        + `<div class="sec"><b>Wind</b><div>${x.wind}</div>${x.house}</div>`
+        + (x.press ? `<div class="sec">${x.press}</div>` : '') + (x.sign ? `<div class="sec">${x.sign}</div>` : '')
         + `<div class="sec muted">A prediction from the terrain and satellite land cover, not a sighting. Confirm with tracks, rubs, scrapes or a trail camera, and check who owns the land.</div>`
         + `<div class="acts"><button type="button" data-a="nav">Navigate here</button><button type="button" data-a="land">Owner &amp; rules</button><button type="button" data-a="save">Save as marker</button></div>`;
       box.querySelector('[data-a=nav]').onclick = () => { map.closePopup(); setGoTo(x.stand, `${SPOT[s.t][0]} #${k + 1} (stand spot)`); };
@@ -6949,10 +7000,11 @@ details.drop > .dropbody { padding: 0 14px 14px; }
         const x = spotText(s);
         L.polyline([s.ll, x.stand], { color: SPOT[s.t][1], weight: 2, dashArray: '3 4', interactive: false }).addTo(spotLayer);
         L.circleMarker(x.stand, { radius: 4, color: '#fff', weight: 1.5, fillColor: SPOT[s.t][1], fillOpacity: 1, interactive: false }).addTo(spotLayer);
+        const lb = bearing(x.stand, s.ll), lr = mDef().yd / YD; L.polygon([x.stand, destPoint(x.stand, lb - 10, lr), destPoint(x.stand, lb + 10, lr)], { color: SPOT[s.t][1], weight: 1, fillOpacity: 0.18, interactive: false }).addTo(spotLayer);
         L.marker(s.ll, { icon: spotIcon(s.t), zIndexOffset: 800, title: `${SPOT[s.t][0]} #${k + 1}` }).on('click', () => spotPopup(s, k)).addTo(spotLayer);
       });
       const list = $('aiList');
-      list.innerHTML = spots.length ? spots.map((s, k) => `<button type="button" class="sitem" data-k="${k}"><span class="ai-pin" style="--c:${SPOT[s.t][1]}">${SPOT[s.t][2]}</span><div><b>${SPOT[s.t][0]} #${k + 1}</b><span>${spotText(s).conf} confidence${s.house != null && s.house < 152 ? ' · near a building' : ''}</span></div><span>${me ? fmtDist(me.distanceTo(s.ll)) : ''}</span></button>`).join('')
+      list.innerHTML = spots.length ? spots.map((s, k) => `<button type="button" class="sitem" data-k="${k}"><span class="ai-pin" style="--c:${SPOT[s.t][1]}">${SPOT[s.t][2]}</span><div><b>${SPOT[s.t][0]} #${k + 1}</b><span>${spotText(s).conf} confidence${s.press ? ` · ${s.press.lvl.toLowerCase()} pressure` : ''}${s.sign && s.sign.score > 0.5 ? ' · your sign nearby' : ''}${s.house != null && s.house < 152 ? ' · near a building' : ''}</span></div><span>${me ? fmtDist(me.distanceTo(s.ll)) : ''}</span></button>`).join('')
         : '<div class="caption">No clear terrain features here. Flat ground and farmland don\'t show saddles or benches: look for edges, fence gaps, creek crossings and food sources instead.</div>';
     }
     $('aiList').addEventListener('click', e => { const b = e.target.closest('[data-k]'); if (!b) return; const s = spots[+b.dataset.k]; map.setView(s.ll, Math.max(map.getZoom(), 16)); spotPopup(s, +b.dataset.k); $('map').scrollIntoView({ behavior: 'smooth', block: 'nearest' }); });
@@ -6974,10 +7026,13 @@ details.drop > .dropbody { padding: 0 14px 14px; }
         const r = await findSpots(c); spots = r.spots;
         $('aiStatus').textContent = 'Checking for houses nearby…';
         const ok = await nearHouses(spots, r.box).catch(() => false);
-        spots.sort((a, b) => ((b.house == null || b.house >= 152) - (a.house == null || a.house >= 152)) || (b.w - a.w));
+        $('aiStatus').textContent = 'Checking trails, roads and parking (hunting pressure)…';
+        const pok = await loadPressure(r.box);
+        spots.forEach(s => { s.press = pressureAt(s.ll); s.sign = ownSign(s.ll); });
+        rankSpots();
         drawSpots();
         const rut = predict.rut ? predict.rut(new Date()) : '';
-        $('aiStatus').innerHTML = `<b>${spots.length} spots</b> within about 1 km of ${fromGPS ? 'you' : 'the map center'}. Wind from <b>${cardinal(WIND.from)} ${WIND.speed} mph</b>${rut ? ` · rut: <b>${rut.toLowerCase()}</b>` : ''}.${r.lcOk ? '' : ' Could not load the satellite land cover, so food, water and cover are missing this time.'}${ok ? '' : ' Could not check for houses (no signal?), so mind the safety zones.'} Tap a spot to see why.`;
+        $('aiStatus').innerHTML = `<b>${spots.length} spots</b> within about 1 km of ${fromGPS ? 'you' : 'the map center'}. Ranked for <b>${mDef().n}</b> hunting · wind from <b>${cardinal(WIND.from)} ${WIND.speed} mph</b>${rut ? ` · rut: <b>${rut.toLowerCase()}</b>` : ''}.${pok ? '' : ' Could not load trails and roads, so hunting pressure only counts your parking pins and pressure log.'}${r.lcOk ? '' : ' Could not load the satellite land cover, so food, water and cover are missing this time.'}${ok ? '' : ' Could not check for houses (no signal?), so mind the safety zones.'} Tap a spot to see why.`;
         if (spots.length) map.fitBounds(L.latLngBounds(spots.map(s => s.ll).concat([c])).pad(0.15), { maxZoom: 16 });
       } catch (e) {
         $('aiStatus').textContent = 'Could not load the elevation data. This needs signal, or an area saved with "Download this area for offline".';
@@ -6987,6 +7042,172 @@ details.drop > .dropbody { padding: 0 14px 14px; }
     $('mpAiBtn').addEventListener('click', () => { if (tool === 'ai') setTool(null); else { setTool('ai'); if (!spots.length) runSpots(true); } });
     $('aiRunMap').addEventListener('click', () => runSpots(false));
     $('aiClear').addEventListener('click', () => { if (spotLayer) map.removeLayer(spotLayer); spotLayer = null; spots = []; $('aiList').innerHTML = ''; $('aiStatus').textContent = 'Cleared.'; });
+
+    // ---------- how you hunt (ground / saddle / tree stand), hunting pressure and your own scouting: re-rank the AI spots ----------
+    const METH = {
+      ground: { n: 'Ground / blind', yd: 18, press: 1, w: { cover: 1.25, browse: 1.2, food: 1.15, draw: 1.15, funnel: 1.1, water: 1.05, mast: 1, saddle: 0.95, bedding: 0.9, bench: 0.9, point: 0.8 },
+        tip: 'Ground: favors thick cover, field edges and draws where you can hide at deer level, with close shots (under 20 yd). Wind matters most on the ground: your scent stays at nose height.' },
+      saddle: { n: 'Saddle', yd: 22, press: 1.7, w: { saddle: 1.25, bench: 1.2, point: 1.15, bedding: 1.15, funnel: 1.1, draw: 1.05, cover: 1.05, mast: 1, browse: 0.95, water: 0.9, food: 0.85 },
+        tip: 'Saddle: favors spots deep in, away from parking and trails, near bedding and terrain features. Hang on any straight tree, hunt it once on the right wind, carry everything out.' },
+      stand: { n: 'Tree stand', yd: 25, press: 1, w: { food: 1.2, funnel: 1.2, mast: 1.15, saddle: 1.1, water: 1.1, bench: 1, draw: 1, browse: 1, point: 0.9, cover: 0.9, bedding: 0.85 },
+        tip: 'Tree stand: favors spots you can hunt again and again (food edges, funnels, travel routes) with a clean walk in on your usual winds.' },
+    };
+    let aiMeth = METH[store.get('ai.method', 'stand')] ? store.get('ai.method', 'stand') : 'stand';
+    const mDef = () => METH[aiMeth];
+    function methUI() {
+      document.querySelectorAll('#aiMeth button').forEach(b => b.setAttribute('aria-pressed', b.dataset.m === aiMeth));
+      $('aiMethTip').textContent = mDef().tip;
+    }
+    $('aiMeth').addEventListener('click', e => {
+      const b = e.target.closest('button[data-m]'); if (!b) return;
+      aiMeth = b.dataset.m; store.set('ai.method', aiMeth); methUI(); map.closePopup();
+      if (spots.length) { rankSpots(); drawSpots(); $('aiStatus').innerHTML = `Re-ranked for <b>${mDef().n}</b> hunting. Tap a spot to see how to set up.`; }
+      if (!$('aiBestOut').hidden) bestNow();
+    });
+    methUI();
+    // your own scouting near a spot: sign markers, camera checks and journal sits (older sign counts less)
+    const SIGNW = { buck: 1.6, scrape: 1.3, rub: 1.1, sighting: 1, bed: 1, lick: 0.9, doe: 0.8, trail: 0.7, shed: 0.6, xing: 0.5, droppings: 0.4 };
+    const SIGNN = { buck: 'buck sighting', scrape: 'scrape', rub: 'rub', sighting: 'deer sighting', bed: 'bed', lick: 'licking branch', doe: 'doe sighting', trail: 'trail', shed: 'shed', xing: 'crossing', droppings: 'droppings' };
+    function ownSign(ll, R = 230) {
+      const now = Date.now(), out = { score: 0, n: {}, sits: 0, deer: 0, hrs: 0 };
+      const age = t => Math.pow(0.5, Math.max(0, now - (t || now)) / (365 * 864e5));
+      for (const m of DB.markers) {
+        const d = ll.distanceTo([m.lat, m.lon]); if (d > R) continue;
+        const near = Math.exp(-d / 150);
+        if (SIGNW[m.type]) { out.score += SIGNW[m.type] * near * age(sigT(m)); out.n[m.type] = (out.n[m.type] || 0) + 1; }
+        if (m.type === 'camera' || m.type === 'cellcam') { const c = (m.visits || []).reduce((a, v) => a + (+v.c || 0), 0); if (c) { out.score += Math.min(2, c / 10) * near; out.n.cam = (out.n.cam || 0) + c; } }
+      }
+      for (const e of store.get('journal', [])) {
+        if (!e.stand || e.stand.lat == null) continue; const d = ll.distanceTo([e.stand.lat, e.stand.lon]); if (d > R) continue;
+        const h = Math.max(0.5, (e.t1 - e.t0) / 36e5), b = +e.b || 0, dd = +e.d || 0;
+        out.sits++; out.deer += b + dd; out.hrs += h; out.score += Math.min(2, (1.5 * b + dd) / h) * Math.exp(-d / 150) * age(e.t0);
+      }
+      return out;
+    }
+    function signText(o) {
+      const parts = Object.keys(SIGNN).filter(k => o.n[k]).map(k => `${o.n[k]} ${SIGNN[k]}${o.n[k] > 1 && !/s$/.test(SIGNN[k]) ? 's' : ''}`);
+      if (o.n.cam) parts.push(`${o.n.cam} deer on camera checks`);
+      if (o.sits) parts.push(`${o.sits} sit${o.sits > 1 ? 's' : ''} with ${o.deer} deer seen`);
+      return parts.length ? `<b>Your own scouting within 250 yd:</b> ${parts.join(', ')}. ${o.score > 1 ? 'That pushes this spot up the list.' : ''}` : '';
+    }
+    // hunting pressure: parking (yours and mapped), trails and roads, and the pressure you logged
+    let pressOSM = null;
+    async function loadPressure(box) {
+      const S = box.getSouth(), Wl = box.getWest(), N = box.getNorth(), E = box.getEast();
+      const q = `[out:json][timeout:20];(way["highway"~"^(path|footway|track|bridleway|service|unclassified|residential|tertiary|secondary|primary|trunk)$"](${S},${Wl},${N},${E});nwr["amenity"="parking"](${S},${Wl},${N},${E}););out geom center;`;
+      try {
+        const r = await fetch('https://overpass-api.de/api/interpreter', { method: 'POST', body: 'data=' + encodeURIComponent(q), headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }); if (!r.ok) throw new Error(r.status);
+        const els = (await r.json()).elements || [];
+        pressOSM = { trails: [], roads: [], park: [] };
+        for (const e of els) {
+          const t = e.tags || {};
+          if (t.amenity === 'parking') { const c = e.center || (e.lat != null ? e : e.geometry && e.geometry[0]); if (c) pressOSM.park.push(L.latLng(c.lat, c.lon)); continue; }
+          if (!t.highway || !e.geometry || e.geometry.length < 2) continue;
+          (/^(path|footway|track|bridleway)$/.test(t.highway) ? pressOSM.trails : pressOSM.roads).push(e.geometry.map(g => [g.lat, g.lon]));
+        }
+        return true;
+      } catch (e) { pressOSM = null; return false; }
+    }
+    function pressureAt(ll) {
+      const near = arr => { let d = Infinity; for (const p of arr) { const x = ll.distanceTo(p); if (x < d) d = x; } return d; };
+      const lineD = arr => { let d = Infinity; for (const pts of arr) { const n = nearLine(ll, pts); if (n && n.d < d) d = n.d; } return d; };
+      const park = Math.min(near(DB.markers.filter(m => m.type === 'parking' || m.type === 'entry').map(m => L.latLng(m.lat, m.lon))), pressOSM ? near(pressOSM.park) : Infinity);
+      const trail = pressOSM ? lineD(pressOSM.trails) : Infinity, road = pressOSM ? lineD(pressOSM.roads) : Infinity;
+      const now = Date.now(); let logged = 0, nLog = 0;
+      for (const x of store.get('maps.pressure', [])) {
+        const age = (now - x.t) / 864e5; if (age > 90) continue; const d = ll.distanceTo([x.lat, x.lon]); if (d > 500) continue;
+        nLog++; logged += (x.k === 'trucks' ? Math.min(3, (x.n || 1) / 2) : 1) * Math.exp(-d / 200) * (age < 14 ? 1 : 0.5);
+      }
+      const p = Math.min(1, Math.max(Math.exp(-park / 450), 0.85 * Math.exp(-trail / 110), Math.exp(-road / 160), 0.4 * logged));
+      return { p, park, trail, road, nLog, lvl: p > 0.55 ? 'High' : p > 0.28 ? 'Medium' : 'Low' };
+    }
+    function pressText(x) {
+      const f = m => isFinite(m) && m < 3000 ? fmtDist(m) : null;
+      const bits = [f(x.park) && `${f(x.park)} from the nearest parking`, f(x.trail) && x.trail < 800 && `${f(x.trail)} from a trail`, f(x.road) && x.road < 800 && `${f(x.road)} from a road`, x.nLog && `${x.nLog} pressure report${x.nLog > 1 ? 's' : ''} you logged nearby`].filter(Boolean);
+      return `<b>Hunting pressure: ${x.lvl}.</b> ${bits.length ? bits.join(' · ') + '. ' : ''}${x.lvl === 'High' ? 'Most hunters stay within a quarter mile of the truck, and public-land deer learn where people walk.' : x.lvl === 'Low' ? 'Far enough from people that deer here are more likely to move in daylight.' : ''}`;
+    }
+    function rankSpots() {
+      const M = mDef();
+      for (const s of spots) {
+        const pf = s.press ? Math.max(0.4, 1 - s.press.p * 0.35 * M.press) : 1, sf = s.sign ? 1 + Math.min(0.6, 0.25 * s.sign.score) : 1;
+        s.sc = s.w * (M.w[s.t] || 1) * pf * sf;
+      }
+      spots.sort((a, b) => ((b.house == null || b.house >= 152) - (a.house == null || a.house >= 152)) || ((b.sc || b.w) - (a.sc || a.w)));
+    }
+
+    // ---------- best spot right now: your saved setups and the AI spots, scored for this wind, time of day, rut, pressure and your history ----------
+    const C8B = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'], c8i = d => Math.round(((d % 360) + 360) % 360 / 45) % 8;
+    function huntPeriod(now) {
+      const h = now.getHours() + now.getMinutes() / 60;
+      if (h < 10.5) return { k: 'morning', n: h < 4 ? 'this morning' : 'this morning' };
+      if (h < 13.5) return { k: 'midday', n: 'midday' };
+      if (h < 19.5) return { k: 'evening', n: 'this evening' };
+      return { k: 'morning', n: 'tomorrow morning' };
+    }
+    const TFIT = {
+      morning: { bench: 1, funnel: 0.9, mast: 0.9, saddle: 0.8, draw: 0.8, browse: 0.7, point: 0.6, cover: 0.6, bedding: 0.5, water: 0.5, food: 0.4 },
+      evening: { food: 1, bedding: 0.9, water: 0.9, cover: 0.9, funnel: 0.9, mast: 0.9, browse: 0.9, draw: 0.8, point: 0.8, saddle: 0.7, bench: 0.6 },
+      midday: { saddle: 0.55, funnel: 0.55, cover: 0.45, bench: 0.45, browse: 0.4, draw: 0.4, point: 0.4, bedding: 0.35, mast: 0.35, water: 0.35, food: 0.3 },
+    };
+    const SETUPT = ['stand', 'ladder', 'saddle', 'blind', 'box'];
+    async function bestNow() {
+      const out = $('aiBestOut'); out.hidden = false; out.innerHTML = '<div class="caption">Checking today\'s wind…</div>';
+      if (typeof windRefresh === 'function') { try { await Promise.race([windRefresh(false), new Promise(r => setTimeout(r, 6000))]); } catch (e) {} }
+      const now = new Date(), per = huntPeriod(now), rut = predict.rut ? predict.rut(now) : '', rutHot = /Seeking|Chasing|Peak/.test(rut), M = mDef();
+      const wi = c8i(WIND.from), here = me || map.getCenter(), J = store.get('journal', []);
+      const cands = [];
+      for (const m of DB.markers) {
+        if (!SETUPT.includes(m.type)) continue; const ll = L.latLng(m.lat, m.lon); if (here.distanceTo(ll) > 25000) continue;
+        const why = [], warn = [];
+        // wind
+        const ws = (m.winds && m.winds.length ? m.winds : (store.get('stand.winds', {})[m.id] || [])).map(w => C8B.indexOf(w)).filter(i => i >= 0);
+        let wsc;
+        if (!ws.length) { wsc = 0.55; warn.push('No good winds saved for this stand: add them with Edit.'); }
+        else if (ws.includes(wi)) { wsc = 1; why.push(`Today's ${C8B[wi]} wind is one of its good winds`); }
+        else if (ws.some(i => Math.min((i - wi + 8) % 8, (wi - i + 8) % 8) === 1)) { wsc = 0.65; why.push(`Wind ${C8B[wi]} is next to its good winds (${ws.map(i => C8B[i]).join(', ')})`); }
+        else { wsc = 0.08; warn.push(`Wrong wind: it's good on ${ws.map(i => C8B[i]).join(', ')}, today is ${C8B[wi]}`); }
+        // your history at this stand
+        const sits = J.filter(e => e.stand && (e.stand.id === m.id || (e.stand.lat != null && ll.distanceTo([e.stand.lat, e.stand.lon]) < 40)));
+        const rate = arr => { const h = arr.reduce((a, e) => a + Math.max(0.5, (e.t1 - e.t0) / 36e5), 0); return h ? arr.reduce((a, e) => a + (+e.b || 0) * 1.5 + (+e.d || 0), 0) / h : null; };
+        const perOf = e => huntPeriod(new Date(e.t0)).k, samePer = sits.filter(e => perOf(e) === per.k), sameWind = sits.filter(e => e.wx && c8i(e.wx.wdir) === wi);
+        let hs = 0.5;
+        if (sits.length) {
+          const r = rate(samePer.length ? samePer : sits); hs = Math.min(1, 0.3 + (r || 0) / 2);
+          const bucks = sits.reduce((a, e) => a + (+e.b || 0), 0);
+          why.push(`${sits.length} sit${sits.length > 1 ? 's' : ''} logged here${samePer.length ? `, ${(rate(samePer) || 0).toFixed(1)} deer/hour ${per.k === 'midday' ? 'at midday' : 'in the ' + per.k}` : ''}${bucks ? `, ${bucks} buck${bucks > 1 ? 's' : ''} seen` : ''}`);
+          if (sameWind.length) why.push(`On a ${C8B[wi]} wind before: ${(rate(sameWind) || 0).toFixed(1)} deer/hour`);
+        }
+        const recent = sits.filter(e => Date.now() - e.t0 < 7 * 864e5).length, rest = recent >= 2 ? 0.75 : 1;
+        if (rest < 1) warn.push(`Hunted ${recent} times in the last week: it may need a rest`);
+        const sg = ownSign(ll), sf = 1 + Math.min(0.5, 0.2 * sg.score); if (sg.score > 0.5) why.push('Fresh sign of yours nearby');
+        const pr = pressureAt(ll), pf = 1 - 0.3 * pr.p * M.press; if (pr.lvl !== 'Medium') why.push(`${pr.lvl} hunting pressure`);
+        const mf = (aiMeth === 'ground' && (m.type === 'blind' || m.type === 'box')) || (aiMeth === 'saddle' && m.type === 'saddle') || (aiMeth === 'stand' && (m.type === 'stand' || m.type === 'ladder')) ? 1.1 : 1;
+        const rf = rutHot && (sg.n.rub || sg.n.scrape) ? 1.15 : 1; if (rf > 1) why.push(`Rubs/scrapes nearby during the ${rut.toLowerCase()} phase`);
+        cands.push({ kind: 'pin', m, ll, name: m.name || MT[m.type][0], sc: 100 * wsc * (0.55 + 0.45 * hs) * sf * pf * rest * mf * rf, why, warn });
+      }
+      for (const [k, s] of spots.entries()) {
+        const tf = TFIT[per.k][s.t] || 0.5, rf = rutHot && ['saddle', 'funnel', 'bench', 'cover'].includes(s.t) ? (per.k === 'midday' ? 1.8 : 1.2) : 1;
+        const pf = s.press ? 1 - 0.3 * s.press.p * M.press : 1, sf = s.sign ? 1 + Math.min(0.5, 0.2 * s.sign.score) : 1;
+        const why = [`AI ${SPOT[s.t][0].toLowerCase()}, ${spotText(s).conf.toLowerCase()} confidence`, `Fits ${per.n}${rf > 1 ? ` and the ${rut.toLowerCase()} phase` : ''}`, `Stand spot already placed downwind of today's ${C8B[wi]} wind`];
+        if (s.press) why.push(`${s.press.lvl} hunting pressure`); if (s.sign && s.sign.score > 0.5) why.push('Your own sign nearby');
+        cands.push({ kind: 'ai', s, k, ll: spotText(s).stand, name: `${SPOT[s.t][0]} #${k + 1}`, sc: 100 * 0.85 * (0.5 + 0.5 * s.n) * Math.min(1, tf * rf) * (M.w[s.t] || 1) * pf * sf, why, warn: s.house != null && s.house < 152 ? ['Close to a building'] : [] });
+      }
+      cands.sort((a, b) => b.sc - a.sc); const top = cands.slice(0, 3), kS = cands.length && cands[0].sc > 96 ? 96 / cands[0].sc : 1; cands.forEach(c => { c.sc *= kS; });
+      const head = `<div class="ab-h">Best for <b>${per.n}</b> · wind ${C8B[wi]} ${WIND.speed} mph${rut ? ` · ${rut.toLowerCase()}` : ''} · ${M.n}</div>`;
+      if (!top.length) { out.innerHTML = head + `<div class="caption">No saved stands nearby and no AI spots yet. Save your stands (with their good winds) or tap "Find spots around me" first.</div>`; return; }
+      out.innerHTML = head + top.map((c, i) => `<div class="ab-c${i ? '' : ' top'}"><div class="ab-t"><span class="ab-n">${i + 1}</span><b>${esc(c.name)}</b><span class="ab-s">${Math.max(1, Math.round(Math.min(99, c.sc)))}</span></div>`
+        + `<ul>${c.why.map(w => `<li>${esc(w)}</li>`).join('')}${c.warn.map(w => `<li class="w">${esc(w)}</li>`).join('')}</ul>`
+        + `<div class="acts"><button type="button" class="btn${i ? '' : ' primary'}" data-go="${i}">Navigate</button><button type="button" class="btn" data-see="${i}">Show</button></div></div>`).join('')
+        + `<div class="caption">Score out of 100 from the wind, time of day, rut, hunting pressure, your sign and your journal sits. ${cands.length > 3 ? `${cands.length - 3} more spots ranked lower.` : ''} Log your sits in the Hunt journal and it learns which stands produce.</div>`;
+      out.onclick = e => {
+        const g = e.target.closest('[data-go]'), sv = e.target.closest('[data-see]'); if (!g && !sv) return;
+        const cc = top[+((g && g.dataset.go) || (sv && sv.dataset.see))];
+        if (g) { setGoTo(cc.ll, cc.kind === 'pin' ? cc.name : `${cc.name} (stand spot)`); if (goTo && cc.m) goTo.pin = cc.m; }
+        else { map.setView(cc.kind === 'ai' ? cc.s.ll : cc.ll, Math.max(map.getZoom(), 16)); if (cc.kind === 'ai') spotPopup(cc.s, cc.k); else $('map').scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }
+      };
+    }
+    $('aiBest').addEventListener('click', async () => { if (tool !== 'ai') setTool('ai'); if (!spots.length && navigator.onLine) await runSpots(true); bestNow(); });
+
 
 
     // ---------- route planning on the terrain grid (entry/exit routes and drag routes) ----------
@@ -7448,12 +7669,17 @@ details.drop > .dropbody { padding: 0 14px 14px; }
       // off-route warning: planned route, breadcrumb trail, tack line or chain
       const line = goTo.line || (goTo.trail ? goTo.trail : null); let off = null;
       if (line && line.length > 1 && !arrived) { const n = nearLine(me, line); if (n && n.d > Math.max(15, meAcc * 0.9)) off = n; }
+      if (off && dEnd < Math.max(45, off.d * 1.5)) off = null; // close to the spot: just go to it
+      MB.offN = off ? (MB.offN || 0) + 1 : 0; if (off && MB.offN < 2) off = null; // two readings in a row, so one GPS jump doesn't cry wolf
+      $('navOffR').hidden = !off;
       if (off) {
         const bb = bearing(me, off.ll), rr = hd ? ((((bb - hd.h) % 360) + 540) % 360) - 180 : null;
         const txt = `Off route by ${Math.round(off.d * YD)} yd: the line is ${rr == null ? `${Math.round(bb)}° ${cardinal(bb)}` : Math.abs(rr) < 20 ? 'straight ahead' : `${Math.abs(Math.round(rr))}° to your ${rr < 0 ? 'left' : 'right'}`}. `;
-        $('navSay').textContent = txt + $('navSay').textContent;
+        $('navSay').textContent = txt + $('navSay').textContent; $('navOffT').textContent = txt + 'The arrow points back to it.';
         if (now - MB.offSaid > 20000) { MB.offSaid = now; if (voiceOn) speak(txt, true); if (buzzOn || saverOn) bz([60, 80, 60, 80, 60, 80, 60]); }
       }
+      quietApproach(dEnd, near);
+      if (pocketOn) $('pkTxt').textContent = `Pocket mode · ${fmtDist(dEnd)} to go · double-tap to wake`;
       // auto big view inside 100 yd; red at night
       if (dEnd < 91 && !goTo.autoBig) { goTo.autoBig = true; if (!$('mpNav').classList.contains('big')) { $('mpNav').classList.add('big'); document.body.classList.add('nav-big'); $('navBig').textContent = 'Small'; } }
       if (!goTo.redChk || now - goTo.redChk > 60000) { goTo.redChk = now; const s = sunPos(new Date(), me.lat, me.lng); $('mpNav').classList.toggle('redview', s.alt < -2 && !document.documentElement.classList.contains('night')); }
@@ -7485,7 +7711,104 @@ details.drop > .dropbody { padding: 0 14px 14px; }
       } else { $('pocket').hidden = true; if (watchId === -1) { watchId = null; startGPS(false); } }
     }
     $('navSaver').addEventListener('click', () => setSaver(!saverOn));
-    let pkTap = 0; $('pocket').addEventListener('click', () => { const t = Date.now(); if (t - pkTap < 450) { $('pocket').hidden = true; if (saverOn) toast('Screen on. Battery saver GPS stays on; tap Saver to turn it off.'); } pkTap = t; });
+    let pkTap = 0; $('pocket').addEventListener('click', () => { const t = Date.now(); if (t - pkTap < 450) { $('pocket').hidden = true; if (pocketOn) setPocket(false, true); else if (saverOn) toast('Screen on. Battery saver GPS stays on; tap Saver to turn it off.'); } pkTap = t; });
+    // pocket mode: black screen, full-rate GPS, steering by buzz from your walking direction (a compass in a pocket is useless)
+    function setPocket(on, quiet) {
+      pocketOn = on; $('navPocket').setAttribute('aria-pressed', on); $('navPocket').textContent = on ? 'Pocket on' : 'Pocket mode';
+      if (on) {
+        if (!goTo) { pocketOn = false; $('navPocket').setAttribute('aria-pressed', false); $('navPocket').textContent = 'Pocket mode'; toast('Start navigating first.'); return; }
+        if (!buzzOn) { buzzOn = true; $('navBuzz').setAttribute('aria-pressed', true); $('navBuzz').textContent = 'Buzz on'; }
+        $('pkTxt').textContent = 'Pocket mode · double-tap to wake'; $('pocket').hidden = false; keepAwake(true);
+        bz([60, 300, 80, 120, 80, 300, 80, 120, 80, 120, 80]);
+        toast(navigator.vibrate ? 'Pocket mode: put the phone away and walk. 1 buzz = on course · 2 = bear right · 3 = bear left · 2 long = turn around · 1 long = arrived. Direction comes from your walking, so keep moving.' : 'This phone or browser cannot vibrate from a web app. Pocket mode will use Voice instead.');
+        if (!navigator.vibrate && !voiceOn) setVoice(true);
+      } else { $('pocket').hidden = true; if (!quiet) toast('Pocket mode off'); else toast('Screen on. Pocket mode off.'); }
+    }
+    $('navPocket').addEventListener('click', () => setPocket(!pocketOn));
+
+    // quiet final approach: the last 100 yards to a stand or spot
+    const isOutTrip = () => !!goTo && /truck|\(out\)|trail back|breadcrumb/i.test(goTo.name || '');
+    function quietApproach(dEnd, near) {
+      const el = $('navQuiet');
+      if (!goTo || isOutTrip() || (goTo.chain && goTo.chain.idx < goTo.chain.pts.length - 1) || dEnd > 91 || dEnd <= near) { el.hidden = true; if (goTo && dEnd > 130) goTo.qa = null; return; }
+      const now = Date.now(), wTo = (WIND.from + 180) % 360, bTo = bearing(me, goTo.end), diff = Math.abs(((wTo - bTo) % 360 + 540) % 360 - 180);
+      const wmsg = WIND.from == null ? '' : diff < 50 ? `<b>Your scent is blowing ahead of you onto the spot</b> (wind from ${cardinal(WIND.from)}). If deer could be there, swing around and come in from the ${cardinal(wTo)} side.`
+        : diff > 130 ? `Good: the ${cardinal(WIND.from)} wind carries your scent back behind you.` : `Crosswind from the ${cardinal(WIND.from)}: your scent drifts off to the ${cardinal(wTo)} side of the spot.`;
+      const tm = typeof thermalMode === 'function' ? thermalMode(goTo.end, new Date()) : null;
+      if (!goTo.qa) {
+        goTo.qa = { at: me, stop: 0, n: 0 }; V.mile = Math.min(V.mile == null ? 100 : V.mile, 100);
+        speak(`Quiet approach. ${sayDist(dEnd)} to go. Slow down: fifteen slow steps, then stop, look and listen. ${diff < 50 ? `Careful: the wind is blowing your scent toward the spot. Come in from the ${WORDS[cardinal(wTo)]} side if you can.` : ''}`, true);
+        if (buzzOn || pocketOn) bz([40, 200, 40, 200, 40]);
+      }
+      const q = goTo.qa, stopping = now < q.stop;
+      if (!stopping && me.distanceTo(q.at) >= 12) { q.at = me; q.n++; q.stop = now + 10000; if (buzzOn || pocketOn) bz(25); if (q.n === 1) speak('Stop. Look and listen.'); }
+      const sec = Math.ceil((q.stop - now) / 1000), st = now < q.stop;
+      const h = `<div class="qa-h">Quiet approach · ${Math.round(dEnd * YD)} yd</div><div class="qa-s${st ? ' stop' : ''}">${st ? `STOP · look and listen · ${sec} s` : 'GO · about 15 slow steps, then stop'}</div>`
+        + (wmsg ? `<div class="qa-w${diff < 50 ? ' bad' : ''}">${wmsg}</div>` : '') + (tm ? `<div class="qa-w">${tm.why}.</div>` : '');
+      if (el.innerHTML !== h) el.innerHTML = h; el.hidden = false;
+    }
+
+    // offline map pictures for a list of areas (the map view, or a corridor along a route)
+    function offlineUrls(boxes, z0, z1, demMax = 15) {
+      const urls = new Set(), flat = l => l instanceof L.TileLayer ? [l] : (l && l.getLayers ? l.getLayers().flatMap(flat) : []);
+      const layers = flat(baseLayer).concat(...Object.keys(OVERS).filter(k => overOn[k] && overLayers[k]).map(k => flat(overLayers[k])));
+      if (baseKey !== 'sat' && baseKey !== 'hybrid') layers.push(esriImg());
+      const seen = new Set();
+      for (const b of boxes) for (let z = z0; z <= z1; z++) {
+        const p1 = map.project(b.getNorthWest(), z).divideBy(256).floor(), p2 = map.project(b.getSouthEast(), z).divideBy(256).floor();
+        for (let x = p1.x; x <= p2.x; x++) for (let y = p1.y; y <= p2.y; y++) {
+          const key = z + '/' + x + '/' + y; if (seen.has(key)) continue; seen.add(key);
+          for (const l of layers) {
+            const o = l.options; if (z < (o.minZoom || 0) || z > (o.maxNativeZoom || 19)) continue;
+            if (o.bounds) { const bb = L.latLngBounds(o.bounds), tb = L.latLngBounds(map.unproject(L.point(x * 256, (y + 1) * 256), z), map.unproject(L.point((x + 1) * 256, y * 256), z)); if (!bb.intersects(tb)) continue; }
+            if (L.TileLayer.WMS && l instanceof L.TileLayer.WMS) continue;
+            if (l instanceof ArcTiles) { const c = L.point(x, y); c.z = z; urls.add(l.getTileUrl(c)); }
+            else { const subs = typeof o.subdomains === 'string' ? o.subdomains : (o.subdomains || ['a']).join(''), zz = o.detectRetina && L.Browser.retina ? z + 1 : z, f = zz - z;
+              for (let dx = 0; dx <= f; dx++) for (let dy = 0; dy <= f; dy++) { const X = (x << f) + dx, Y = (y << f) + dy; urls.add(L.Util.template(l._url, { x: X, y: Y, z: zz, s: subs[(X + Y) % subs.length], r: '' })); } }
+          }
+          if (z <= demMax) urls.add(DEM.replace('{z}', z).replace('{x}', x).replace('{y}', y));
+        }
+      }
+      return [...urls];
+    }
+    async function fetchOffline(urls, prog) {
+      let done = 0, bad = 0; const q = urls.slice();
+      const next = async () => { while (q.length) { const u = q.pop(); try { const r = await fetch(u, { mode: 'cors', credentials: 'omit' }); if (!r.ok) bad++; } catch (e) { bad++; } done++; prog && prog(done, urls.length); } };
+      await Promise.all([next(), next(), next(), next()]);
+      return { done, bad };
+    }
+    // save the map along the route you're walking (or the one you planned): 250 m each side, zoom 13-17, satellite and terrain included
+    async function saveRouteOffline(btn) {
+      let pts = goTo ? (goTo.trail ? goTo.trail.map(p => L.latLng(p)) : [me, goTo.end].filter(Boolean)) : (routeIn && routeIn.length ? routeIn : null);
+      if (!pts || !pts.length) { toast('Plan a route or start navigating first.'); return; }
+      if (!('caches' in window) || !navigator.serviceWorker || !navigator.serviceWorker.controller) { toast('Open Deer Eyes from your website or installed app (with signal) first, then try again.'); return; }
+      if (!navigator.onLine) { toast('No signal right now. Save the route before you leave the truck.'); return; }
+      const dense = [pts[0]];
+      for (let i = 1; i < pts.length; i++) { const a = pts[i - 1], b = pts[i], d = a.distanceTo(b), n = Math.ceil(d / 120); for (let k = 1; k <= n; k++) dense.push(L.latLng(a.lat + (b.lat - a.lat) * k / n, a.lng + (b.lng - a.lng) * k / n)); }
+      const urls = offlineUrls(dense.map(p => p.toBounds(500)), 13, 17, 14);
+      if (urls.length > 6000) { toast(`That route needs ${urls.length} map pictures: too long to save in one go. Save the area around your stand instead.`); return; }
+      const lbl = btn.textContent; btn.disabled = true;
+      const r = await fetchOffline(urls, (d, t) => { btn.textContent = `Saving ${Math.round(100 * d / t)}%`; });
+      btn.disabled = false; btn.textContent = r.bad ? 'Route saved*' : 'Route saved ✓';
+      setTimeout(() => { btn.textContent = lbl; }, 8000);
+      const len = pts.reduce((a, p, i) => i ? a + pts[i - 1].distanceTo(p) : 0, 0);
+      toast(r.bad ? `Saved ${r.done - r.bad} of ${r.done} map pictures along the route (${fmtDist(len)}). Some failed: check your signal and tap again.` : `Route saved for offline: ${r.done} map pictures along ${fmtDist(len)}, 250 yd each side, with satellite and terrain. It works with no signal now.`);
+    }
+    $('navDl').addEventListener('click', () => saveRouteOffline($('navDl')));
+    $('wpDl').addEventListener('click', () => saveRouteOffline($('wpDl')));
+    // off the route: plan a fresh easiest walk from where you are
+    $('navReroute').addEventListener('click', async () => {
+      if (!goTo || !me) return; const end = goTo.end, name = goTo.name, keep = { pin: goTo.pin, plan: !!goTo.plan, qa: goTo.qa };
+      $('navReroute').disabled = true; toast('Planning a new easiest walk from here…');
+      try {
+        const r = await easyRoute(me, end);
+        if (!r) throw new Error('none');
+        setGoTo(r.pts[r.pts.length - 1], name, r.pts.slice().reverse().map(q => [q.lat, q.lng]));
+        if (goTo) { goTo.pin = keep.pin; goTo.qa = keep.qa; goTo.cues = buildCues(r.pts, r.cues); goTo.plan = keep.plan ? goTo.trail : null; goTo.end = end; }
+        MB.offN = 0; $('navOffR').hidden = true; toast(`New route: ${fmtDist(r.len)} from here.`); speak('New route. Follow the arrow.', true);
+      } catch (e) { toast('Could not plan a new route (no terrain data here?). Follow the arrow back to the line.'); }
+      finally { $('navReroute').disabled = false; }
+    });
 
     // ---------- camera finder (AR) ----------
     let arStream = null, arRaf = null, arBeta = 90;
@@ -8408,6 +8731,7 @@ details.drop > .dropbody { padding: 0 14px 14px; }
         if (!map) init(); setTimeout(() => map.invalidateSize(), 50);
         if (store.get('pendingBlood', 0)) { store.set('pendingBlood', 0); setTimeout(() => { if (tool !== 'blood') setTool('blood'); $('mp-blood').scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }, 150); }
         if (store.get('pendingSpots', 0)) { store.set('pendingSpots', 0); setTimeout(() => runSpots(true), 150); }
+        if (store.get('pendingBest', 0)) { store.set('pendingBest', 0); setTimeout(() => $('aiBest').click(), 200); }
         if (store.get('pendingScout', 0)) { store.set('pendingScout', 0); setTimeout(() => { setTool('scout'); startGPS(false); $('mp-scout').scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }, 150); }
         const pg = store.get('pendingGo', null);
         if (pg) { store.set('pendingGo', null); const ll = L.latLng(pg.lat, pg.lon); map.setView(ll, 16); setGoTo(ll, pg.name || 'Shared spot'); toast(`Navigating to ${pg.name || 'the shared spot'}`); }
@@ -10269,6 +10593,7 @@ details.drop > .dropbody { padding: 0 14px 14px; }
     if (go) { store.set('pendingGo', { lat: +go[1], lon: +go[2], name: decodeURIComponent(go[3] || '') }); location.replace('#maps'); return; }
     if (location.hash === '#bloodmap') { store.set('pendingBlood', 1); location.replace('#maps'); return; }
     if (location.hash === '#spots') { store.set('pendingSpots', 1); location.replace('#maps'); return; }
+    if (location.hash === '#best') { store.set('pendingBest', 1); location.replace('#maps'); return; }
     if (location.hash === '#scoutloop') { store.set('pendingScout', 1); location.replace('#maps'); return; }
     const name = (location.hash || '').replace('#', '');
     const next = TOOLS[name] ? name : 'home';
