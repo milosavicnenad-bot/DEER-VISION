@@ -228,6 +228,10 @@ html.night body { background: #000; }
 #jnVoice[aria-pressed="true"] { border-color: #c62828; color: #c62828; }
 .ck-home { border: 1.5px solid var(--h-blaze); background: color-mix(in srgb, var(--h-blaze) 10%, transparent); border-radius: 10px; padding: 9px 12px; font-size: .9rem; }
 .ck-home a { color: var(--accent); font-weight: 600; }
+.safe-home { border-color: #1565c0; background: color-mix(in srgb, #1565c0 9%, transparent); display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; }
+.safe-home .sh-t { flex: 1 1 100%; }
+.safe-home .sh-act { background: #1565c0; color: #fff; border: 0; border-radius: 8px; padding: 6px 10px; font: inherit; font-weight: 600; cursor: pointer; }
+.safe-home .sh-x { margin-left: auto; background: none; border: 0; color: var(--fg); font-size: 1.3rem; line-height: 1; padding: 2px 6px; cursor: pointer; }
 .ck-banner { position: fixed; left: 12px; right: 12px; bottom: max(12px, env(safe-area-inset-bottom)); z-index: 2550; background: #b71c1c; color: #fff; border-radius: 12px; padding: 14px; display: grid; gap: 6px; box-shadow: 0 6px 24px rgba(0,0,0,.4); }
 .ck-banner b { font-size: 1.1rem; } .ck-banner .btn { border-color: #fff; }
 .tc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
@@ -1785,6 +1789,7 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
     </div>
     <div class="ck-home" id="ckHome" hidden></div>
     <div class="ck-home" id="seasonHome" hidden></div>
+    <div class="ck-home safe-home" id="safeHome" hidden></div>
     <div class="hfind" id="hFind">
       <label class="hq"><svg aria-hidden="true"><use href="#i-search"/></svg><input id="homeQ" type="search" placeholder="Find a tool… (blood, wind, pins)" autocomplete="off" enterkeyhint="search" aria-label="Find a tool"><button type="button" id="homeQx" aria-label="Clear" hidden>×</button></label>
     </div>
@@ -2051,7 +2056,7 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
   <!-- ============ BACKUP & SHARE ============ -->
   <section class="view" id="v-backup" hidden aria-label="Backup and share">
     <div class="vhead" style="--h: var(--h-slate)"><button class="back" type="button"><svg><use href="#i-back"/></svg>Menu</button><span class="vic"><svg><use href="#i-backup"/></svg></span><h2>Backup &amp; share</h2></div>
-    <p class="lead">Everything you save in Deer Eyes (markers, tracks, journal, stand winds, settings) lives only in this phone's browser. Clearing Chrome's data or changing phones erases it. Save a backup file now and then, and keep it in Google Drive or email it to yourself.</p>
+    <p class="lead">Everything you save in Deer Eyes (markers, tracks, journal, stand winds, settings) lives only in this phone's browser. Updating the app on GitHub keeps it, and Deer Eyes also keeps a safety copy of your pins. Clearing Chrome's data or changing phones still erases it. Save a backup file now and then, and keep it in Google Drive or email it to yourself.</p>
     <div class="panel">
       <h2 style="margin:0">What's saved on this phone</h2>
       <div id="bkSummary" class="caption"></div>
@@ -2070,6 +2075,7 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
       <div class="actions"><button class="btn" id="bkSpots" type="button"><svg style="width:18px;height:18px"><use href="#i-share"/></svg>Send my spots…</button><label class="btn" for="bkMerge">Add spots from a file…</label></div>
       <input type="file" id="bkMerge" accept=".json,.gpx,application/json">
     </div>
+    <div class="caption" id="bkWhere"></div>
     <div class="caption" id="bkPersist"></div>
   </section>
 
@@ -3343,10 +3349,34 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
 
   let toastTimer;
   function toast(msg) { const t = $('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), 3200); }
+  // ---- safety copy: pins, tracks and journal are also kept in a second place on the phone ----
+  // If regular storage is wiped or full, the app puts them back on the next start.
+  const SAFE_KEYS = ['maps.markers', 'maps.tracks', 'maps.areas', 'maps.chains', 'journal', 'stand.winds', 'tags'];
+  const safe = (() => {
+    let p = null;
+    const open = () => p || (p = new Promise((res, rej) => { try { const r = indexedDB.open('deereyes-safe', 1); r.onupgradeneeded = () => r.result.createObjectStore('kv'); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); } catch (e) { rej(e); } }));
+    const run = (mode, fn) => open().then(db => new Promise(res => { const t = db.transaction('kv', mode), out = fn(t.objectStore('kv')); t.oncomplete = () => res(out && out.res); t.onerror = () => res(null); t.onabort = () => res(null); })).catch(() => null);
+    return {
+      put: (k, v) => run('readwrite', st => { st.put({ v, t: Date.now() }, k); }),
+      clear: () => run('readwrite', st => { st.clear(); }),
+      all: () => run('readonly', st => { const o = { res: {} }, c = st.openCursor(); c.onsuccess = () => { const x = c.result; if (x) { o.res[x.key] = x.value; x.continue(); } }; return o; }).then(r => r || {})
+    };
+  })();
   const store = {
     get(k, d) { try { const v = localStorage.getItem('deereyes.' + k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
-    set(k, v) { try { localStorage.setItem('deereyes.' + k, JSON.stringify(v)); } catch (e) {} }
+    set(k, v) { try { localStorage.setItem('deereyes.' + k, JSON.stringify(v)); } catch (e) {} if (SAFE_KEYS.includes(k)) safe.put(k, v); }
   };
+  // on start: put back anything that went missing, and make sure the safety copy is up to date
+  safe.all().then(S => {
+    let back = 0;
+    for (const k of SAFE_KEYS) {
+      let cur = null; try { cur = localStorage.getItem('deereyes.' + k); } catch (e) {}
+      const s = S[k];
+      if (cur == null && s && s.v != null && !(Array.isArray(s.v) && !s.v.length)) { try { localStorage.setItem('deereyes.' + k, JSON.stringify(s.v)); back++; } catch (e) {} }
+      else if (cur != null && !s) { try { safe.put(k, JSON.parse(cur)); } catch (e) {} }
+    }
+    if (back) { try { localStorage.setItem('deereyes.safeMsg', '1'); } catch (e) {} location.reload(); }
+  });
 
   // ---- sharing helpers (spot links open navigation in Deer Eyes) ----
   const appLink = (lat, lon, name) => `${location.href.split('#')[0]}#go=${(+lat).toFixed(6)},${(+lon).toFixed(6)},${encodeURIComponent(name || '')}`;
@@ -9745,9 +9775,29 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
       idb.all().then(ps => { const el = $('bkPhotos'); if (el) el.textContent = ps.length ? `, ${ps.length} trail-cam photos` : ''; }).catch(() => {});
       $('bkSummary').innerHTML = `<b>${m.length}</b> markers, <b>${t.length}</b> tracks, <b>${j.length}</b> journal sits, <b>${a.length}</b> areas<span id="bkPhotos"></span>, plus settings. Last backup: <b>${store.get('backup.last', null) ? new Date(store.get('backup.last')).toLocaleDateString() : 'never'}</b>.`;
       $('bkArea').innerHTML = `<option value="all">All areas</option>` + a.map(x => `<option>${String(x).replace(/[&<>"]/g, '')}</option>`).join('');
+      $('bkWhere').innerHTML = `Your pins belong to this web address: <b>${(location.host + location.pathname.replace(/index\.html$/, '')).replace(/[&<>"]/g, '')}</b>. Upload new versions to the same GitHub repo and open the app from this address, and everything stays.`;
       if (navigator.storage && navigator.storage.persisted) navigator.storage.persisted().then(p => { $('bkPersist').textContent = p ? 'This phone has agreed to keep Deer Eyes data unless you clear it yourself.' : 'This phone may clear Deer Eyes data when storage runs low. Installing the app to your home screen and keeping backups protects it.'; }).catch(() => {});
     }
-    $('bkSave').addEventListener('click', async () => { download(await fullBackup()); store.set('backup.last', Date.now()); summary(); toast('Backup saved to Downloads. Keep a copy in Google Drive or email.'); });
+    const saveNow = async () => { download(await fullBackup()); store.set('backup.last', Date.now()); toast('Backup saved to Downloads. Keep a copy in Google Drive or email.'); };
+    $('bkSave').addEventListener('click', async () => { await saveNow(); summary(); });
+    // home screen: remind to back up new pins, and offer to bring pins back on a fresh phone
+    function homeBanner() {
+      const el = $('safeHome'); if (!el) return;
+      const m = store.get('maps.markers', []), last = store.get('backup.last', 0) || 0;
+      const fresh = (m.length + store.get('maps.tracks', []).length) === 0;
+      const unsaved = m.filter(x => (x.t || 0) > last).length;
+      const snooze = store.get('safe.snooze', 0) > Date.now();
+      if (fresh && !store.get('safe.freshNo', false)) {
+        el.innerHTML = `<span class="sh-t">No pins on this phone yet. Had pins in Deer Eyes before?</span> <label class="sh-act" for="bkMerge">Bring them back from a backup file</label> <button type="button" class="sh-x" aria-label="Hide">×</button>`;
+        el.hidden = false; el.querySelector('.sh-x').onclick = () => { store.set('safe.freshNo', true); el.hidden = true; };
+      } else if (!fresh && unsaved && !snooze) {
+        el.innerHTML = `<span class="sh-t"><b>${unsaved} pin${unsaved === 1 ? '' : 's'}</b> ${unsaved === 1 ? 'is' : 'are'} not in a backup yet. Save one before you update the app.</span> <button type="button" class="sh-act" id="shSave">Save backup</button> <button type="button" class="sh-x" aria-label="Later">×</button>`;
+        el.hidden = false;
+        el.querySelector('#shSave').onclick = async () => { await saveNow(); el.hidden = true; };
+        el.querySelector('.sh-x').onclick = () => { store.set('safe.snooze', Date.now() + 3 * 864e5); el.hidden = true; };
+      } else el.hidden = true;
+    }
+    try { if (localStorage.getItem('deereyes.safeMsg')) { localStorage.removeItem('deereyes.safeMsg'); setTimeout(() => toast('Your pins were missing, so Deer Eyes put them back from its safety copy.'), 800); } } catch (e) {}
     $('bkShare').addEventListener('click', async () => { await send(await fullBackup(), 'Deer Eyes backup'); store.set('backup.last', Date.now()); summary(); });
     $('bkSpots').addEventListener('click', () => {
       const area = $('bkArea').value, f = x => area === 'all' || x.area === area;
@@ -9767,6 +9817,7 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
         if (Array.isArray(o.cams)) { try { await idb.clear(); for (const r of o.cams) await idb.put(r); } catch (er) {} }
         if (Array.isArray(o.steps)) { try { await idb.stepClear(); for (const r of o.steps) await idb.stepPut(r); } catch (er) {} }
         if (Array.isArray(o.pins)) { try { await idb.pinClear(); for (const r of o.pins) await idb.pinPut(r); } catch (er) {} }
+        await safe.clear(); for (const k of SAFE_KEYS) if (o.data[k] != null) { try { await safe.put(k, JSON.parse(o.data[k])); } catch (er) {} }
         toast('Restored. Reloading…'); setTimeout(() => location.reload(), 900);
       } catch (er) { toast('Could not read that file.'); }
     });
@@ -9786,7 +9837,7 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
         toast(`Added ${nm} markers and ${nt} tracks. Reloading…`); setTimeout(() => location.reload(), 1100);
       } catch (er) { toast('Could not read that file.'); }
     });
-    return { show: summary };
+    return { show: summary, homeBanner };
   })();
 
   // =================================================================
@@ -11258,7 +11309,7 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
     document.querySelectorAll('.view').forEach(v => { v.hidden = v.id !== 'v-' + next; });
     current = next;
     $('bgWrap').hidden = next !== 'home';
-    if (next === 'home') { compass.home(); tags.homeBanner(); }
+    if (next === 'home') { compass.home(); tags.homeBanner(); backup.homeBanner(); }
     if (TOOLS[next] && TOOLS[next].show) TOOLS[next].show();
     if (next === 'predict') journal.hint();
     window.scrollTo(0, 0);
