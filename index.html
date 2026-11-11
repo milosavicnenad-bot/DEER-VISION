@@ -1624,6 +1624,9 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
 .fd-grid small { display: block; font-size: .7rem; opacity: .75; }
 .fd-grid small.on { color: #2e7d32; opacity: 1; font-weight: 700; }
 .fd-grid button[aria-pressed="true"] svg, .fd-grid button:active svg { color: #fff; }
+.own-lbl { pointer-events: none; }
+.own-lbl span { display: inline-block; transform: translate(-50%, -50%); white-space: nowrap; text-align: center; line-height: 1.2; font: 800 .78rem var(--font-body); color: #fff; background: var(--c); border: 1.5px solid #fff; border-radius: 6px; padding: 2px 6px; box-shadow: 0 1px 4px rgba(0,0,0,.4); }
+.own-lbl i { font-style: normal; font-weight: 600; opacity: .9; }
 .ai-land { display: grid; gap: 4px; margin: 6px 0; font-size: .85rem; }
 .ai-land label { display: flex; gap: 8px; align-items: flex-start; }
 .ai-land input { width: 18px; height: 18px; flex: none; margin-top: 1px; }
@@ -5886,6 +5889,63 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
         } catch (e) { /* offline or blocked: leave lines off */ }
       }
     });
+    // property colored by owner: every parcel of one owner (e.g. all the Sterling Forest parcels) gets one color, the lines between them are dropped, and the owner's name is written on the biggest piece
+    const ownerKey = o => { let s = String(o || '').toUpperCase().replace(/[.,'&]/g, ' ').replace(/\s+/g, ' ').trim().replace(/^THE /, '');
+      if (/PEOPLE OF (THE )?STATE OF (NEW YORK|NY)|^STATE OF NEW YORK|^NEW YORK STATE\b|^NYS\b|^N Y S\b/.test(s)) return 'STATE OF NEW YORK';
+      if (/^STATE OF (NEW JERSEY|NJ)|^NEW JERSEY STATE\b|^NJ STATE\b|^N J STATE\b/.test(s)) return 'STATE OF NEW JERSEY';
+      if (/PALISADES INTERSTATE/.test(s)) return 'PALISADES INTERSTATE PARK COMMISSION';
+      return s.replace(/ (INC|LLC|L L C|CORP|CO|LP|LTD)$/, '') || 'UNKNOWN OWNER'; };
+    const titleCase = s => s.toLowerCase().replace(/\b\w/g, c => c.toUpperCase()).replace(/\bOf\b/g, 'of').replace(/\bThe\b/g, 'the').replace(/\bNy\b/g, 'NY').replace(/\bNj\b/g, 'NJ').replace(/\bLlc\b/g, 'LLC');
+    const ownerColor = k => { if (k === 'STATE OF NEW YORK' || k === 'STATE OF NEW JERSEY' || k === 'PALISADES INTERSTATE PARK COMMISSION') return '#2e7d32';
+      if (/COUNTY OF|TOWN OF|TOWNSHIP|VILLAGE OF|CITY OF|BOROUGH|UNITED STATES|BOARD OF EDUCATION|WATER|CONSERVANCY|LAND TRUST|OPEN SPACE/.test(k)) return '#00838f';
+      let h = 0; for (const c of k) h = (h * 31 + c.charCodeAt(0)) >>> 0; const hues = [8, 28, 45, 280, 320, 340, 200, 220, 260, 15, 300, 55]; return `hsl(${hues[h % hues.length]} ${60 + (h >> 5) % 25}% ${42 + (h >> 9) % 14}%)`; };
+    const ringArea = r => { let a = 0; for (let i = 0, j = r.length - 1; i < r.length; j = i++) a += (r[j][0] + r[i][0]) * (r[j][1] - r[i][1]); return Math.abs(a / 2); };
+    const OwnerParcels = L.LayerGroup.extend({
+      onAdd(m) { L.LayerGroup.prototype.onAdd.call(this, m); this._h = () => this._load(); m.on('moveend', this._h); this._load(); },
+      onRemove(m) { m.off('moveend', this._h); L.LayerGroup.prototype.onRemove.call(this, m); },
+      async _load() {
+        const m = this._map; if (!m) return;
+        if (m.getZoom() < 13) { this.clearLayers(); this._box = null; toastOnce('Zoom in closer to color property by owner.'); return; }
+        if (this._box && L.latLngBounds(this._box).contains(m.getBounds()) && this._z <= m.getZoom() + 1) return;
+        const b = m.getBounds().pad(0.2), key = b.toBBoxString(); this._key = key; this._box = [b.getSouthWest(), b.getNorthEast()]; this._z = m.getZoom();
+        const off = (0.00002 * Math.pow(2, Math.max(0, 16 - m.getZoom()))).toFixed(6);
+        const q = f => new URLSearchParams({ where: '1=1', geometry: `${b.getWest()},${b.getSouth()},${b.getEast()},${b.getNorth()}`, geometryType: 'esriGeometryEnvelope', inSR: '4326', spatialRel: 'esriSpatialRelIntersects', outFields: f, returnGeometry: 'true', outSR: '4326', maxAllowableOffset: off, resultRecordCount: '2000', f: 'json' });
+        const get = (u, f) => fetch(`${u}/query?${q(f)}`).then(r => r.json()).then(j => { if (j.error) throw new Error(); return j; });
+        const nyOn = b.getNorth() > 40.9 && b.getSouth() < 45.1, njOn = b.getSouth() < 41.4 && b.getWest() < -73.8;
+        const [ny, nj] = await Promise.allSettled([nyOn ? get(NYP + '/1', 'PRIMARY_OWNER,CALC_ACRES,ACRES') : Promise.resolve({ features: [] }), njOn ? get(NJP, '*') : Promise.resolve({ features: [] })]);
+        if (this._key !== key) return;
+        const groups = {}; let cut = false, okAny = false;
+        const add = (res, ownerOf) => { if (res.status !== 'fulfilled') return; okAny = true; if (res.value.exceededTransferLimit) cut = true;
+          for (const f of res.value.features || []) { const rings = f.geometry && f.geometry.rings; if (!rings) continue; const a = f.attributes || {}, raw = ownerOf(a), k = ownerKey(raw);
+            const g = groups[k] = groups[k] || { k, rings: [], area: 0, acres: 0, big: null, bigA: 0 }; g.rings.push(...rings); g.acres += +(a.CALC_ACRES || a.ACRES || a.CALC_AC || 0) || 0;
+            for (const r of rings) { const ar = ringArea(r); g.area += ar; if (ar > g.bigA) { g.bigA = ar; g.big = r; } } } };
+        add(ny, a => a.PRIMARY_OWNER);
+        add(nj, a => { const k = Object.keys(a).find(x => /OWNER/i.test(x) && !/ADD|ADDR|CITY|STATE|ZIP/i.test(x) && a[x]); return k ? a[k] : ''; });
+        this.clearLayers();
+        if (!okAny) { toastOnce('Could not load property owners (no signal?).'); return; }
+        const R = L.canvas({ padding: 0.3 });
+        const list = Object.values(groups).sort((x, y) => y.area - x.area);
+        for (const g of list) {
+          const col = ownerColor(g.k), big = g.k !== 'UNKNOWN OWNER' && g.rings.length > 1;
+          L.polygon(g.rings.map(r => r.map(p => [p[1], p[0]])), { renderer: R, stroke: false, fillColor: col, fillOpacity: big ? 0.28 : 0.14, interactive: false }).addTo(this);
+          // outline: drop edges shared by two parcels of the same owner, so the whole block reads as one property
+          const seen = new Map(), E = (p, q) => { const a = p[0].toFixed(6) + ',' + p[1].toFixed(6), c = q[0].toFixed(6) + ',' + q[1].toFixed(6); return a < c ? a + '|' + c : c + '|' + a; };
+          for (const r of g.rings) for (let i = 1; i < r.length; i++) { const k = E(r[i - 1], r[i]); seen.set(k, seen.has(k) ? null : [r[i - 1], r[i]]); }
+          const segs = [...seen.values()].filter(Boolean).map(([p, q]) => [[p[1], p[0]], [q[1], q[0]]]);
+          L.polyline(segs, { renderer: R, color: col, weight: big ? 3 : 1.6, opacity: 0.95, interactive: false }).addTo(this);
+          // name on the biggest piece, for owners with real land in view
+          const px = m.getZoom() >= 16 ? 0 : 2e-7 * Math.pow(4, 16 - m.getZoom());
+          if (g.big && g.bigA > px && g.k !== 'UNKNOWN OWNER') {
+            let sx = 0, sy = 0; for (const p of g.big) { sx += p[0]; sy += p[1]; } let c = L.latLng(sy / g.big.length, sx / g.big.length);
+            const vb = m.getBounds().pad(-0.18), mc = m.getCenter(); if (g.rings.some(r => pipRings([r], mc.lng, mc.lat))) c = L.latLng(mc.lat + (vb.getNorth() - mc.lat) * 0.5, mc.lng); else if (!vb.contains(c)) { let w = 180, so = 90, e = -180, n = -90; for (const r of g.rings) for (const [x, y] of r) { if (x < w) w = x; if (x > e) e = x; if (y < so) so = y; if (y > n) n = y; }
+              const W2 = Math.max(w, vb.getWest()), E2 = Math.min(e, vb.getEast()), S2 = Math.max(so, vb.getSouth()), N2 = Math.min(n, vb.getNorth()); if (W2 < E2 && S2 < N2) { const t = L.latLng((S2 + N2) / 2, (W2 + E2) / 2); if (g.rings.some(r => pipRings([r], t.lng, t.lat))) c = t; } }
+            const ac = g.acres > 0 ? ` · ${g.acres >= 100 ? Math.round(g.acres).toLocaleString() : g.acres.toFixed(1)} ac in view` : '';
+            L.marker(c, { interactive: false, keyboard: false, icon: L.divIcon({ className: 'own-lbl', html: `<span style="--c:${col}">${esc(titleCase(g.k))}${g.rings.length > 1 ? `<br><i>${g.rings.length} parcels${ac}</i>` : ''}</span>`, iconSize: null }) }).addTo(this);
+          }
+        }
+        if (cut) toastOnce('Lots of parcels here: zoom in to see every owner.');
+      }
+    });
     // your rubs and scrapes as a heat map, colored by how fresh they are, with likely scrape lines
     const SignHeat = L.LayerGroup.extend({
       onAdd(m) { L.LayerGroup.prototype.onAdd.call(this, m); this.redraw(); },
@@ -6036,6 +6096,7 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
     const GROUPS = [['legal', 'Property, public land and rules'], ['terrain', 'Terrain'], ['photos', 'Aerial photos and old maps'], ['land', 'Land and water'], ['access', 'Access'], ['mine', 'Your sign']];
     const OVERS = {
       nyParcels: ['NY property lines', 'Tax parcels with owners (38 counties incl. Orange, Rockland, Ulster, Putnam). Zoom in close.', () => arc(NYP, 'show:1', { minZoom: 14 }), 'legal'],
+      owners:    ['Property by owner (colors)', 'Every parcel of the same owner in one color, with the lines between them removed and the owner\u2019s name on it. All of Sterling Forest shows as one green block. Green = state land, teal = county, town or land trust.', () => new OwnerParcels(), 'legal'],
       njParcels: ['NJ property lines', 'Statewide tax parcels. Zoom in close.', () => new NJParcels(), 'legal'],
       nyState:   ['NY state land', 'All state-owned land: state parks, forests, DEC land', () => arc(NYS, 'show:0', { minZoom: 11 }), 'legal'],
       nyDec:     ['NY DEC lands and WMAs', 'State forests, wildlife management areas', () => arc(DEC, 'show:0,2', { minZoom: 9 }), 'legal'],
