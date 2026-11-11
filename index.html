@@ -1616,6 +1616,27 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
 .sp-list li small { display: block; color: var(--muted, inherit); opacity: .85; margin-top: 2px; font-size: .8rem; }
 .sp-list li.done { opacity: .55; }
 .sp-list li.done b { text-decoration: line-through; }
+
+.fd-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.fd-grid button { display: flex; gap: 8px; align-items: center; text-align: left; border: 1.5px solid var(--line); border-left: 5px solid var(--c); border-radius: 10px; padding: 8px; background: var(--card, transparent); color: var(--fg); font: inherit; cursor: pointer; min-height: 52px; }
+.fd-grid svg { width: 22px; height: 22px; flex: none; color: var(--c); }
+.fd-grid b { display: block; font-size: .82rem; line-height: 1.15; }
+.fd-grid small { display: block; font-size: .7rem; opacity: .75; }
+.fd-grid small.on { color: #2e7d32; opacity: 1; font-weight: 700; }
+.fd-grid button[aria-pressed="true"] svg, .fd-grid button:active svg { color: #fff; }
+.fd-prod { margin-top: 6px; display: flex; flex-wrap: wrap; gap: 4px; align-items: center; }
+.fd-prod button { border: 1px solid var(--line); background: transparent; color: inherit; border-radius: 6px; padding: 3px 7px; font: inherit; font-size: .78rem; cursor: pointer; }
+.dm-head { font-size: .9rem; margin: 6px 0; }
+.dm-f { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 4px 16px; }
+#dmBox h3 { font-size: .8rem; text-transform: uppercase; letter-spacing: .04em; margin: 8px 0 2px; }
+.dm-row { display: grid; grid-template-columns: 1fr auto; gap: 0 8px; font-size: .86rem; padding: 2px 0; border-bottom: 1px dashed var(--line); }
+.dm-row .caption { grid-column: 1 / -1; font-size: .74rem; }
+.dm-m { font-weight: 800; }
+.dm-m.up { color: #2e7d32; } .dm-m.dn { color: #c62828; }
+.dm-best { border: 1.5px solid #2e7d32; border-radius: 10px; padding: 8px 10px; font-size: .88rem; }
+.dm-best ul { margin: 4px 0 0; padding-left: 18px; }
+.dm-slot { border: 1px solid var(--line); border-radius: 10px; padding: 6px 8px; }
+.dm-sh { display: flex; flex-wrap: wrap; gap: 2px 8px; align-items: baseline; margin-bottom: 4px; }
 </style>
 </head>
 <body>
@@ -2371,6 +2392,7 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
         <button type="button" data-tool="blood" class="bt-tool"><svg><use href="#i-blood"/></svg>Blood</button>
         <button type="button" data-tool="bearing"><svg><use href="#i-compass"/></svg>Bearing</button>
         <button type="button" data-tool="approach"><svg><use href="#i-fov"/></svg>Approach</button>
+        <button type="button" data-tool="food"><svg><use href="#i-acorn"/></svg>Food pins</button>
         <button type="button" data-tool="scout"><svg><use href="#i-track"/></svg>Scout loop</button>
         <button type="button" data-tool="chain"><svg><use href="#i-route"/></svg>Chains</button>
         <button type="button" data-tool="ready"><svg><use href="#i-check"/></svg>Ready?</button>
@@ -2461,6 +2483,17 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
         <div class="row"><label for="apRoute">Your route</label><select id="apRoute" class="full"></select><span class="v"></span></div>
         <div class="actions"><button class="btn primary" id="apRun" type="button">Check my approach</button><button class="btn" id="apClear" type="button">Clear</button></div>
         <div id="apOut" class="caption"></div>
+      </div>
+
+      <div class="panel mp" id="mp-food" hidden>
+        <h2 style="margin:0">Food pins</h2>
+        <div class="caption">Stand at the tree or in the middle of the patch and tap what it is. The app averages your GPS for a few seconds and drops an exact pin. The AI spots, movement lines, best spot and your deer model use each food in its season.</div>
+        <div><div class="k" style="font-size:.8rem">How much is on it this year (optional)</div><div class="seg bt-seg" id="fdProd"><button type="button" data-v="none">None</button><button type="button" data-v="light">Light</button><button type="button" data-v="good">Good</button><button type="button" data-v="heavy">Heavy</button></div></div>
+        <div class="pin-row"><label>Acorns or fruit on the ground in a 1-yard circle (optional)<input type="number" id="fdCount" min="0" max="500" inputmode="numeric" placeholder="count"></label></div>
+        <input type="text" id="fdNote" placeholder="Note (optional): fresh droppings under it, big tree, crop planted…">
+        <div class="row"><label for="fdSec">GPS averaging</label><select id="fdSec" class="full"><option value="6">6 s (quick)</option><option value="10" selected>10 s</option><option value="20">20 s (most exact)</option></select><span class="v"></span></div>
+        <div class="fd-grid" id="fdGrid"></div>
+        <div class="caption" id="fdNow"></div>
       </div>
 
       <div class="panel mp" id="mp-scout" hidden>
@@ -2624,6 +2657,11 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
     <div class="vhead" style="--h: var(--h-gold)"><button class="back" type="button"><svg><use href="#i-back"/></svg>Menu</button><span class="vic"><svg><use href="#i-predict"/></svg></span><h2>Deer movement</h2></div>
     <p class="lead">A forecast of when deer are most likely on their feet, built from what research shows matters most: time of day, time of year (the rut) and weather. It's a guide for planning your sits, not a guarantee.</p>
     <div class="panel jn-hint" id="pdJournal" hidden></div>
+    <div class="panel"><h2 style="margin:0">Your deer model</h2>
+      <div class="caption">Learns from your hunt journal sits, deer sightings and kills on the map, and your food pins, which conditions bring deer past your stands: time of day, rut phase, temperature against normal, barometric pressure and its trend, moon, wind, and food in season.</div>
+      <div id="dmBox"></div>
+      <div class="actions"><button class="btn primary" id="dmFcBtn" type="button">Forecast my stands (next 3 days)</button></div>
+      <div id="dmFc" style="display:grid;gap:8px"></div></div>
     <div class="panel live-only" hidden>
       <div class="row">
         <span class="k">Location</span>
@@ -3411,6 +3449,45 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
     }
     if (back) { try { localStorage.setItem('deereyes.safeMsg', '1'); } catch (e) {} location.reload(); }
   });
+
+
+  // ---- deer food calendar (NY/NJ): how much deer use each food, month by month (Jan..Dec, 0-1), and how much they prefer it ----
+  const FOODCAL = {
+    whiteoak:    { m: [.1, .05, 0, 0, 0, 0, 0, .05, .6, 1, .7, .25], p: 1, n: 'White oak acorns', note: 'Deer\'s first choice. Eaten as soon as they drop, mostly September to early November.' },
+    chestnutoak: { m: [.05, 0, 0, 0, 0, 0, 0, .05, .7, .9, .5, .15], p: .85, n: 'Chestnut oak acorns', note: 'White-oak family on rocky ridges. Drops early and goes fast.' },
+    redoak:      { m: [.8, .5, .2, 0, 0, 0, 0, 0, .1, .5, .9, 1], p: .8, n: 'Red oak acorns', note: 'Bitter, so deer switch to them once white oak acorns are gone: late fall into winter.' },
+    beech:       { m: [.4, .2, 0, 0, 0, 0, 0, 0, .2, .7, .9, .7], p: .8, n: 'Beechnuts', note: 'Only in good mast years, but deer love them in late fall.' },
+    fruit:       { m: [.15, .05, 0, 0, 0, 0, .1, .5, .9, 1, .7, .3], p: .95, n: 'Apples, pears, crabapples', note: 'A magnet from August into November; crabapples hang into winter.' },
+    persimmon:   { m: [0, 0, 0, 0, 0, 0, 0, 0, .6, 1, .8, .2], p: .95, n: 'Persimmons', note: 'Rare up north, but deer hit ripe fruit hard in October.' },
+    grape:       { m: [0, 0, 0, 0, 0, 0, 0, .2, .7, .8, .4, .1], p: .7, n: 'Wild grapes', note: 'Fall fruit and leaves in thick tangles; good cover too.' },
+    mushroom:    { m: [0, 0, 0, 0, .1, .3, .5, .7, .9, .7, .2, 0], p: .6, n: 'Mushrooms', note: 'Eaten on sight in late summer and early fall, mostly after rain.' },
+    clover:      { m: [.1, .1, .3, .8, .8, .7, .6, .7, .9, .9, .6, .2], p: .75, n: 'Clover, alfalfa, green fields', note: 'Green until hard frost; best in early season evenings.' },
+    brassica:    { m: [.9, .5, .2, 0, 0, 0, 0, 0, .1, .3, .8, 1], p: .8, n: 'Brassicas, turnips', note: 'Sweeter after hard frosts: November into winter.' },
+    corn:        { m: [1, .8, .4, 0, 0, 0, .1, .2, .4, .6, .8, 1], p: .85, n: 'Corn', note: 'High-energy food for cold weather; standing corn is cover too.' },
+    soy:         { m: [.8, .6, .2, .1, .2, .5, .8, .9, .7, .4, .5, .8], p: .8, n: 'Soybeans', note: 'Leaves in summer, dry pods again in winter.' },
+    plot:        { m: [.7, .6, .5, .6, .7, .7, .7, .7, .8, .8, .8, .8], p: .8, n: 'Food plot', note: 'Mark what is planted in the notes.' },
+    browse:      { m: [.9, .9, .8, .5, .5, .5, .5, .5, .5, .6, .7, .9], p: .6, n: 'Browse, cutover', note: 'Young growth after logging or fire: food and cover all year, key in winter.' },
+    greenbrier:  { m: [.8, .8, .7, .4, .4, .4, .4, .4, .4, .5, .7, .8], p: .6, n: 'Greenbrier', note: 'Stays green; important winter browse in thickets.' },
+    honeysuckle: { m: [.9, .9, .8, .4, .3, .3, .3, .3, .3, .4, .7, .8], p: .55, n: 'Honeysuckle', note: 'Keeps its leaves late; deer browse it hard in winter.' },
+    bramble:     { m: [.7, .7, .6, .4, .5, .6, .6, .5, .5, .5, .6, .7], p: .55, n: 'Blackberry, raspberry', note: 'Leaves stay green into winter; thick patches are bedding too.' },
+    hemlock:     { m: [1, 1, .7, .2, 0, 0, 0, 0, 0, .1, .3, .8], p: .5, n: 'Hemlock, cedar', note: 'Winter browse and shelter in deep snow and cold.' },
+    food:        { m: [.6, .6, .6, .6, .6, .6, .6, .6, .6, .6, .6, .6], p: .6, n: 'Food source', note: '' },
+    mineral:     { m: [.2, .2, .4, .7, .9, .9, .8, .6, .3, .2, .2, .2], p: .4, n: 'Mineral lick', note: 'Used most in spring and summer.' },
+    water:       { m: [.5, .5, .5, .5, .6, .7, .8, .8, .8, .7, .6, .5], p: .4, n: 'Water', note: 'Matters most in dry, warm weeks.' },
+    spring:      { m: [.6, .6, .5, .5, .6, .7, .8, .8, .8, .7, .6, .6], p: .4, n: 'Spring, seep', note: 'Unfrozen water in winter.' },
+  };
+  const PROD = { none: ['None this year', 0.1], light: ['Light', 0.5], good: ['Good', 1], heavy: ['Heavy', 1.4] };
+  // how strong a food pin pulls deer on a date: season x preference x what you saw on it this year
+  function foodPull(m, d) {
+    const c = FOODCAL[m.type]; if (!c) return 0;
+    const mo = d.getMonth(), f = d.getDate() / 31, nx = (mo + 1) % 12, season = c.m[mo] * (1 - f) + c.m[nx] * f;
+    let prod = m.prod && PROD[m.prod] ? PROD[m.prod][1] : 0.8;
+    const yr = d.getTime() - 300 * 864e5, v = (m.visits || []).filter(x => x.t > yr && x.c != null).sort((a, b) => b.t - a.t)[0];
+    if (v) prod = v.c === 0 ? 0.1 : v.c < 3 ? 0.5 : v.c < 10 ? 1 : 1.4;
+    return season * c.p * prod;
+  }
+  const foodSeason = type => { const c = FOODCAL[type]; if (!c) return ''; const MO = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']; const hi = c.m.map((v, i) => [v, i]).filter(x => x[0] >= 0.7).map(x => x[1]); if (!hi.length || hi.length >= 10) return 'all year'; let s = hi[0]; for (let i = 0; i < 12; i++) if (c.m[(i + 11) % 12] < 0.7 && c.m[i] >= 0.7) s = i; let e = s; while (c.m[(e + 1) % 12] >= 0.7 && (e + 1) % 12 !== s) e = (e + 1) % 12; return s === e ? MO[s] : `${MO[s]}–${MO[e]}`; };
+  const foodNowWord = (type, d) => { const c = FOODCAL[type]; if (!c) return ''; const v = c.m[d.getMonth()]; return v >= 0.85 ? 'peak now' : v >= 0.5 ? 'in season now' : v >= 0.2 ? 'some use now' : 'out of season now'; };
 
   // ---- sharing helpers (spot links open navigation in Deer Eyes) ----
   const appLink = (lat, lon, name) => `${location.href.split('#')[0]}#go=${(+lat).toFixed(6)},${(+lon).toFixed(6)},${encodeURIComponent(name || '')}`;
@@ -5584,8 +5661,21 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
       // food and water
       food:     ['Food source', 'i-food', '#6b8e23', 'food'],
       whiteoak: ['White oak (acorns)', 'i-acorn', '#7c5c1e', 'food'],
+      chestnutoak: ['Chestnut oak (acorns)', 'i-acorn', '#8a6a2a', 'food'],
       redoak:   ['Red oak (acorns)', 'i-acorn', '#9b3d1c', 'food'],
-      fruit:    ['Apple / fruit tree', 'i-apple', '#c2410c', 'food'],
+      beech:    ['Beech (beechnuts)', 'i-acorn', '#a1887f', 'food'],
+      fruit:    ['Apple / pear / crabapple', 'i-apple', '#c2410c', 'food'],
+      persimmon:['Persimmon', 'i-apple', '#e65100', 'food'],
+      grape:    ['Wild grapes', 'i-food', '#6a1b9a', 'food'],
+      mushroom: ['Mushrooms', 'i-food', '#8d6e63', 'food'],
+      clover:   ['Clover / alfalfa / green field', 'i-plot', '#43a047', 'food'],
+      brassica: ['Brassicas / turnips', 'i-plot', '#7cb342', 'food'],
+      corn:     ['Corn', 'i-plot', '#f9a825', 'food'],
+      soy:      ['Soybeans', 'i-plot', '#9e9d24', 'food'],
+      greenbrier:['Greenbrier', 'i-plot', '#2e7d32', 'food'],
+      honeysuckle:['Honeysuckle', 'i-plot', '#558b2f', 'food'],
+      bramble:  ['Blackberry / raspberry', 'i-plot', '#880e4f', 'food'],
+      hemlock:  ['Hemlock / cedar (winter browse)', 'i-plot', '#1b5e20', 'food'],
       plot:     ['Food plot', 'i-plot', '#4d7c0f', 'food'],
       browse:   ['Browse / cutover', 'i-plot', '#65a30d', 'food'],
       mineral:  ['Mineral / lick', 'i-mineral', '#78716c', 'food'],
@@ -6711,6 +6801,7 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
         + (setup ? `<div class="sec">${esc(setup)}${m.winds && m.winds.length && typeof WIND !== 'undefined' && WIND.from != null ? ` · today's wind: from ${cardinal(WIND.from)}${m.winds.includes(WD[Math.round(WIND.from / 45) % 8]) ? ' ✓ good' : ' ✗ not listed'}` : ''}</div>` : '')
         + (m.final ? `<div class="sec"><b>Last yards:</b> ${esc(m.final)}</div>` : '')
         + `<img class="ppic" alt="" hidden>` + (m.audio ? '<audio class="paud" controls preload="none" style="width:100%;margin-top:6px"></audio>' : '')
+        + (FOODCAL[m.type] && !['water', 'spring'].includes(m.type) ? `<div class="sec fd-pop"><b>${esc(FOODCAL[m.type].n)}:</b> deer use it most ${foodSeason(m.type)} · <b>${foodNowWord(m.type, new Date())}</b>${FOODCAL[m.type].note ? `<div class="muted">${esc(FOODCAL[m.type].note)}</div>` : ''}<div class="fd-prod">How much is on it this year: ${Object.entries(PROD).map(([k, v]) => `<button type="button" data-prod="${k}" aria-pressed="${m.prod === k}">${v[0]}</button>`).join('')}</div></div>` : '')
         + visitHtml(m) + standRules(m)
         + `<div class="sec"><b>Precision:</b> ${esc(precTxt(m))}</div>`
         + `<div class="sec pcoord">${coordTxt(m.lat, m.lon)}${elevTxt ? elevTxt(ll) : ''}</div>`
@@ -6728,6 +6819,7 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
       };
       const rg = box.querySelector('[data-a=rings]'); if (rg) rg.onclick = ev => { ev.stopPropagation(); m.rings = !m.rings; saveDB(); map.closePopup(); drawSaved(); if (m.rings && map.getZoom() < 17) map.setView([m.lat, m.lon], 18); };
       const lg = box.querySelector('[data-a=log]'); if (lg) lg.onclick = ev => { ev.stopPropagation(); lg.hidden = true; logForm(m, box, () => map.closePopup()); };
+      box.querySelectorAll('[data-prod]').forEach(b => b.onclick = ev => { ev.stopPropagation(); m.prod = m.prod === b.dataset.prod ? null : b.dataset.prod; m.prodT = Date.now(); saveDB(); box.querySelectorAll('[data-prod]').forEach(x => x.setAttribute('aria-pressed', x.dataset.prod === m.prod)); toast(m.prod ? `Saved: ${PROD[m.prod][0].toLowerCase()} crop. The AI uses it.` : 'Cleared.'); });
       const rf = box.querySelector('[data-a=refine]'); if (rf) rf.onclick = async () => { map.closePopup(); await refinePin(m); };
       box.querySelector('[data-a=copy]').onclick = async () => { const txt = `${m.lat.toFixed(6)}, ${m.lon.toFixed(6)}`; try { await navigator.clipboard.writeText(txt); toast('Copied ' + txt); } catch (e) { toast(txt); } };
       if (m.photo) pinPhoto(m.id).then(src => { const im = box.querySelector('.ppic'); if (src && im) { im.src = src; im.hidden = false; } });
@@ -7384,7 +7476,8 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
       const M = mDef();
       for (const s of spots) {
         const pf = s.press ? Math.max(0.4, 1 - s.press.p * 0.35 * M.press) : 1, sf = s.sign ? 1 + Math.min(0.6, 0.25 * s.sign.score) : 1;
-        s.sc = s.w * (M.w[s.t] || 1) * pf * sf;
+        let ff = 1; if (['food', 'mast', 'browse'].includes(s.t)) { const fa = deerModel.foodAt({ lat: s.ll.lat, lon: s.ll.lng }, new Date()); if (fa.top) { ff = Math.max(0.6, Math.min(1.5, 0.7 + 0.6 * fa.s)); s.food = fa.top; } }
+        s.sc = s.w * (M.w[s.t] || 1) * pf * sf * ff;
       }
       spots.sort((a, b) => ((b.house == null || b.house >= 152) - (a.house == null || a.house >= 152)) || ((b.sc || b.w) - (a.sc || a.w)));
     }
@@ -7433,13 +7526,15 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
           why.push(`${sits.length} sit${sits.length > 1 ? 's' : ''} logged here${samePer.length ? `, ${(rate(samePer) || 0).toFixed(1)} deer/hour ${per.k === 'midday' ? 'at midday' : 'in the ' + per.k}` : ''}${bucks ? `, ${bucks} buck${bucks > 1 ? 's' : ''} seen` : ''}`);
           if (sameWind.length) why.push(`On a ${C8B[wi]} wind before: ${(rate(sameWind) || 0).toFixed(1)} deer/hour`);
         }
+        // your deer model: conditions now (time, rut, temperature, pressure, moon, wind, food) as learned from your sits
+        let dmf = 1; try { const pr = deerModel.rate(m, now, { temp: WIND.temp != null ? WIND.temp : null, wspd: WIND.speed, wdir: WIND.from }); dmf = Math.max(0.6, Math.min(1.5, pr.r / 0.9)); const top = pr.why.filter(w => w[2] == null || Math.abs(w[2] - 1) >= 0.1).slice(0, 2); if (top.length) why.push('Your deer model: ' + top.map(w => `${w[1].toLowerCase ? w[1].charAt(0).toLowerCase() + w[1].slice(1) : w[1]}${w[2] != null ? ` (${w[2] >= 1 ? '+' : '−'}${Math.round(Math.abs(w[2] - 1) * 100)}%)` : ''}`).join(', ')); } catch (e) { dmf = 1; }
         const recent = sits.filter(e => Date.now() - e.t0 < 7 * 864e5).length, rest = recent >= 2 ? 0.75 : 1;
         if (rest < 1) warn.push(`Hunted ${recent} times in the last week: it may need a rest`);
         const sg = ownSign(ll), sf = 1 + Math.min(0.5, 0.2 * sg.score); if (sg.score > 0.5) why.push('Fresh sign of yours nearby');
         const pr = pressureAt(ll), pf = 1 - 0.3 * pr.p * M.press; if (pr.lvl !== 'Medium') why.push(`${pr.lvl} hunting pressure`);
         const mf = (aiMeth === 'ground' && (m.type === 'blind' || m.type === 'box')) || (aiMeth === 'saddle' && m.type === 'saddle') || (aiMeth === 'stand' && (m.type === 'stand' || m.type === 'ladder')) ? 1.1 : 1;
         const rf = rutHot && (sg.n.rub || sg.n.scrape) ? 1.15 : 1; if (rf > 1) why.push(`Rubs/scrapes nearby during the ${rut.toLowerCase()} phase`);
-        cands.push({ kind: 'pin', m, ll, name: m.name || MT[m.type][0], sc: 100 * wsc * (0.55 + 0.45 * hs) * sf * pf * rest * mf * rf, why, warn });
+        cands.push({ kind: 'pin', m, ll, name: m.name || MT[m.type][0], sc: 100 * wsc * (0.55 + 0.45 * hs) * sf * pf * rest * mf * rf * dmf, why, warn });
       }
       for (const [k, s] of spots.entries()) {
         const tf = TFIT[per.k][s.t] || 0.5, rf = rutHot && ['saddle', 'funnel', 'bench', 'cover'].includes(s.t) ? (per.k === 'midday' ? 1.8 : 1.2) : 1;
@@ -7468,7 +7563,7 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
     let moveLayer = null, moves = [], movePinch = [], moveSun = null;
     const MCOL = { morning: '#ffd600', evening: '#ffd600', rut: '#ffd600' }, MIDLE = '#ffffff', MEDGE = '#1b1b1b';
     const BEDT = ['bedding', 'cover', 'point'], FOODT = ['food', 'browse', 'mast', 'water'];
-    const MBED = ['bed'], MFOOD = ['food', 'plot', 'whiteoak', 'redoak', 'fruit', 'browse', 'water', 'spring', 'mineral'];
+    const MBED = ['bed'], MFOOD = Object.keys(FOODCAL);
     function rasterMask(G, arr, wM) {
       const W = G.W, cv = document.createElement('canvas'); cv.width = cv.height = W; const g = cv.getContext('2d');
       g.lineCap = g.lineJoin = 'round'; g.strokeStyle = '#000'; g.lineWidth = Math.max(1.5, wM / G.cm);
@@ -7498,7 +7593,7 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
       const beds = spots.filter(s => BEDT.includes(s.t)).map(s => ({ ll: s.ll, n: SPOT[s.t][0], w: s.n }))
         .concat(DB.markers.filter(m => MBED.includes(m.type)).map(m => ({ ll: L.latLng(m.lat, m.lon), n: m.name || 'Your bedding mark', w: 1, own: 1 }))).filter(b => inGrid(G, b.ll)).slice(0, 8);
       const foods = spots.filter(s => FOODT.includes(s.t)).map(s => ({ ll: s.ll, n: SPOT[s.t][0], t: s.t, w: s.n }))
-        .concat(DB.markers.filter(m => MFOOD.includes(m.type)).map(m => ({ ll: L.latLng(m.lat, m.lon), n: m.name || MT[m.type][0], t: m.type === 'water' || m.type === 'spring' ? 'water' : 'food', w: 1, own: 1 }))).filter(f => inGrid(G, f.ll));
+        .concat(DB.markers.filter(m => MFOOD.includes(m.type) && (foodPull(m, new Date()) >= 0.2 || m.type === 'water' || m.type === 'spring')).map(m => ({ ll: L.latLng(m.lat, m.lon), n: m.name || MT[m.type][0], t: m.type === 'water' || m.type === 'spring' ? 'water' : 'food', w: 1 + foodPull(m, new Date()), own: 1 }))).filter(f => inGrid(G, f.ll)).sort((a, b) => b.w - a.w);
       const day = new Date(), st = sunTimes(day, c0.lat, c0.lng); moveSun = st;
       const rutNow = predict.rut ? predict.rut(day) : '', mo = day.getMonth() + 1, rutSeason = (mo === 10 && day.getDate() >= 20) || mo === 11 || (mo === 12 && day.getDate() <= 15);
       const pairs = [], seen = new Set();
@@ -8218,6 +8313,31 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
     $('scNext').addEventListener('click', () => { if (!scoutStops.length) { toast('Plan the loop first.'); return; } if (scoutIdx >= scoutStops.length) { setGoTo(scoutPts[0], 'back to the start'); scoutIdx = 0; return; } const s = scoutStops[scoutIdx++]; setGoTo(s.ll, `Stop ${scoutIdx}: ${s.name}`); });
     $('scProf').addEventListener('click', () => scoutPts ? showProfile(scoutPts, 'Scouting loop profile') : toast('Plan the loop first.'));
     $('scClear').addEventListener('click', () => { if (scoutLayer) map.removeLayer(scoutLayer); scoutLayer = null; scoutPts = null; scoutStops = []; scoutExtra = []; $('scOut').innerHTML = ''; });
+    // ---------- food scouting: one tap drops an exact pin for what deer are eating ----------
+    const FOODQ = ['whiteoak', 'chestnutoak', 'redoak', 'beech', 'fruit', 'persimmon', 'grape', 'mushroom', 'clover', 'brassica', 'corn', 'soy', 'plot', 'browse', 'greenbrier', 'honeysuckle', 'bramble', 'hemlock', 'water', 'spring', 'mineral'];
+    let fdProd = null, fdBusy = false;
+    function fillFood() {
+      const d = new Date();
+      $('fdGrid').innerHTML = FOODQ.map(t => { const c = MT[t], w = foodNowWord(t, d); return `<button type="button" data-ft="${t}" style="--c:${c[2]}"><svg><use href="#${c[1]}"/></svg><span><b>${esc(c[0])}</b><small class="${/peak|in season/.test(w) ? 'on' : ''}">${['water', 'spring', 'mineral'].includes(t) ? '' : w}</small></span></button>`; }).join('');
+      document.querySelectorAll('#fdProd button').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === fdProd));
+      const here = me || map.getCenter(), near = DB.markers.filter(m => FOODCAL[m.type] && !['water', 'spring', 'mineral'].includes(m.type)).map(m => ({ m, d: here.distanceTo([m.lat, m.lon]), p: foodPull(m, d) })).filter(x => x.d < 2000 && x.p > 0.25).sort((a, b) => b.p - a.p).slice(0, 5);
+      $('fdNow').innerHTML = near.length ? `<b>Food pulling deer near you now:</b> ${near.map(x => `${esc(x.m.name || MT[x.m.type][0])} (${fmtDist(x.d)}, ${foodNowWord(x.m.type, d)}${x.m.prod ? ', ' + PROD[x.m.prod][0].toLowerCase() : ''})`).join(' · ')}` : '';
+    }
+    $('fdProd').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; fdProd = fdProd === b.dataset.v ? null : b.dataset.v; fillFood(); });
+    $('fdGrid').addEventListener('click', async e => {
+      const b = e.target.closest('[data-ft]'); if (!b || fdBusy) return; const t = b.dataset.ft;
+      fdBusy = true; b.setAttribute('aria-pressed', true);
+      try {
+        const r = await precise(+$('fdSec').value || 10, `Marking ${MT[t][0].toLowerCase()}: stand at the trunk or in the middle of the patch`); if (!r) return;
+        const cnt = $('fdCount').value !== '' ? Math.max(0, Math.round(+$('fdCount').value)) : null;
+        const mk = { id: uid(), area: newArea(), t: Date.now(), type: t, name: MT[t][0].replace(/ \(.*\)$/, ''), notes: $('fdNote').value.trim(), lat: +r.ll.lat.toFixed(7), lon: +r.ll.lng.toFixed(7), acc: +r.acc.toFixed(1), fixes: r.n };
+        if (fdProd) { mk.prod = fdProd; mk.prodT = Date.now(); }
+        if (cnt != null) mk.visits = [{ t: Date.now(), s: cnt ? 'active' : 'dead', c: cnt, note: '' }];
+        DB.markers.push(mk); saveDB(); drawSaved(); $('fdNote').value = ''; $('fdCount').value = '';
+        toast(`${MT[t][0]} pinned (±${Math.max(1, Math.round(r.acc * YD))} yd). ${FOODCAL[t] && !['water', 'spring'].includes(t) ? foodNowWord(t, new Date()).replace(/^./, c => c.toUpperCase()) + '.' : ''}`);
+        fillFood();
+      } finally { fdBusy = false; b.setAttribute('aria-pressed', false); }
+    });
     // ---------- spring scouting plan: after the season, a route of stops with a job at each ----------
     const SP_DONE = () => store.get('spring.done', {});
     const spKey = ll => ll.lat.toFixed(5) + ',' + ll.lng.toFixed(5);
@@ -8289,7 +8409,7 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
     });
     // ---------- 3+4. sign visit history and acorn tally ----------
     const VST = { fresh: ['Fresh', '#c62828'], active: ['Active', '#ef6c00'], old: ['Old', '#9e9e9e'], dead: ['Dead / gone', '#455a64'] };
-    const isMast = m => ['whiteoak', 'redoak', 'fruit'].includes(m.type);
+    const isMast = m => ['whiteoak', 'redoak', 'chestnutoak', 'beech', 'fruit', 'persimmon'].includes(m.type);
     const loggable = m => deerish(m) || ['note', 'landmark', 'camera', 'cellcam'].includes(m.type);
     const sigT = m => { const v = (m.visits || []).filter(x => x.s === 'fresh' || x.s === 'active').sort((a, b) => b.t - a.t)[0]; return v ? v.t : m.t; };
     function visitHtml(m) {
@@ -9099,9 +9219,9 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
       if (tool === 'layers') tool = null; // layers is a panel, not a map mode
       document.querySelectorAll('.mtools [data-tool]').forEach(b => b.classList.toggle('on', b.dataset.tool === tool));
       $('mpAiBtn').classList.toggle('on', tool === 'ai');
-      for (const id of ['add', 'measure', 'track', 'saved', 'rules', 'ai', 'route', 'blood', 'bearing', 'approach', 'scout', 'profile', 'chain', 'ready']) $('mp-' + id).hidden = tool !== id;
+      for (const id of ['add', 'measure', 'track', 'saved', 'rules', 'ai', 'route', 'blood', 'bearing', 'approach', 'scout', 'profile', 'chain', 'ready', 'food']) $('mp-' + id).hidden = tool !== id;
       if (tool === 'chain') drawChain(); if (tool === 'ready') fillReady();
-      if (tool === 'approach') fillApproach(); if (tool === 'scout') fillScout(); if (tool === 'bearing' && compass.heading() != null && !$('brgDeg').value) $('brgDeg').value = Math.round(compass.heading()) % 360;
+      if (tool === 'approach') fillApproach(); if (tool === 'scout') fillScout(); if (tool === 'food') { fillFood(); startGPS(false); } if (tool === 'bearing' && compass.heading() != null && !$('brgDeg').value) $('brgDeg').value = Math.round(compass.heading()) % 360;
       if (tool === 'blood') { renderBlood(); if (curBT()) { startGPS(false); keepAwake(true); } }
       if (tool === 'route') fillRouteSelects();
       if (tool) $('mp-layers').hidden = true;
@@ -9880,6 +10000,119 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
     };
   })();
 
+  // =================================================================
+  // YOUR DEER MODEL: learns from your sits, sightings and kills which conditions bring deer past you
+  // Starts from what research shows (time of day, rut, cold), and moves toward your own data as it grows.
+  // =================================================================
+  const deerModel = (() => {
+    const NHI = [36, 39, 47, 60, 71, 79, 84, 82, 75, 63, 52, 41]; // normal daily highs (°F), Hudson Valley / north Jersey
+    const normT = d => NHI[d.getMonth()] - 9; // a typical hunting-hour temperature for the date
+    const C8 = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'], c8 = x => C8[Math.round(((x % 360) + 360) % 360 / 45) % 8];
+    const dist = (a, b) => { const r = Math.PI / 180, dl = (b.lat - a.lat) * r, dn = (b.lon - a.lon) * r, h = Math.sin(dl / 2) ** 2 + Math.cos(a.lat * r) * Math.cos(b.lat * r) * Math.sin(dn / 2) ** 2; return 12742000 * Math.asin(Math.sqrt(h)); };
+    const esc = t => String(t == null ? '' : t).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    const RUTP = { 'Early season': 0.9, 'Pre-rut': 1, 'Seeking': 1.15, 'Chasing': 1.3, 'Peak breeding': 1.2, 'Post-rut': 0.95, 'Second rut': 0.95, 'Early winter': 0.85, 'Winter': 0.8, 'Off season': 0.75 };
+    // factor: [name, how to read a condition -> level, expert prior per level, order of levels]
+    const F = [
+      ['Time of day', c => c.h < 10.5 ? 'Morning' : c.h < 14 ? 'Midday' : 'Evening', { Morning: 1, Midday: 0.55, Evening: 1.1 }],
+      ['Rut phase', c => c.rut, RUTP],
+      ['Temperature', c => c.temp == null ? null : (x => x <= -8 ? 'Much colder than normal' : x <= -3 ? 'Colder than normal' : x < 3 ? 'Normal for the date' : x < 8 ? 'Warmer than normal' : 'Much warmer than normal')(c.temp - c.norm), { 'Much colder than normal': 1.2, 'Colder than normal': 1.1, 'Normal for the date': 1, 'Warmer than normal': 0.9, 'Much warmer than normal': 0.78 }],
+      ['Pressure trend', c => c.ptr || null, { Rising: 1, Steady: 1, Falling: 1 }],
+      ['Pressure', c => c.press == null ? null : c.press < 29.85 ? 'Low (under 29.85)' : c.press > 30.15 ? 'High (over 30.15)' : 'Normal', { 'Low (under 29.85)': 1, Normal: 1, 'High (over 30.15)': 1 }],
+      ['Moon', c => c.moon, { 'New moon': 1, Waxing: 1, 'Full moon': 1, Waning: 1 }],
+      ['Wind speed', c => c.wspd == null ? null : c.wspd < 5 ? 'Calm (under 5 mph)' : c.wspd <= 12 ? 'Breezy (5–12 mph)' : 'Windy (over 12 mph)', { 'Calm (under 5 mph)': 1, 'Breezy (5–12 mph)': 1, 'Windy (over 12 mph)': 0.8 }],
+      ['Wind for the stand', c => c.wfit, { 'Good wind': 1.1, 'Wrong wind': 0.7 }],
+      ['Food near the stand', c => c.food == null ? null : c.food < 0.25 ? 'Little in season' : c.food < 1 ? 'Some in season' : 'Lots in season', { 'Little in season': 0.85, 'Some in season': 1, 'Lots in season': 1.2 }],
+    ];
+    const A = 2.5; // how many deer of evidence it takes to move a factor halfway from the research toward your data
+    const markers = () => store.get('maps.markers', []);
+    const foodAt = (ll, d, ms) => { let s = 0, top = null; for (const m of ms) { if (!FOODCAL[m.type] || m.type === 'water' || m.type === 'spring' || m.type === 'mineral') continue; const x = dist(ll, m); if (x > 300) continue; const v = foodPull(m, d) * Math.exp(-x / 130); s += v; if (!top || v > top.v) top = { m, v, x }; } return { s, top }; };
+    function moonOf(d, ll) { try { const sm = sunmoon.day(d.getFullYear(), d.getMonth() + 1, d.getDate(), ll.lat, ll.lon), p = sm.phase || ''; return /new/i.test(p) || sm.illum < 0.08 ? 'New moon' : /full/i.test(p) || sm.illum > 0.92 ? 'Full moon' : /wax|first/i.test(p) ? 'Waxing' : 'Waning'; } catch (e) { return null; } }
+    function cond(d, ll, wx, standId, ms) {
+      const winds = (standId && (store.get('stand.winds', {})[standId] || (ms.find(m => m.id === standId) || {}).winds)) || [];
+      return { h: d.getHours() + d.getMinutes() / 60, rut: predict.rut ? predict.rut(d) : 'Off season', temp: wx && wx.temp != null ? wx.temp : null, norm: normT(d), ptr: wx && wx.ptr, press: wx && wx.press != null ? wx.press : null, wspd: wx && wx.wspd != null ? wx.wspd : null, moon: moonOf(d, ll), wfit: wx && wx.wdir != null && winds.length ? (winds.includes(c8(wx.wdir)) ? 'Good wind' : 'Wrong wind') : null, food: foodAt(ll, d, ms).s };
+    }
+    let MOD = null;
+    function fit() {
+      const J = store.get('journal', []).filter(e => e.stand && e.stand.lat != null && e.t1 > e.t0), ms = markers();
+      const rows = J.map(e => { const d = new Date((e.t0 + e.t1) / 2), ll = { lat: e.stand.lat, lon: e.stand.lon }; return { e, hrs: Math.max(0.5, (e.t1 - e.t0) / 36e5), y: (+e.b || 0) + (+e.d || 0) + (+e.f || 0), bucks: +e.b || 0, c: cond(d, ll, e.wx, e.stand.id, ms), sk: e.stand.id || (e.stand.lat.toFixed(4) + e.stand.lon.toFixed(4)), sn: e.stand.name || 'Stand' }; });
+      const lv = rows.map(r => F.map(f => f[1](r.c)));
+      const mult = F.map(f => Object.assign({}, f[2])), stand = {};
+      const prior = (k, l) => F[k][2][l] != null ? F[k][2][l] : 1;
+      const H = rows.reduce((a, r) => a + r.hrs, 0), Y = rows.reduce((a, r) => a + r.y, 0);
+      let base = 0.9; // deer per hour on an average sit (typical for northeast public land) until your data says otherwise
+      const pred = (i, skip) => { let p = base * rows[i].hrs * (stand[rows[i].sk] || 1); F.forEach((f, k) => { if (k === skip) return; const l = lv[i][k]; if (l != null) p *= mult[k][l] != null ? mult[k][l] : prior(k, l); }); return p; };
+      for (let it = 0; it < 10 && rows.length; it++) {
+        const E0 = rows.reduce((a, r, i) => a + pred(i), 0); base = (Y + 4 * 0.9) / (E0 / base + 4); // shrink the base rate toward a typical 0.9 deer/hr
+        F.forEach((f, k) => {
+          const O = {}, E = {};
+          rows.forEach((r, i) => { const l = lv[i][k]; if (l == null) return; O[l] = (O[l] || 0) + r.y; E[l] = (E[l] || 0) + pred(i, k); });
+          for (const l of Object.keys(E)) { const p = prior(k, l); mult[k][l] = (O[l] + A * p) / (E[l] + A); }
+        });
+        const SO = {}, SE = {}; rows.forEach((r, i) => { SO[r.sk] = (SO[r.sk] || 0) + r.y; SE[r.sk] = (SE[r.sk] || 0) + pred(i) / (stand[r.sk] || 1); });
+        for (const s of Object.keys(SE)) stand[s] = (SO[s] + A) / (SE[s] + A);
+      }
+      // what your sightings and kills say about foods: deer seen within 150 yd of each food type, by season
+      const SIGHT = ['sighting', 'buck', 'doe', 'shot', 'recovery'];
+      const ev = ms.filter(m => SIGHT.includes(m.type)).map(m => ({ ll: m, t: m.t, buck: m.type === 'buck' }))
+        .concat(J.filter(e => e.harvest).map(e => ({ ll: e.stand, t: e.t0, buck: true })))
+        .concat((store.get('maps.blood', []) || []).flatMap(t => t.pts.filter(p => p.kind === 'found').map(p => ({ ll: p, t: p.t, buck: false }))));
+      const fUse = {};
+      for (const x of ev) { const fa = foodAt(x.ll, new Date(x.t), ms); if (fa.top && fa.x !== undefined); if (fa.top && fa.top.x < 140) { const ty = fa.top.m.type; fUse[ty] = (fUse[ty] || 0) + 1; } }
+      const n = Object.fromEntries(F.map((f, k) => [k, {}])); rows.forEach((r, i) => F.forEach((f, k) => { const l = lv[i][k]; if (l != null) { const o = n[k][l] = n[k][l] || { sits: 0, y: 0, h: 0 }; o.sits++; o.y += r.y; o.h += r.hrs; } }));
+      const sn = {}; rows.forEach(r => { const o = sn[r.sk] = sn[r.sk] || { name: r.sn, sits: 0, y: 0, h: 0, b: 0 }; o.sits++; o.y += r.y; o.h += r.hrs; o.b += r.bucks; });
+      MOD = { base, mult, stand, n, sn, sits: rows.length, H, Y, ev: ev.length, fUse, t: Date.now() };
+      return MOD;
+    }
+    const model = () => MOD && Date.now() - MOD.t < 60000 ? MOD : fit();
+    // expected deer per hour for a stand at a time and weather; why[] says what pushed it up or down
+    function rate(standM, d, wx) {
+      const M = model(), ms = markers(), ll = { lat: standM.lat, lon: standM.lon }, c = cond(d, ll, wx, standM.id, ms), why = [];
+      let r = M.base * (M.stand[standM.id] || M.stand[standM.lat.toFixed(4) + standM.lon.toFixed(4)] || 1);
+      F.forEach((f, k) => { const l = f[1](c); if (l == null) return; const m = M.mult[k][l] != null ? M.mult[k][l] : (f[2][l] != null ? f[2][l] : 1); r *= m; if (Math.abs(m - 1) >= 0.08) why.push([f[0], l, m, (M.n[k][l] || {}).sits || 0]); });
+      const fa = foodAt(ll, d, ms); if (fa.top && fa.top.v > 0.3) why.push(['Food', `${FOODCAL[fa.top.m.type].n} ${Math.round(fa.top.x * 1.0936)} yd away (${foodNowWord(fa.top.m.type, d)})`, null, 0]);
+      return { r, why, c };
+    }
+    // ---- forecast: each stand, next 3 mornings and evenings, with your model ----
+    async function forecast() {
+      const out = $('dmFc'), ss = markers().filter(m => ['stand', 'ladder', 'saddle', 'blind', 'box'].includes(m.type));
+      if (!ss.length) { out.innerHTML = '<div class="caption">Add your stands on the map first.</div>'; return; }
+      out.innerHTML = '<div class="caption">Getting the hourly forecast…</div>';
+      const a = ss[0]; let j = null;
+      try { const r = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${a.lat.toFixed(3)}&longitude=${a.lon.toFixed(3)}&hourly=temperature_2m,pressure_msl,wind_speed_10m,wind_direction_10m&wind_speed_unit=mph&temperature_unit=fahrenheit&timezone=auto&forecast_days=4`); j = await r.json(); } catch (e) { j = null; }
+      const slots = [], now = Date.now();
+      for (let k = 0; k < 4; k++) for (const [h, lbl] of [[7, 'morning'], [16, 'evening']]) { const d = new Date(); d.setDate(d.getDate() + k); d.setHours(h, 30, 0, 0); if (d.getTime() < now - 2 * 36e5 || slots.length >= 6) continue; slots.push({ d, lbl }); }
+      const wxFor = d => { if (!j || !j.hourly) return null; const pad = n => String(n).padStart(2, '0'), key = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:00`, i = j.hourly.time.indexOf(key); if (i < 0) return null; const h = j.hourly, p = h.pressure_msl[i], p3 = i >= 3 ? h.pressure_msl[i - 3] : p; return { temp: Math.round(h.temperature_2m[i]), wspd: Math.round(h.wind_speed_10m[i]), wdir: Math.round(h.wind_direction_10m[i]), press: +(p * 0.02953).toFixed(2), ptr: p - p3 > 1 ? 'Rising' : p - p3 < -1 ? 'Falling' : 'Steady' }; };
+      const cells = slots.map(s => { const wx = wxFor(s.d); return { s, wx, per: ss.map(m => ({ m, ...rate(m, s.d, wx) })).sort((x, y) => y.r - x.r) }; });
+      const mx = Math.max(...cells.flatMap(c => c.per.map(p => p.r)), 0.1);
+      const best = cells.flatMap(c => c.per.slice(0, 1).map(p => ({ c, p }))).sort((x, y) => y.p.r - x.p.r)[0];
+      out.innerHTML = (best ? `<div class="dm-best"><b>Best sit coming up:</b> ${esc(best.p.m.name || 'Stand')}, ${best.c.s.d.toLocaleDateString([], { weekday: 'long' })} ${best.c.s.lbl}: about <b>${best.p.r.toFixed(1)} deer per hour</b>.<ul>${best.p.why.slice(0, 5).map(w => `<li>${esc(w[0])}: ${esc(w[1])}${w[2] != null ? ` (${w[2] >= 1 ? '+' : '−'}${Math.round(Math.abs(w[2] - 1) * 100)}%${w[3] ? `, from ${w[3]} of your sits` : ', research'})` : ''}</li>`).join('')}</ul></div>` : '')
+        + cells.map(c => `<div class="dm-slot"><div class="dm-sh"><b>${c.s.d.toLocaleDateString([], { weekday: 'short' })} ${c.s.lbl}</b><span class="caption">${c.wx ? `${c.wx.temp}°F · ${c8(c.wx.wdir)} ${c.wx.wspd} mph · ${c.wx.press.toFixed(2)} ${c.wx.ptr.toLowerCase()}` : 'no forecast'} · ${esc(c.per[0].c.moon || '')}</span></div>`
+          + c.per.slice(0, 4).map(p => `<div class="jn-bar"><span>${esc(p.m.name || 'Stand')}</span><span class="tr"><i style="width:${Math.round(100 * p.r / mx)}%"></i></span><span>${p.r.toFixed(1)}/hr</span></div>`).join('') + '</div>').join('')
+        + `<div class="caption">Deer per hour you can expect to see, from your model. Uses the forecast at ${a.name ? esc(a.name) : 'your first stand'}.</div>`;
+    }
+    function render() {
+      const box = $('dmBox'); if (!box) return;
+      const M = fit();
+      const conf = M.sits >= 25 ? 'strong' : M.sits >= 10 ? 'growing' : M.sits >= 3 ? 'early' : 'research only';
+      let h = `<div class="dm-head"><span class="pill ${M.sits >= 10 ? 'good' : M.sits >= 3 ? 'mid' : ''}">${conf}</span> Built from <b>${M.sits}</b> sit${M.sits === 1 ? '' : 's'} (${Math.round(M.H)} h, ${M.Y} deer seen) and <b>${M.ev}</b> sightings and kills on your map. Average: <b>${M.base.toFixed(1)} deer per hour</b>.</div>`;
+      if (M.sits < 3) h += '<div class="caption">Until you log a few sits in the Hunt journal (with the stand picked), the model uses what research shows. Every sit you log moves it toward what happens in your woods.</div>';
+      h += '<div class="dm-f">' + F.map((f, k) => {
+        const lv = Object.keys(Object.assign({}, f[2], M.mult[k])); if (!lv.length) return '';
+        const all = lv.map(l => { const m = M.mult[k][l] != null ? M.mult[k][l] : f[2][l], o = M.n[k][l]; return { l, m, o }; }), mine = all.filter(x => x.o);
+        const rows = mine.length ? mine : all.filter(x => Math.abs(x.m - 1) > 0.02);
+        if (!rows.length) return '';
+        return `<div><h3>${esc(f[0])}</h3>${rows.map(x => `<div class="dm-row"><span>${esc(x.l)}</span><span class="dm-m ${x.m >= 1.08 ? 'up' : x.m <= 0.92 ? 'dn' : ''}">${x.m >= 1 ? '+' : '−'}${Math.round(Math.abs(x.m - 1) * 100)}%</span><span class="caption">${x.o ? `${x.o.sits} sit${x.o.sits > 1 ? 's' : ''}, ${(x.o.y / x.o.h).toFixed(1)}/hr` : 'research'}</span></div>`).join('')}</div>`;
+      }).join('') + '</div>';
+      const st = Object.entries(M.sn).sort((a, b) => (M.stand[b[0]] || 1) - (M.stand[a[0]] || 1));
+      if (st.length) h += `<div><h3 style="margin:10px 0 4px">Your stands</h3>${st.map(([k, o]) => `<div class="dm-row"><span>${esc(o.name)}</span><span class="dm-m ${(M.stand[k] || 1) >= 1.08 ? 'up' : (M.stand[k] || 1) <= 0.92 ? 'dn' : ''}">${(M.stand[k] || 1) >= 1 ? '+' : '−'}${Math.round(Math.abs((M.stand[k] || 1) - 1) * 100)}%</span><span class="caption">${o.sits} sits, ${(o.y / o.h).toFixed(1)}/hr${o.b ? `, ${o.b} buck${o.b > 1 ? 's' : ''}` : ''}</span></div>`).join('')}</div>`;
+      const fu = Object.entries(M.fUse).sort((a, b) => b[1] - a[1]);
+      if (fu.length) h += `<div class="caption" style="margin-top:8px"><b>Deer you saw or shot near food:</b> ${fu.map(([t, n]) => `${esc(FOODCAL[t].n.toLowerCase())} ${n}×`).join(', ')}.</div>`;
+      h += '<div class="caption" style="margin-top:6px">+/− is how much each condition changes deer movement past your stands compared with average. It starts from research (time of day, rut, temperature; pressure and moon at no effect) and shifts toward your own sits as you log them. Few sits can mislead, so research keeps a say until the evidence is strong.</div>';
+      box.innerHTML = h;
+    }
+    $('dmFcBtn').addEventListener('click', forecast);
+    return { render, rate, fit, foodAt: (ll, d) => foodAt(ll, d, markers()) };
+  })();
   // =================================================================
   // SHOT DISTANCE (tree-stand angle) and SHOT PLACEMENT
   // =================================================================
@@ -11301,7 +11534,7 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
       } catch (e) { $('scWx').textContent = 'No weather record right now (no signal?). Use the guide below.'; }
     }
     function mast() {
-      const ms = store.get('maps.markers', []).filter(m => ['whiteoak', 'redoak', 'fruit'].includes(m.type)), now = Date.now();
+      const ms = store.get('maps.markers', []).filter(m => ['whiteoak', 'redoak', 'chestnutoak', 'beech', 'fruit', 'persimmon'].includes(m.type)), now = Date.now();
       if (!ms.length) { $('scMast').innerHTML = '<div class="caption">No oak or fruit tree pins yet. In Maps, add a White oak or Red oak pin under trees you find dropping.</div>'; return; }
       const rows = ms.map(m => { const v = (m.visits || []).filter(x => x.c != null).sort((a, b) => b.t - a.t); return { m, last: v[0], prev: v[1] }; })
         .sort((a, b) => (b.last && now - b.last.t < 14 * 864e5 ? b.last.c : -1) - (a.last && now - a.last.t < 14 * 864e5 ? a.last.c : -1));
@@ -11502,7 +11735,7 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
     $('bgWrap').hidden = next !== 'home';
     if (next === 'home') { compass.home(); tags.homeBanner(); backup.homeBanner(); }
     if (TOOLS[next] && TOOLS[next].show) TOOLS[next].show();
-    if (next === 'predict') journal.hint();
+    if (next === 'predict') { journal.hint(); deerModel.render(); }
     window.scrollTo(0, 0);
   }
   const PARENT = { blood: 'tracking', track: 'tracking' };
