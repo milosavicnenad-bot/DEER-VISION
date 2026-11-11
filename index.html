@@ -1595,6 +1595,27 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
 /* exceptions that must keep their own color */
 #mpVoiceBtn.rec { background: #c62828 !important; border-color: #c62828 !important; }
 .wk-days button[aria-pressed="false"] { background: var(--surface) !important; color: var(--fg) !important; }
+
+.rec-hit { flex-wrap: wrap; }
+.rec-dir { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; max-width: 300px; }
+.rec-dir button { border: 1.5px solid var(--line); background: var(--card, transparent); color: var(--fg); border-radius: 8px; padding: 8px 4px; font: inherit; font-weight: 700; cursor: pointer; }
+.rec-dir .rec-ph { font-size: .72rem; font-weight: 600; line-height: 1.1; }
+.rec-z { width: 34px; height: 34px; border-radius: 50%; background: #d50000; color: #fff; border: 3px solid #fff; box-shadow: 0 0 0 2px #1b1b1b, 0 2px 6px rgba(0,0,0,.5); display: grid; place-items: center; font: 800 15px system-ui; }
+.rec-z.top { animation: huntp 1.6s ease-in-out infinite; }
+.rec-h { font-size: .9rem; }
+.rec-c { display: grid; grid-template-columns: auto 1fr; gap: 6px 10px; align-items: start; border: 1.5px solid var(--line); border-radius: 10px; padding: 8px 10px; }
+.rec-c.top { border-color: #d50000; }
+.rec-c .acts { grid-column: 1 / -1; display: flex; gap: 6px; flex-wrap: wrap; }
+.rec-n { width: 24px; height: 24px; border-radius: 50%; background: #d50000; color: #fff; display: grid; place-items: center; font: 800 12px system-ui; }
+.sc-num.sp { background: #2e7d32; width: 26px; height: 26px; }
+.sc-num.sp.done { background: #78909c; }
+.sp-when { margin: 6px 0; padding: 8px 10px; border-left: 3px solid #2e7d32; background: color-mix(in srgb, #2e7d32 8%, transparent); border-radius: 6px; font-size: .85rem; }
+.sp-list { margin: 6px 0; padding-left: 0; list-style: none; display: grid; gap: 6px; counter-reset: sp; }
+.sp-list li { display: flex; gap: 8px; align-items: flex-start; border: 1px solid var(--line); border-radius: 10px; padding: 8px; color: var(--fg); }
+.sp-list li label { display: flex; gap: 8px; flex: 1; align-items: flex-start; cursor: pointer; }
+.sp-list li small { display: block; color: var(--muted, inherit); opacity: .85; margin-top: 2px; font-size: .8rem; }
+.sp-list li.done { opacity: .55; }
+.sp-list li.done b { text-decoration: line-through; }
 </style>
 </head>
 <body>
@@ -2449,7 +2470,7 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
         <label class="lyr"><input type="checkbox" id="scAi" checked><div><b>Include AI hunt spots</b><span>Saddles, benches, funnels, food and bedding the terrain model finds.</span></div></label>
         <label class="lyr"><input type="checkbox" id="scPins" checked><div><b>Include my pins</b><span>Food, water, terrain and sign pins within about a mile.</span></div></label>
         <div class="row"><label for="scMax">Most stops</label><input type="number" id="scMax" min="3" max="20" value="10" class="full" inputmode="numeric"><span class="v"></span></div>
-        <div class="actions"><button class="btn primary" id="scPlan" type="button">Plan the loop</button><button class="btn" id="scNext" type="button">Navigate to next stop</button><button class="btn" id="scProf" type="button">Elevation profile</button><button class="btn" id="scClear" type="button">Clear</button></div>
+        <div class="actions"><button class="btn primary" id="scPlan" type="button">Plan the loop</button><button class="btn" id="scSpring" type="button">Spring scouting plan</button><button class="btn" id="scNext" type="button">Navigate to next stop</button><button class="btn" id="scProf" type="button">Elevation profile</button><button class="btn" id="scClear" type="button">Clear</button></div>
         <div id="scOut" class="caption"></div>
       </div>
 
@@ -2503,6 +2524,16 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
           <div class="caption" id="btHint"></div>
           <div class="actions"><button class="btn" id="btLost" type="button">Lost blood here</button><button class="btn" id="btFound" type="button">Deer found here</button><button class="btn" id="btUndo" type="button">Undo last pin</button></div>
           <div class="actions"><button class="btn" id="btShowAll" type="button">Show whole trail</button><button class="btn" id="btDone" type="button">Finish and save</button><button class="btn" id="btDel" type="button">Delete trail</button></div>
+          <div class="gd-panel rec-panel">
+            <div class="k" style="font-size:.85rem">Where did it go?</div>
+            <div class="caption">Before you follow, or when the blood runs out: the app marks the 3 most likely places the deer lies, from the hit, the way it ran, downhill, thick cover, water and bedding.</div>
+            <div><div class="k" style="font-size:.8rem">Where it hit</div><div class="seg bt-seg rec-hit" id="recHit"><button type="button" data-v="heart">Heart</button><button type="button" data-v="lungs">Lungs</button><button type="button" data-v="liver">Liver</button><button type="button" data-v="gut">Guts</button><button type="button" data-v="muscle">Leg / muscle</button><button type="button" data-v="spine">Spine</button><button type="button" data-v="unsure">Not sure</button></div></div>
+            <div><div class="k" style="font-size:.8rem">Which way it ran</div>
+              <div class="rec-dir" id="recDir"><button type="button" data-d="315">NW</button><button type="button" data-d="0">N</button><button type="button" data-d="45">NE</button><button type="button" data-d="270">W</button><button type="button" class="rec-ph" data-ph="1">Phone points it</button><button type="button" data-d="90">E</button><button type="button" data-d="225">SW</button><button type="button" data-d="180">S</button><button type="button" data-d="135">SE</button></div>
+              <div class="caption" id="recDirT"></div></div>
+            <div class="actions"><button class="btn primary" id="recGo" type="button">Show where it likely went</button><button class="btn" id="recClear" type="button" hidden>Hide zones</button></div>
+            <div id="recOut" style="display:grid;gap:8px"></div>
+          </div>
           <div class="gd-panel">
             <div class="k" style="font-size:.85rem">Search grid</div>
             <div class="caption">Lost blood? The grid covers about 120 yards around the last blood. Squares are colored by how likely the deer went there (red most likely: along its heading, close by and downhill) and numbered in search order.</div>
@@ -2749,6 +2780,9 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
     <div class="panel"><h2 style="margin:0">New piece of public land?</h2>
       <div class="caption">Plan one efficient scouting loop through saddles, benches, funnels, food and water, walked with the wind in your face. Then use <b>Approach</b> on the map to check your walk-in against bedding.</div>
       <div class="actions"><a class="btn primary" href="#scoutloop">Plan a scouting loop</a></div></div>
+    <div class="panel"><h2 style="margin:0">After the season: spring scouting plan</h2>
+      <div class="caption">Turns your season (stands and how they did in your journal, rub lines, scrapes, buck sightings) and the terrain into one walk for late winter and early spring, with a job at each stop: move a slow stand, follow a rub line to bedding, confirm bedding and look for sheds, pick next fall's stand trees.</div>
+      <div class="actions"><a class="btn primary" href="#springplan">Plan my spring scouting</a></div></div>
     <div class="panel"><h2 style="margin:0">Public-land stand rules</h2>
       <ul class="trk-tips"><li><b>New York state land</b> (6 NYCRR 190.8): label the stand with your name and address or license number; place and use it only during big game, turkey or migratory bird season; nothing that injures the tree: no nails, screws, screw-in steps or permanent stands.</li><li><b>New Jersey state parks and forests:</b> label with your Conservation ID (CID) and contact info; up no more than 30 days before the season, down within 14 days after; one stand or blind at a time; nothing that pierces a tree; no dead or diseased trees.</li><li><b>New Jersey WMAs:</b> rules differ; check the NJ Hunting Digest for that WMA.</li><li>Each stand pin shows these rules, and you can set a <b>Remove stand by</b> date in the pin.</li></ul>
       <div class="caption">Rules change. Confirm with NY DEC or NJ Fish &amp; Wildlife before the season.</div></div>
@@ -2792,7 +2826,7 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
       </div></div>
     <div class="panel"><h2 style="margin:0">2 · Tracking tools</h2>
       <div class="trk-tools">
-        <a class="trk-tool" href="#bloodmap"><span class="ic" style="--h: var(--h-blood)"><svg><use href="#i-pinadd"/></svg></span><span><b>Blood pins and search grid</b><small>Pin the hit site and every drop on the map. Lost blood? The grid shows where to search.</small></span></a>
+        <a class="trk-tool" href="#bloodmap"><span class="ic" style="--h: var(--h-blood)"><svg><use href="#i-pinadd"/></svg></span><span><b>Blood pins and search grid</b><small>Pin the hit site and every drop on the map. See where the deer most likely went, and a search grid if you lose blood.</small></span></a>
         <a class="trk-tool" href="#blood"><span class="ic" style="--h: var(--h-blood)"><svg><use href="#i-blood"/></svg></span><span><b>Blood trail camera</b><small>Makes blood stand out on brown leaves and dirt.</small></span></a>
         <a class="trk-tool" href="#track"><span class="ic" style="--h: var(--h-bark)"><svg><use href="#i-track"/></svg></span><span><b>Track finder</b><small>Brings out faint hoofprints in mud, dirt and snow.</small></span></a>
         <a class="trk-tool" href="#maps"><span class="ic" style="--h: var(--h-moss)"><svg><use href="#i-map"/></svg></span><span><b>Map and navigation</b><small>Pin the shot spot and last-seen spot, then walk back to them exactly.</small></span></a>
@@ -8184,6 +8218,75 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
     $('scNext').addEventListener('click', () => { if (!scoutStops.length) { toast('Plan the loop first.'); return; } if (scoutIdx >= scoutStops.length) { setGoTo(scoutPts[0], 'back to the start'); scoutIdx = 0; return; } const s = scoutStops[scoutIdx++]; setGoTo(s.ll, `Stop ${scoutIdx}: ${s.name}`); });
     $('scProf').addEventListener('click', () => scoutPts ? showProfile(scoutPts, 'Scouting loop profile') : toast('Plan the loop first.'));
     $('scClear').addEventListener('click', () => { if (scoutLayer) map.removeLayer(scoutLayer); scoutLayer = null; scoutPts = null; scoutStops = []; scoutExtra = []; $('scOut').innerHTML = ''; });
+    // ---------- spring scouting plan: after the season, a route of stops with a job at each ----------
+    const SP_DONE = () => store.get('spring.done', {});
+    const spKey = ll => ll.lat.toFixed(5) + ',' + ll.lng.toFixed(5);
+    async function springPlan() {
+      const v = $('scFrom').value, pm = DB.markers.find(m => m.id === v), start = v === 'me' ? (me || map.getCenter()) : pm ? L.latLng(pm.lat, pm.lon) : map.getCenter();
+      $('scSpring').disabled = true; $('scOut').textContent = 'Going through your season: sign, stands, journal and the terrain…';
+      try {
+        const R = 1700, near = m => L.latLng(m.lat, m.lon).distanceTo(start) < R, yr = Date.now() - 365 * 864e5;
+        const M = DB.markers.filter(inArea).filter(near), J = store.get('journal', []), cand = [];
+        const add = (ll, name, task, w, kind) => cand.push({ ll, name, task, w, kind });
+        // 1. stands: keep, fix or move, from your journal sits
+        const SET = ['stand', 'ladder', 'saddle', 'blind', 'box'];
+        for (const s of M.filter(m => SET.includes(m.type))) {
+          const ll = L.latLng(s.lat, s.lon), sits = J.filter(e => e.stand && e.stand.lat != null && ll.distanceTo([e.stand.lat, e.stand.lon]) < 40 && e.t0 > yr);
+          const hrs = sits.reduce((a, e) => a + Math.max(0.5, (e.t1 - e.t0) / 36e5), 0), deer = sits.reduce((a, e) => a + (+e.b || 0) + (+e.d || 0), 0), bucks = sits.reduce((a, e) => a + (+e.b || 0), 0);
+          const nm = s.name || MT[s.type][0];
+          if (sits.length >= 3 && deer / hrs < 0.25) add(ll, nm, `Slow stand: ${sits.length} sits, ${deer} deer. Walk 100–200 yd toward the nearest bedding or pinch and look for a tree on last fall's trails; plan to move it.`, 5, 'move');
+          else if (sits.length) add(ll, nm, `${sits.length} sit${sits.length > 1 ? 's' : ''}, ${deer} deer${bucks ? ` (${bucks} buck${bucks > 1 ? 's' : ''})` : ''}. Trim shooting lanes now, clear a quiet path in, and check the straps and steps.`, sits.length >= 3 && deer / hrs > 0.6 ? 3 : 2.5, 'keep');
+          else add(ll, nm, 'No sits logged here. Check the trails around it are still used, or pick a better tree before next fall.', 2, 'check');
+        }
+        // 2. rub lines: rubs within 120 yd of each other, walked from end to end
+        const rubs = M.filter(m => m.type === 'rub' && m.t > yr), used = new Set();
+        for (const r0 of rubs) {
+          if (used.has(r0)) continue;
+          const grp = rubs.filter(x => L.latLng(x.lat, x.lon).distanceTo([r0.lat, r0.lon]) < 110); grp.forEach(x => used.add(x));
+          if (grp.length >= 2) { const c = L.latLng(grp.reduce((a, x) => a + x.lat, 0) / grp.length, grp.reduce((a, x) => a + x.lon, 0) / grp.length); add(c, `Rub line (${grp.length} rubs)`, 'Walk the rub line end to end. Rubs face the way bucks travel, usually from bedding: follow it to the bed and look for a stand tree 20 yd off the line, downwind.', 4.5, 'rub'); }
+          else add(L.latLng(r0.lat, r0.lon), r0.name || 'Rub', 'Look for more rubs and the trail it sits on; one rub alone is a hint, a line is a pattern.', 1.5, 'rub');
+        }
+        // 3. scrapes and big sign
+        for (const s of M.filter(m => m.type === 'scrape' && m.t > yr)) add(L.latLng(s.lat, s.lon), s.name || 'Scrape', 'Check the licking branch. Bucks reuse the same scrape trees year after year: if the branch is there, it is a good spot for a camera next October.', 2.5, 'scrape');
+        for (const s of M.filter(m => (m.type === 'buck' || m.type === 'shed') && m.t > yr)) add(L.latLng(s.lat, s.lon), s.name || MT[s.type][0], 'Shed hunt the cover near here, and look for the trail he used. Big bucks bed within a few hundred yards of where you see them.', 3, 'buck');
+        // 4. terrain the model sees, checked against what you already know
+        let r = null; try { r = await findSpots(start, 1000); } catch (e) { r = null; }
+        if (r) {
+          const known = (ll, types, d) => M.some(m => types.includes(m.type) && L.latLng(m.lat, m.lon).distanceTo(ll) < d);
+          for (const s of r.spots) {
+            if (BEDT.includes(s.t)) { if (!known(s.ll, ['bed'], 150)) add(s.ll, `Possible bedding (${SPOT[s.t][0].toLowerCase()})`, 'Walk right through it now; spring is the only time it does no harm. Look for oval beds, droppings and rubs on the edges, and shed antlers on south-facing sides. Mark the beds you find.', 4, 'bed'); }
+            else if (['funnel', 'saddle', 'bench', 'pinch', 'inside'].includes(s.t) || /Funnel|Saddle|Bench|pinch/i.test(SPOT[s.t][0])) { if (!known(s.ll, SET, 120)) add(s.ll, SPOT[s.t][0], 'Is there a worn trail through it? If yes, pick a stand or saddle tree now: 20–25 yd off the trail, downwind of it for the usual wind, with a quiet way in.', 3.5, 'tree'); }
+            else if (/Food|Water/.test(SPOT[s.t][0]) && !known(s.ll, MFOOD, 150)) add(s.ll, SPOT[s.t][0], 'Check if deer use it: trails in and out, droppings. Mark what you find.', 1.2, 'food');
+          }
+        }
+        // 5. oaks: which ones dropped last fall
+        for (const s of M.filter(m => m.type === 'whiteoak' || m.type === 'redoak')) add(L.latLng(s.lat, s.lon), s.name || MT[s.type][0], 'Look for acorn caps under it and a trail to it. Note it if it produced: good oaks often produce again every 2–3 years.', 1, 'oak');
+        const done = SP_DONE(), pick = [], perK = {}, CAP = { bed: 3, tree: 3, food: 2, oak: 2, rub: 3, scrape: 2 };
+        cand.sort((a, b) => b.w - a.w).forEach(c => { if (pick.some(p => p.ll.distanceTo(c.ll) < 70)) return; if ((perK[c.kind] || 0) >= (CAP[c.kind] || 9)) return; perK[c.kind] = (perK[c.kind] || 0) + 1; pick.push(c); });
+        const max = Math.max(3, Math.min(20, +$('scMax').value || 12)), stops = pick.slice(0, max);
+        if (stops.length < 2) { $('scOut').innerHTML = 'Not enough to plan yet. Pin your stands, rubs, scrapes and beds during the season, log your sits in the Hunt journal, or move the map over your hunting area and try again.'; return; }
+        const ord = tourOrder(start, stops);
+        scoutStops = ord.map(s => ({ ll: s.ll, name: s.name })); scoutPts = [start, ...ord.map(s => s.ll), start]; scoutIdx = 0;
+        if (scoutLayer) map.removeLayer(scoutLayer); scoutLayer = L.layerGroup().addTo(map);
+        L.polyline(scoutPts, { color: '#2e7d32', weight: 4, dashArray: '8 6', opacity: 0.9, interactive: false }).addTo(scoutLayer);
+        ord.forEach((s, i) => L.marker(s.ll, { icon: L.divIcon({ className: '', html: `<div class="sc-num sp${done[spKey(s.ll)] ? ' done' : ''}">${done[spKey(s.ll)] ? '✓' : i + 1}</div>`, iconSize: [26, 26], iconAnchor: [13, 13] }), title: s.name }).bindPopup(`<div class="pop"><h4>${i + 1}. ${esc(s.name)}</h4><div class="sec">${esc(s.task)}</div></div>`, { maxWidth: 260 }).addTo(scoutLayer));
+        let len = 0; for (let i = 1; i < scoutPts.length; i++) len += scoutPts[i - 1].distanceTo(scoutPts[i]);
+        springLast = ord;
+        $('scOut').innerHTML = `<b>Spring scouting plan: ${ord.length} stops, ${fmtDist(len)} loop</b>, about ${fmtMin(len / WOODS / 60 + ord.length * 12)} with time to look around at each stop.`
+          + `<div class="sp-when">Best from the end of the season until green-up (about February to mid-April): leaves are down, sign from last fall is still easy to read, and pushing deer now does not hurt next season. Stay out of thick bedding after mid-April, before fawns are born and spring turkey season starts.</div>`
+          + `<ol class="sp-list">${ord.map((s, i) => `<li class="${done[spKey(s.ll)] ? 'done' : ''}"><label><input type="checkbox" data-sp="${i}" ${done[spKey(s.ll)] ? 'checked' : ''}><span><b>${esc(s.name)}</b> · ${fmtDist(s.ll.distanceTo(i ? ord[i - 1].ll : start))} from the last stop<small>${esc(s.task)}</small></span></label><button type="button" class="btn" data-spgo="${i}">Go</button></li>`).join('')}</ol>`
+          + `<div class="actions"><button type="button" class="btn" id="spShare">Send the plan…</button></div>`;
+        map.fitBounds(L.latLngBounds(scoutPts).pad(0.15));
+      } finally { $('scSpring').disabled = false; }
+    }
+    let springLast = [];
+    $('scSpring').addEventListener('click', () => springPlan());
+    $('scOut').addEventListener('click', e => {
+      const c = e.target.closest('[data-sp]'), g = e.target.closest('[data-spgo]'), sh = e.target.closest('#spShare');
+      if (c) { const s = springLast[+c.dataset.sp]; if (!s) return; const d = SP_DONE(), k = spKey(s.ll); if (c.checked) d[k] = Date.now(); else delete d[k]; store.set('spring.done', d); c.closest('li').classList.toggle('done', c.checked); }
+      if (g) { const i = +g.dataset.spgo, s = springLast[i]; if (s) { scoutIdx = i + 1; setGoTo(s.ll, `Stop ${i + 1}: ${s.name}`); } }
+      if (sh) shareText('Spring scouting plan', 'Deer Eyes spring scouting plan\n' + springLast.map((s, i) => `${i + 1}. ${s.name} (${s.ll.lat.toFixed(5)}, ${s.ll.lng.toFixed(5)}): ${s.task}`).join('\n'));
+    });
     // ---------- 3+4. sign visit history and acorn tally ----------
     const VST = { fresh: ['Fresh', '#c62828'], active: ['Active', '#ef6c00'], old: ['Old', '#9e9e9e'], dead: ['Dead / gone', '#455a64'] };
     const isMast = m => ['whiteoak', 'redoak', 'fruit'].includes(m.type);
@@ -8762,7 +8865,7 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
       $('btOld').innerHTML = list.length ? '<div class="k">Saved blood trails</div>' + list.map(x => `<button type="button" class="sitem" data-id="${x.id}"><span class="bt-pin" style="--c:#b3122a;width:24px;height:24px">${x.pts.filter(p => p.kind === 'blood').length}</span><div><b>${esc(x.name)}</b><span>${new Date(x.t).toLocaleDateString()} · ${fmtDist(btLen(x.pts))}${x.pts.some(p => p.kind === 'found') ? ' · found' : ''}</span></div><span>${x.id === btActive ? 'open' : ''}</span></button>`).join('') : '';
       if (!t) return;
       const blood = t.pts.filter(p => p.kind === 'blood').length, hit = t.pts[0], last = t.pts[t.pts.length - 1];
-      $('btName').textContent = t.name;
+      $('btName').textContent = t.name; renderRec();
       $('btStats').innerHTML = `<div class="stat"><span class="caption">Blood pins</span><span class="big">${blood}</span></div><div class="stat"><span class="caption">Along the trail</span><span class="big">${fmtDist(btLen(t.pts))}</span></div><div class="stat"><span class="caption">From hit site</span><span class="big">${t.pts.length > 1 ? fmtDist(L.latLng(hit.lat, hit.lon).distanceTo([last.lat, last.lon])) : '—'}</span></div>`;
       document.querySelectorAll('#btAmt button').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === btAmt));
       $('gdBox').hidden = !t.grid; $('gdMake').textContent = t.grid ? 'New search grid here' : 'Lost blood? Make a search grid';
@@ -8802,12 +8905,98 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
       btActive = t.id; saveBT(); drawBlood(); drawGrid(); renderBlood(); map.fitBounds(L.latLngBounds(t.pts.map(p => [p.lat, p.lon])).pad(0.3), { maxZoom: 18 });
     });
     $('btDel').addEventListener('click', () => { const t = curBT(); if (!t) return; if (!confirm(`Delete "${t.name}" and all its pins?`)) return; BT = BT.filter(x => x !== t); btActive = null; saveBT(); drawBlood(); renderBlood(); });
-    $('gdMake').addEventListener('click', () => { $('gdMake').disabled = true; makeGrid().finally(() => { $('gdMake').disabled = false; }); });
+    $('gdMake').addEventListener('click', () => { $('gdMake').disabled = true; makeGrid(null).finally(() => { $('gdMake').disabled = false; }); });
     $('gdSize').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; gridSize = +b.dataset.v; renderBlood(); });
     $('gdTap').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; tapMode = b.dataset.v; renderBlood(); });
     $('gdNext').addEventListener('click', () => { const t = curBT(), g = t && t.grid, nx = g && nextCell(g); if (!nx) return; setGoTo(L.latLng(...cellLL(g, nx.i, nx.j)), `search square #${nx.r}`); });
     $('gdClear').addEventListener('click', () => { const t = curBT(); if (!t) return; delete t.grid; tapMode = 'pin'; saveBT(); drawGrid(); renderBlood(); });
     $('btShowAll').addEventListener('click', () => { const t = curBT(); if (t && t.pts.length) map.fitBounds(L.latLngBounds(t.pts.map(p => [p.lat, p.lon])).pad(0.3), { maxZoom: 18 }); });
+
+    // ---------- where did it go? likely recovery zones from the hit, the run direction, terrain, cover and bedding ----------
+    // distances in meters a hit deer usually goes before it lies down (field experience of blood trackers; every deer is different)
+    const RUN = {
+      heart: [25, 100, 'Heart-shot deer run hard and usually fall inside 100 yd, often in sight of the run direction.', 0],
+      lungs: [40, 160, 'Double-lung deer usually go 50–150 yd and run fairly straight before they fall.', 0],
+      liver: [110, 400, 'Liver-hit deer walk off and usually bed within 150–400 yd, often in the first thick cover, downhill.', 1],
+      gut: [200, 800, 'Gut-hit deer walk slowly, often toward water or thick cover, and bed down; many bed within 300 yd if not pushed.', 2],
+      muscle: [120, 900, 'Muscle hits often run far and may live. Expect a long trail; bedded deer jump up if pushed.', 1],
+      spine: [0, 25, 'A spine hit drops the deer on the spot. If it is not where it fell, it crawled only a few yards.', 0],
+      unsure: [60, 400, 'Hit unknown: these zones cover a normal walking-off distance. Pick the hit in the Shot timer for a sharper guess.', 1],
+    };
+    let recLayer = null, recDir = null, recZones = [];
+    const recHit = () => store.get('dress.hit', null) || 'unsure';
+    function renderRec() {
+      const t = curBT(); if (!t) return;
+      const k = recHit();
+      document.querySelectorAll('#recHit button').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === k));
+      const d = recDir != null ? recDir : t.ran != null ? t.ran : null;
+      document.querySelectorAll('#recDir button[data-d]').forEach(b => b.setAttribute('aria-pressed', d != null && +b.dataset.d === Math.round(d / 45) * 45 % 360));
+      $('recDirT').textContent = d != null ? `Ran toward ${Math.round(d)}° ${cardinal(d)}` : t.pts.length >= 2 ? 'Using the direction of your blood pins.' : 'Pick which way it ran (or leave blank if you did not see).';
+    }
+    async function recPredict() {
+      const t = curBT(); if (!t || !t.pts.length) { toast('Mark the hit site first (Hit site here, or tap the map where the deer stood).'); return; }
+      const hitP = t.pts.find(p => p.kind === 'hit') || t.pts[0], H0 = L.latLng(hitP.lat, hitP.lon), hk = recHit(), R = RUN[hk];
+      let dir = recDir != null ? recDir : t.ran != null ? t.ran : null, from = H0;
+      const blood = t.pts.filter(p => p.kind !== 'found');
+      if (blood.length >= 2) { const a = blood[Math.max(0, blood.length - 3)], b = blood[blood.length - 1]; if (dir == null) dir = bearing(L.latLng(a.lat, a.lon), L.latLng(b.lat, b.lon)); from = L.latLng(b.lat, b.lon); }
+      const done = from === H0 ? 0 : H0.distanceTo(from), lo = Math.max(0, R[0] - done), hi = Math.max(40, R[1] - done);
+      $('recOut').innerHTML = 'Reading the terrain, cover and bedding around the hit…'; $('recGo').disabled = true;
+      let r = null; try { r = await findSpots(from, Math.min(1100, hi * 1.25 + 120)); } catch (e) { r = null; }
+      $('recGo').disabled = false;
+      if (!r) { $('recOut').innerHTML = 'Could not read the terrain here (no signal?). Follow the blood, and use the search grid if you lose it.'; return; }
+      const G = r.grid, [ci, cj] = G.toIJ(from), z0 = G.z(ci, cj);
+      const beds = r.spots.filter(s => BEDT.includes(s.t)).map(s => s.ll).concat(DB.markers.filter(m => m.type === 'bed').map(m => L.latLng(m.lat, m.lon)));
+      const houses = DB.markers.filter(m => m.type === 'house' || m.type === 'parking').map(m => L.latLng(m.lat, m.lon));
+      const cells = [], rr = Math.ceil(hi * 1.25 / G.cm);
+      for (let j = cj - rr; j <= cj + rr; j++) for (let i = ci - rr; i <= ci + rr; i++) {
+        if (i < 1 || j < 1 || i >= G.W - 1 || j >= G.W - 1) continue;
+        const ll = G.toLL(i, j), d = from.distanceTo(ll); if (d > hi * 1.25) continue;
+        const z = G.z(i, j), c = G.lc(i, j); if (isNaN(z)) continue;
+        let s = d < lo ? Math.exp(-(((lo - d) / Math.max(25, lo * 0.5)) ** 2)) : d > hi ? Math.exp(-(((d - hi) / (hi * 0.3)) ** 2)) : 1;
+        if (dir != null) { const cs = Math.cos((bearing(from, ll) - dir) * Math.PI / 180); s *= 0.12 + 0.88 * Math.pow(Math.max(0, (cs + 0.35) / 1.35), d < 80 ? 3 : 1.6); }
+        if (!isNaN(z0)) { const dz = z - z0; s *= dz < 0 ? 1 + Math.min(0.45, -dz / 30) : 1 - Math.min(0.45, dz / 40); }
+        if (c > 0) s *= c === 11 ? 0.05 : isDev(c) ? 0.15 : isField(c) ? (R[3] ? 0.45 : 0.75) : isCover(c) ? (R[3] ? 1.6 : 1.2) : c === 95 ? (R[3] === 2 ? 1.5 : 1.0) : 1;
+        if (R[3] === 2) { let w = false; for (let b = -3; b <= 3 && !w; b++) for (let a = -3; a <= 3; a++) { const q = G.lc(i + a, j + b); if (q === 11 || q === 95 || q === 90) { w = true; break; } } if (w) s *= 1.3; }
+        if (R[3] && beds.length) { let bd = Infinity; for (const b of beds) bd = Math.min(bd, b.distanceTo(ll)); s *= 1 + 0.9 * Math.exp(-bd / 90); }
+        for (const h of houses) if (h.distanceTo(ll) < 120) s *= 0.5;
+        cells.push({ ll, d, s, z, c, i, j });
+      }
+      if (!cells.length) { $('recOut').textContent = 'Not enough terrain data here.'; return; }
+      const mx = Math.max(...cells.map(x => x.s)); cells.forEach(x => { x.p = x.s / mx; });
+      // three zones: best cells at least 50 m apart, each with the probability mass around it
+      recZones = [];
+      for (const x of cells.slice().sort((a, b) => b.s - a.s)) { if (recZones.length >= 3) break; if (x.p < 0.35) break; if (recZones.some(z => z.ll.distanceTo(x.ll) < Math.max(50, hi * 0.2))) continue; recZones.push(x); }
+      const tot = cells.reduce((a, x) => a + x.s, 0);
+      recZones.forEach(z => { z.mass = cells.filter(x => x.ll.distanceTo(z.ll) < Math.max(40, hi * 0.15)).reduce((a, x) => a + x.s, 0) / tot; });
+      if (recLayer) map.removeLayer(recLayer); recLayer = L.layerGroup().addTo(map);
+      const half = G.cm / 2, dLat = half / 111320;
+      for (const x of cells) if (x.p > 0.2) { const dLon = half / (111320 * Math.cos(x.ll.lat * Math.PI / 180)); L.rectangle([[x.ll.lat - dLat, x.ll.lng - dLon], [x.ll.lat + dLat, x.ll.lng + dLon]], { stroke: false, fillColor: x.p > 0.75 ? '#d50000' : x.p > 0.5 ? '#ff6d00' : '#ffd600', fillOpacity: 0.12 + 0.35 * x.p, interactive: false }).addTo(recLayer); }
+      if (dir != null) L.polyline([from, destPoint(from, dir, Math.min(hi, 250))], { color: '#fff', weight: 5, opacity: 0.85, interactive: false }).addTo(recLayer), L.polyline([from, destPoint(from, dir, Math.min(hi, 250))], { color: '#b3122a', weight: 2.5, dashArray: '4 6', interactive: false }).addTo(recLayer);
+      const why = z => { const w = []; if (z.c > 0 && LC_NAME[z.c]) w.push(LC_NAME[z.c]); if (!isNaN(z0)) { const ft = Math.round((z.z - z0) * 3.281); if (Math.abs(ft) >= 6) w.push(ft < 0 ? `${-ft} ft downhill` : `${ft} ft uphill`); } if (R[3] && beds.some(b => b.distanceTo(z.ll) < 120)) w.push('near likely bedding'); return w.join(', '); };
+      recZones.forEach((z, k) => L.marker(z.ll, { zIndexOffset: 900, icon: L.divIcon({ className: '', iconSize: [34, 34], iconAnchor: [17, 17], html: `<div class="rec-z${k ? '' : ' top'}">${k + 1}</div>` }), title: `Recovery zone ${k + 1}` }).bindTooltip(`Zone ${k + 1}: ${fmtDist(from.distanceTo(z.ll))} ${cardinal(bearing(from, z.ll))}`).addTo(recLayer));
+      map.fitBounds(L.latLngBounds([from, ...recZones.map(z => z.ll)]).pad(0.35), { maxZoom: 18 });
+      const W8 = HITW[hk];
+      $('recOut').innerHTML = `<div class="rec-h"><b>${esc(RECN[hk])}.</b> ${esc(R[2])}${W8 ? ` <b>${esc(W8)}</b>` : ''}</div>`
+        + recZones.map((z, k) => `<div class="rec-c${k ? '' : ' top'}"><span class="rec-n">${k + 1}</span><div><b>${fmtDist(from.distanceTo(z.ll))} ${cardinal(bearing(from, z.ll))}</b> of ${from === H0 ? 'the hit site' : 'your last blood'} · ${k ? (z.p > 0.85 ? 'about as likely' : 'next most likely') : 'most likely'}<div class="caption">${esc(why(z))}</div></div><div class="acts"><button type="button" class="btn${k ? '' : ' primary'}" data-rgo="${k}">Navigate</button><button type="button" class="btn" data-rgrid="${k}">Search grid</button></div></div>`).join('')
+        + `<div class="caption">Red = most likely, then orange and yellow. Built from ${dir != null ? 'the run direction, ' : ''}typical distances for this hit, downhill, thick cover${R[3] === 2 ? ', water' : ''}${R[3] ? ' and bedding' : ''}. It is a guess to plan the search, not a replacement for the blood: follow the trail first, and go to the zones when it runs out.</div>`;
+      $('recClear').hidden = false;
+    }
+    const RECN = { heart: 'Heart', lungs: 'Lungs', liver: 'Liver', gut: 'Guts / paunch', muscle: 'Leg / muscle', spine: 'Neck / spine', unsure: 'Hit not sure' };
+    const HITW = { liver: 'Wait 3–4 hours before you go in.', gut: 'Wait 8–12 hours (overnight) unless rain is coming.', muscle: 'Wait 1–2 hours, then go slow and be ready for a second shot.', unsure: 'When unsure, wait 3–4 hours.', lungs: 'Give it 30–60 minutes.' };
+    $('recHit').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; store.set('dress.hit', b.dataset.v); renderRec(); });
+    $('recDir').addEventListener('click', e => {
+      const b = e.target.closest('button'); if (!b) return; const t = curBT(); if (!t) return;
+      if (b.dataset.d != null) recDir = +b.dataset.d;
+      else { const h = headingNow(); if (h == null) { toast('Point the top of the phone where the deer ran. Tap "Tap to start compass" on the menu first if the compass is off.'); return; } recDir = Math.round(h); toast(`Ran toward ${recDir}° ${cardinal(recDir)}`); }
+      t.ran = recDir; saveBT(); renderRec();
+    });
+    $('recGo').addEventListener('click', () => recPredict());
+    $('recClear').addEventListener('click', () => { if (recLayer) map.removeLayer(recLayer); recLayer = null; recZones = []; $('recOut').innerHTML = ''; $('recClear').hidden = true; });
+    $('recOut').addEventListener('click', e => {
+      const g = e.target.closest('[data-rgo]'), s = e.target.closest('[data-rgrid]'); if (!g && !s) return;
+      const z = recZones[+(g ? g.dataset.rgo : s.dataset.rgrid)]; if (!z) return;
+      if (g) setGoTo(z.ll, `Recovery zone ${+g.dataset.rgo + 1}`); else makeGrid(z.ll);
+    });
 
 
     // ---------- blood trail search grid: numbered squares around the last blood, most likely first ----------
@@ -8820,11 +9009,12 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
     const cellLL = (g, i, j) => { const k = 111320, cos = Math.cos(g.lat * Math.PI / 180); return [g.lat + (j * g.size) / k, g.lon + (i * g.size) / (k * cos)]; };
     const cellBounds = (g, i, j) => { const a = cellLL(g, i - 0.5, j - 0.5), b = cellLL(g, i + 0.5, j + 0.5); return [a, b]; };
     function cellAt(g, ll) { const k = 111320, cos = Math.cos(g.lat * Math.PI / 180); const i = Math.round((ll.lng - g.lon) * k * cos / g.size), j = Math.round((ll.lat - g.lat) * k / g.size); return g.cells.find(c => c.i === i && c.j === j) || null; }
-    async function makeGrid() {
+    async function makeGrid(at) {
       const t = curBT(); if (!t || !t.pts.length) { toast('Pin at least the hit site or one blood spot first.'); return; }
-      const last = t.pts[t.pts.length - 1], L0 = L.latLng(last.lat, last.lon);
+      const last = at ? { lat: at.lat, lon: at.lng } : t.pts[t.pts.length - 1], L0 = L.latLng(last.lat, last.lon);
       let hd = null;
-      if (t.pts.length >= 2) { const a = t.pts[Math.max(0, t.pts.length - 3)]; hd = bearing(L.latLng(a.lat, a.lon), L0); }
+      if (at) { const p = t.pts[t.pts.length - 1], pl = L.latLng(p.lat, p.lon); hd = pl.distanceTo(L0) > 15 ? bearing(pl, L0) : null; }
+      else if (t.pts.length >= 2) { const a = t.pts[Math.max(0, t.pts.length - 3)]; hd = bearing(L.latLng(a.lat, a.lon), L0); }
       const c0 = hd == null ? L0 : destPoint(L0, hd, 30), N = Math.max(4, Math.round(110 / gridSize));
       const g = { lat: c0.lat, lon: c0.lng, size: gridSize, hd, from: [last.lat, last.lon], cells: [] };
       let z0 = null; try { z0 = await elevAt(L0); } catch (e) { z0 = null; }
@@ -9318,7 +9508,7 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
         if (store.get('pendingBlood', 0)) { store.set('pendingBlood', 0); setTimeout(() => { if (tool !== 'blood') setTool('blood'); $('mp-blood').scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }, 150); }
         if (store.get('pendingSpots', 0)) { store.set('pendingSpots', 0); setTimeout(() => runSpots(true), 150); }
         if (store.get('pendingBest', 0)) { store.set('pendingBest', 0); setTimeout(() => $('aiBest').click(), 200); }
-        if (store.get('pendingScout', 0)) { store.set('pendingScout', 0); setTimeout(() => { setTool('scout'); startGPS(false); $('mp-scout').scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }, 150); }
+        { const ps = store.get('pendingScout', 0); if (ps) { store.set('pendingScout', 0); setTimeout(() => { setTool('scout'); startGPS(false); $('mp-scout').scrollIntoView({ behavior: 'smooth', block: 'nearest' }); if (ps === 2) setTimeout(() => springPlan(), 400); }, 150); } }
         const pg = store.get('pendingGo', null);
         if (pg) { store.set('pendingGo', null); const ll = L.latLng(pg.lat, pg.lon); map.setView(ll, 16); setGoTo(ll, pg.name || 'Shared spot'); toast(`Navigating to ${pg.name || 'the shared spot'}`); }
       },
@@ -11303,6 +11493,7 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
     if (location.hash === '#spots') { store.set('pendingSpots', 1); location.replace('#maps'); return; }
     if (location.hash === '#best') { store.set('pendingBest', 1); location.replace('#maps'); return; }
     if (location.hash === '#scoutloop') { store.set('pendingScout', 1); location.replace('#maps'); return; }
+    if (location.hash === '#springplan') { store.set('pendingScout', 2); location.replace('#maps'); return; }
     const name = (location.hash || '').replace('#', '');
     const next = TOOLS[name] ? name : 'home';
     if (current !== next && TOOLS[current] && TOOLS[current].hide) TOOLS[current].hide();
