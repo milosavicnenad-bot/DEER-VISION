@@ -5923,23 +5923,30 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
         add(nj, a => { const k = Object.keys(a).find(x => /OWNER/i.test(x) && !/ADD|ADDR|CITY|STATE|ZIP/i.test(x) && a[x]); return k ? a[k] : ''; });
         this.clearLayers();
         if (!okAny) { toastOnce('Could not load property owners (no signal?).'); return; }
-        const R = L.canvas({ padding: 0.3 }), S = this._svg = this._svg || L.svg({ padding: 0.3 });
+        const R = L.canvas({ padding: 0.3 });
         const list = Object.values(groups).sort((x, y) => y.area - x.area);
-        const ANG = [45, 135, 0, 90, 22, 68, 112, 158], NS = 'http://www.w3.org/2000/svg';
-        let defs = null, used = new Map(); const placed = [];
+        const ANG = [45, 135, 0, 90, 22, 68, 112, 158];
+        let used = new Map(); const placed = [];
         // each owner gets its own stripe angle; neighbors are pushed to a different angle than the owners already drawn
         const angleFor = (g, k) => { let h = 0; for (const c of g.k) h = (h * 31 + c.charCodeAt(0)) >>> 0; let a = ANG[h % ANG.length]; if (g.k === 'STATE OF NEW YORK' || g.k === 'STATE OF NEW JERSEY' || g.k === 'PALISADES INTERSTATE PARK COMMISSION') a = 45;
           for (let t = 0; t < ANG.length && k > 0 && [...used.values()].slice(-3).includes(a); t++) a = ANG[(ANG.indexOf(a) + 1) % ANG.length]; used.set(g.k, a); return a; };
         list.forEach((g, gi) => {
           const col = ownerColor(g.k), big = g.k !== 'UNKNOWN OWNER' && g.rings.length > 1;
-          const pg = L.polygon(g.rings.map(r => r.map(p => [p[1], p[0]])), { renderer: S, stroke: false, fillColor: col, fillOpacity: big ? 0.28 : 0.14, interactive: false }).addTo(this);
-          const svg = S._container; if (svg && g.k !== 'UNKNOWN OWNER') {
-            if (!defs) { defs = svg.querySelector('defs.own-defs'); if (!defs) { defs = document.createElementNS(NS, 'defs'); defs.setAttribute('class', 'own-defs'); svg.insertBefore(defs, svg.firstChild); } defs.textContent = ''; }
-            const id = `ownp${gi}`, a = angleFor(g, gi), gap = big ? 9 : 7, pt = document.createElementNS(NS, 'pattern');
-            pt.setAttribute('id', id); pt.setAttribute('patternUnits', 'userSpaceOnUse'); pt.setAttribute('width', gap); pt.setAttribute('height', gap); pt.setAttribute('patternTransform', `rotate(${a})`);
-            pt.innerHTML = `<rect width="${gap}" height="${gap}" fill="${col}" fill-opacity="${big ? 0.14 : 0.08}"/><line x1="0" y1="0" x2="0" y2="${gap}" stroke="${col}" stroke-width="${big ? 2.2 : 1.6}" stroke-opacity="0.8"/>`;
-            defs.appendChild(pt); g.ang = a;
-            pg.options.fillColor = `url(#${id})`; pg.options.fillOpacity = 1; const el = pg.getElement(); if (el) { el.setAttribute('fill', `url(#${id})`); el.setAttribute('fill-opacity', '1'); }
+          L.polygon(g.rings.map(r => r.map(p => [p[1], p[0]])), { renderer: R, stroke: false, fillColor: col, fillOpacity: big ? 0.22 : 0.12, interactive: false }).addTo(this);
+          // white stripes at this owner's own angle, cut to the property's shape (real lines, so they show on any phone and any base map)
+          if (g.k !== 'UNKNOWN OWNER') {
+            const z = m.getZoom(), ang = angleFor(g, gi) * Math.PI / 180, dx = Math.cos(ang), dy = Math.sin(ang), nx = -dy, ny = dx, gap = big ? 12 : 9;
+            const PR = g.rings.map(r => r.map(p => m.project([p[1], p[0]], z)));
+            let lo = Infinity, hi = -Infinity; for (const r of PR) for (const P of r) { const o = P.x * nx + P.y * ny; if (o < lo) lo = o; if (o > hi) hi = o; }
+            const segs = [];
+            if ((hi - lo) / gap < 600) for (let o = Math.ceil(lo / gap) * gap; o <= hi; o += gap) {
+              const ts = [];
+              for (const r of PR) for (let i = 1; i < r.length; i++) { const P = r[i - 1], Q = r[i], s0 = P.x * nx + P.y * ny - o, s1 = Q.x * nx + Q.y * ny - o; if ((s0 > 0) === (s1 > 0)) continue; const f = s0 / (s0 - s1), X = P.x + (Q.x - P.x) * f, Y = P.y + (Q.y - P.y) * f; ts.push(X * dx + Y * dy); }
+              ts.sort((u, v) => u - v);
+              for (let i = 0; i + 1 < ts.length; i += 2) { if (ts[i + 1] - ts[i] < 1) continue; const A = L.point(nx * o + dx * ts[i], ny * o + dy * ts[i]), B = L.point(nx * o + dx * ts[i + 1], ny * o + dy * ts[i + 1]); segs.push([m.unproject(A, z), m.unproject(B, z)]); }
+              if (segs.length > 25000) break;
+            }
+            if (segs.length) L.polyline(segs, { renderer: R, color: '#fff', weight: big ? 1.8 : 1.4, opacity: 0.9, interactive: false }).addTo(this);
           }
           // outline: drop edges shared by two parcels of the same owner, so the whole block reads as one property
           const seen = new Map(), E = (p, q) => { const a = p[0].toFixed(6) + ',' + p[1].toFixed(6), c = q[0].toFixed(6) + ',' + q[1].toFixed(6); return a < c ? a + '|' + c : c + '|' + a; };
