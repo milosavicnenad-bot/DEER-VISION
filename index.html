@@ -1629,7 +1629,17 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
 .own-lbl i { font-style: normal; font-weight: 600; opacity: .9; }
 .ai-land { display: grid; gap: 4px; margin: 6px 0; font-size: .85rem; }
 .ai-land label { display: flex; gap: 8px; align-items: flex-start; }
+.ai-land .ai-edge { align-items: center; }
+.ai-land select { font: inherit; padding: 3px; border-radius: 6px; border: 1px solid var(--line); background: var(--surface); color: var(--fg); }
 .ai-land input { width: 18px; height: 18px; flex: none; margin-top: 1px; }
+.pp-mode .leaflet-marker-pane, .pp-mode .leaflet-marker-pane *, .pp-mode .leaflet-popup-pane, .pp-mode .leaflet-popup-pane *, .pp-mode .leaflet-overlay-pane .leaflet-interactive { pointer-events: none !important; }
+.pp-load { display: flex; justify-content: center; margin: 8px 0; cursor: pointer; }
+.pp-step { background: rgba(21,101,192,.1); border-left: 4px solid #1565c0; padding: 8px; border-radius: 6px; margin: 6px 0; }
+.pp-row { display: grid; gap: 4px; padding: 8px; border: 1px solid var(--line); border-radius: 8px; margin: 6px 0; }
+.pp-row input[type=range] { width: 100%; }
+.pp-zones { display: grid; gap: 4px; margin: 6px 0; }
+.pp-z { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+#hzName { width: 100%; box-sizing: border-box; font: inherit; padding: 6px; border-radius: 6px; border: 1px solid var(--line); background: var(--surface); color: var(--fg); }
 .vs-mic { width: 100%; justify-content: center; padding: 14px; font-size: 1.05rem; margin: 8px 0; }
 .vs-mic[aria-pressed="true"] { animation: recp 1s infinite; }
 #vsText { width: 100%; box-sizing: border-box; font: inherit; padding: 8px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); color: var(--fg); }
@@ -2410,6 +2420,7 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
         <button type="button" data-tool="bearing"><svg><use href="#i-compass"/></svg>Bearing</button>
         <button type="button" data-tool="approach"><svg><use href="#i-fov"/></svg>Approach</button>
         <button type="button" data-tool="food"><svg><use href="#i-acorn"/></svg>Food pins</button>
+        <button type="button" data-tool="paper"><svg><use href="#i-layers"/></svg>Park map</button>
         <button type="button" data-tool="scout"><svg><use href="#i-track"/></svg>Scout loop</button>
         <button type="button" data-tool="chain"><svg><use href="#i-route"/></svg>Chains</button>
         <button type="button" data-tool="ready"><svg><use href="#i-check"/></svg>Ready?</button>
@@ -2511,6 +2522,17 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
         <div class="row"><label for="fdSec">GPS averaging</label><select id="fdSec" class="full"><option value="6">6 s (quick)</option><option value="10" selected>10 s</option><option value="20">20 s (most exact)</option></select><span class="v"></span></div>
         <div class="fd-grid" id="fdGrid"></div>
         <div class="caption" id="fdNow"></div>
+      </div>
+
+      <div class="panel mp" id="mp-paper" hidden>
+        <h2 style="margin:0">Park hunting map</h2>
+        <div class="caption">For parks where you may hunt only in some areas (Sterling Forest, Harriman). Load the park's hunting map (the PDF from the park's website, or a photo or screenshot of your permit map). Line it up by tapping a few landmarks, then trace the open hunting areas. AI spots then stay inside them.</div>
+        <label class="btn primary pp-load"><input type="file" id="ppFile" accept="image/*,application/pdf,.pdf" hidden>Load the park map (picture or PDF)</label>
+        <div class="caption" id="ppMsg"></div>
+        <div id="ppAlign" hidden></div>
+        <div id="ppList"></div>
+        <h3 style="margin:10px 0 4px;font-size:1rem">Open hunting areas</h3>
+        <div id="hzBox"></div>
       </div>
 
       <div class="panel mp" id="mp-voice" hidden>
@@ -2626,7 +2648,7 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
         <h2 style="margin:0">AI hunt spots</h2>
         <div class="caption" id="aiStatus">Finds the places where deer are most likely to move or bed within about 1 km, from the shape of the land, satellite land cover (food, water, cover), today's wind and the rut.</div>
         <div class="ai-legend"><span><i class="ai-pin sm" style="--c:#c2185b">N</i>Funnel</span><span><i class="ai-pin sm" style="--c:#7b3fd1">S</i>Saddle</span><span><i class="ai-pin sm" style="--c:#c9a227">F</i>Food (field edge)</span><span><i class="ai-pin sm" style="--c:#1b8a8a">B</i>Bench</span><span><i class="ai-pin sm" style="--c:#d9530f">P</i>Ridge point</span><span><i class="ai-pin sm" style="--c:#1e88e5">W</i>Water</span><span><i class="ai-pin sm" style="--c:#2e7d32">C</i>Thick cover</span><span><i class="ai-pin sm" style="--c:#7cb342">Y</i>Young growth</span><span><i class="ai-pin sm" style="--c:#3949ab">D</i>Draw</span><span><i class="ai-pin sm" style="--c:#a0522d">A</i>Hardwoods (acorns?)</span><span><i class="ai-pin sm" style="--c:#6d4c41">Z</i>Bedding</span></div><div class="ai-hunt-leg"><span class="ai-hunt"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.5"/><path d="M12 1v5M12 18v5M1 12h5M18 12h5"/></svg><b>1</b></span><div><b>Hunt here.</b> Where to set up for each spot, numbered by rank, already placed downwind of today's wind. The small letters are the deer features (food, water, bedding…) it is hunting.</div></div>
-        <div class="ai-land"><label><input type="checkbox" id="aiLegal" checked> Only legal hunting land (public hunting land, 150 ft from buildings)</label><label><input type="checkbox" id="aiParks" checked> Include state parks with permit hunts (Sterling Forest, Harriman, Ringwood…)</label></div>
+        <div class="ai-land"><label><input type="checkbox" id="aiLegal" checked> Only legal hunting land (public hunting land, 150 ft from buildings)</label><label><input type="checkbox" id="aiParks" checked> Include state parks with permit hunts (Sterling Forest, Harriman, Ringwood…)</label><label class="ai-edge">Stay inside the property line by <select id="aiEdge"><option value="75">75 yd (safest)</option><option value="40">40 yd (bow range)</option><option value="0">0 (off)</option></select></label></div>
         <div class="k">How are you hunting?</div>
         <div class="ai-meth" id="aiMeth" role="group" aria-label="How are you hunting"><button type="button" data-m="ground"><svg><use href="#i-blind"/></svg>Ground / blind</button><button type="button" data-m="saddle"><svg><use href="#i-tether"/></svg>Saddle</button><button type="button" data-m="stand"><svg><use href="#i-stand"/></svg>Tree stand</button></div>
         <div class="caption" id="aiMethTip"></div>
@@ -3453,7 +3475,7 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
   function toast(msg) { const t = $('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), 3200); }
   // ---- safety copy: pins, tracks and journal are also kept in a second place on the phone ----
   // If regular storage is wiped or full, the app puts them back on the next start.
-  const SAFE_KEYS = ['maps.markers', 'maps.tracks', 'maps.areas', 'maps.chains', 'journal', 'stand.winds', 'tags'];
+  const SAFE_KEYS = ['maps.markers', 'maps.tracks', 'maps.areas', 'maps.chains', 'journal', 'stand.winds', 'tags', 'maps.huntzones', 'maps.paper'];
   const safe = (() => {
     let p = null;
     const open = () => p || (p = new Promise((res, rej) => { try { const r = indexedDB.open('deereyes-safe', 1); r.onupgradeneeded = () => r.result.createObjectStore('kv'); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); } catch (e) { rej(e); } }));
@@ -5889,6 +5911,17 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
         } catch (e) { /* offline or blocked: leave lines off */ }
       }
     });
+    // ArcGIS query that still works where the browser blocks direct data requests: falls back to the server's JSONP mode
+    const arcJsonp = url => new Promise((res, rej) => { const cb = '__arc' + Math.random().toString(36).slice(2), sc = document.createElement('script'); let done = false;
+      const end = () => { done = true; clearTimeout(t); try { delete window[cb]; } catch (e) { window[cb] = undefined; } sc.remove(); };
+      const t = setTimeout(() => { if (!done) { end(); rej(new Error('timeout')); } }, 20000);
+      window[cb] = j => { end(); res(j); }; sc.onerror = () => { end(); rej(new Error('blocked')); }; sc.src = url + (url.includes('?') ? '&' : '?') + 'callback=' + cb; document.head.appendChild(sc); });
+    async function arcGet(url) {
+      let why = '';
+      try { const r = await fetch(url); if (r.ok) { const j = await r.json(); if (!j.error) return j; why = 'server: ' + (j.error.message || 'error'); } else why = 'HTTP ' + r.status; } catch (e) { why = 'blocked'; }
+      try { const j = await arcJsonp(url); if (j && !j.error) return j; why += '; ' + (j && j.error ? j.error.message : 'empty'); } catch (e) { why += '; jsonp ' + e.message; }
+      throw new Error(why);
+    }
     // property colored by owner: every parcel of one owner (e.g. all the Sterling Forest parcels) gets one color, the lines between them are dropped, and the owner's name is written on the biggest piece
     const ownerKey = o => { let s = String(o || '').toUpperCase().replace(/[.,'&]/g, ' ').replace(/\s+/g, ' ').trim().replace(/^THE /, '');
       if (/PEOPLE OF (THE )?STATE OF (NEW YORK|NY)|^STATE OF NEW YORK|^NEW YORK STATE\b|^NYS\b|^N Y S\b/.test(s)) return 'STATE OF NEW YORK';
@@ -5905,24 +5938,31 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
       onRemove(m) { m.off('moveend', this._h); L.LayerGroup.prototype.onRemove.call(this, m); },
       async _load() {
         const m = this._map; if (!m) return;
-        if (m.getZoom() < 13) { this.clearLayers(); this._box = null; toastOnce('Zoom in closer to color property by owner.'); return; }
+        if (m.getZoom() < 13) { this.clearLayers(); this._box = null; toast('Property by owner: zoom in closer to see it.'); return; }
         if (this._box && L.latLngBounds(this._box).contains(m.getBounds()) && this._z === m.getZoom()) return;
         const b = m.getBounds().pad(0.2), key = b.toBBoxString(); this._key = key; this._box = [b.getSouthWest(), b.getNorthEast()]; this._z = m.getZoom();
         const off = (0.00002 * Math.pow(2, Math.max(0, 16 - m.getZoom()))).toFixed(6);
         const q = f => new URLSearchParams({ where: '1=1', geometry: `${b.getWest()},${b.getSouth()},${b.getEast()},${b.getNorth()}`, geometryType: 'esriGeometryEnvelope', inSR: '4326', spatialRel: 'esriSpatialRelIntersects', outFields: f, returnGeometry: 'true', outSR: '4326', maxAllowableOffset: off, resultRecordCount: '2000', f: 'json' });
-        const get = (u, f) => fetch(`${u}/query?${q(f)}`).then(r => r.json()).then(j => { if (j.error) throw new Error(); return j; });
+        const get = (u, f) => arcGet(`${u}/query?${q(f)}`);
         const nyOn = b.getNorth() > 40.9 && b.getSouth() < 45.1, njOn = b.getSouth() < 41.4 && b.getWest() < -73.8;
-        const [ny, nj] = await Promise.allSettled([nyOn ? get(NYP + '/1', 'PRIMARY_OWNER,CALC_ACRES,ACRES') : Promise.resolve({ features: [] }), njOn ? get(NJP, '*') : Promise.resolve({ features: [] })]);
+        const none = Promise.resolve({ features: [] });
+        if (!this._said) { this._said = 1; toast('Loading property owners…'); }
+        const [ny, nys, nj] = await Promise.allSettled([nyOn ? get(NYP + '/1', 'PRIMARY_OWNER') : none, nyOn ? get(NYS + '/0', 'PRIMARY_OWNER,NYS_NAME') : none, njOn ? get(NJP, '*') : none]);
         if (this._key !== key) return;
-        const groups = {}; let cut = false, okAny = false;
-        const add = (res, ownerOf) => { if (res.status !== 'fulfilled') return; okAny = true; if (res.value.exceededTransferLimit) cut = true;
-          for (const f of res.value.features || []) { const rings = f.geometry && f.geometry.rings; if (!rings) continue; const a = f.attributes || {}, raw = ownerOf(a), k = ownerKey(raw);
+        const groups = {}, dup = new Set(); let cut = false, okAny = false, nF = 0; const errs = [];
+        const add = (res, ownerOf, tag) => { if (res.status !== 'fulfilled') { errs.push(tag + ' (' + (res.reason && res.reason.message || 'failed') + ')'); return; } okAny = true; if (res.value.exceededTransferLimit) cut = true;
+          for (const f of res.value.features || []) { const rings = f.geometry && f.geometry.rings; if (!rings || !rings[0] || !rings[0][0]) continue;
+            const dk = rings[0].length + ':' + rings[0][0][0].toFixed(5) + ',' + rings[0][0][1].toFixed(5); if (dup.has(dk)) continue; dup.add(dk); nF++;
+            const a = f.attributes || {}, raw = ownerOf(a), k = ownerKey(raw);
             const g = groups[k] = groups[k] || { k, rings: [], area: 0, acres: 0, big: null, bigA: 0 }; g.rings.push(...rings); g.acres += +(a.CALC_ACRES || a.ACRES || a.CALC_AC || 0) || 0;
             for (const r of rings) { const ar = ringArea(r); g.area += ar; if (ar > g.bigA) { g.bigA = ar; g.big = r; } } } };
-        add(ny, a => a.PRIMARY_OWNER);
-        add(nj, a => { const k = Object.keys(a).find(x => /OWNER/i.test(x) && !/ADD|ADDR|CITY|STATE|ZIP/i.test(x) && a[x]); return k ? a[k] : ''; });
+        add(ny, a => a.PRIMARY_OWNER, 'NY parcels');
+        add(nys, a => a.PRIMARY_OWNER || a.NYS_NAME || 'STATE OF NEW YORK', 'NY state land');
+        add(nj, a => { const k = Object.keys(a).find(x => /OWNER/i.test(x) && !/ADD|ADDR|CITY|STATE|ZIP/i.test(x) && a[x]); return k ? a[k] : ''; }, 'NJ parcels');
         this.clearLayers();
-        if (!okAny) { toastOnce('Could not load property owners (no signal?).'); return; }
+        if (!okAny) { toast(`Property by owner: could not load the parcel data. ${errs.join(' · ')}`); return; }
+        if (!nF) { toast(`Property by owner: no parcels found in this view.${errs.length ? ' Failed: ' + errs.join(' · ') : ''}`); return; }
+        if (this._said === 1) { this._said = 2; toast(`Property by owner: ${Object.keys(groups).length} owners, ${nF} parcels in view.${errs.length ? ' Some data failed: ' + errs.join(' · ') : ''}`); }
         const R = L.canvas({ padding: 0.3 });
         const list = Object.values(groups).sort((x, y) => y.area - x.area);
         const ANG = [45, 135, 0, 90, 22, 68, 112, 158];
@@ -7379,7 +7419,7 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
       const key = [box.getWest(), box.getSouth(), box.getEast(), box.getNorth()].map(v => v.toFixed(3)).join();
       if (landCache[key] && Date.now() - landCache[key].t < 6e5) return landCache[key];
       const q = fields => new URLSearchParams({ where: '1=1', geometry: `${box.getWest()},${box.getSouth()},${box.getEast()},${box.getNorth()}`, geometryType: 'esriGeometryEnvelope', inSR: '4326', spatialRel: 'esriSpatialRelIntersects', outFields: fields, returnGeometry: 'true', outSR: '4326', maxAllowableOffset: '0.00005', resultRecordCount: '1000', f: 'json' });
-      const get = (u, f) => fetch(`${u}/query?${q(f)}`).then(r => r.json()).then(j => { if (j.error) throw new Error(j.error.message); return j.features || []; });
+      const get = (u, f) => arcGet(`${u}/query?${q(f)}`).then(j => j.features || []);
       const inNY = box.getSouth() < 45.1 && box.getNorth() > 40.9 - 0.4, inNJp = box.getSouth() < 41.4 && box.getNorth() > 38.9 && box.getWest() < -73.8;
       const jobs = [
         ['dec', inNY ? get(DEC + '/0', 'CATEGORY,FACILITY') : Promise.resolve([])],
@@ -7406,21 +7446,45 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
       if (L2.ok) landCache[key] = L2;
       return L2;
     }
-    let legalOnly = store.get('ai.legalOnly', true), parksOk = store.get('ai.parksOk', true);
-    // keep spots where both the spot and your stand spot are on huntable land and over 150 ft from a building; returns how many were hidden
+    let legalOnly = store.get('ai.legalOnly', true), parksOk = store.get('ai.parksOk', true), edgeYd = store.get('ai.edgeYd', 75);
+    // county tax parcels with their owner, to double-check that the stand is not on private land (both data sets must agree)
+    const parcelCache = {};
+    const PUBLIC_OWNER = /STATE OF|PEOPLE OF|PALISADES|INTERSTATE PARK|COUNTY OF|TOWN OF|TOWNSHIP|VILLAGE OF|CITY OF|UNITED STATES|\bUSA\b|\bNYS\b|N Y S|NEW YORK STATE|NEW JERSEY STATE|CONSERVATION|\bPARKS?\b|\bDEC\b|DEPT|DEPARTMENT|COMMISSION|AUTHORITY|BOROUGH|WATER SUPPLY|BOARD OF|COMMISSIONER/i;
+    async function ownerParcels(box) {
+      const key = box.toBBoxString(); if (parcelCache[key] && Date.now() - parcelCache[key].t < 6e5) return parcelCache[key];
+      const env = `${box.getWest()},${box.getSouth()},${box.getEast()},${box.getNorth()}`, polys = []; let ok = 0, tried = 0;
+      const page = (u, f, off) => arcGet(`${u}/query?${new URLSearchParams({ where: '1=1', geometry: env, geometryType: 'esriGeometryEnvelope', inSR: '4326', spatialRel: 'esriSpatialRelIntersects', outFields: f, returnGeometry: 'true', outSR: '4326', maxAllowableOffset: '0.00002', resultRecordCount: '2000', resultOffset: String(off), f: 'json' })}`);
+      const pull = async (u, f, ownerOf) => { tried++; try { for (let off = 0, k = 0; k < 4; k++) { const j = await page(u, f, off); const fs = j.features || []; for (const ft of fs) { const rings = ft.geometry && ft.geometry.rings; if (!rings) continue; const o = String(ownerOf(ft.attributes || {}) || ''); let w = 180, s = 90, e = -180, n = -90; for (const rg of rings) for (const [x, y] of rg) { if (x < w) w = x; if (x > e) e = x; if (y < s) s = y; if (y > n) n = y; } polys.push({ o, pub: !o.trim() || PUBLIC_OWNER.test(o), rings, bb: [w, s, e, n] }); } if (!j.exceededTransferLimit || !fs.length) break; off += fs.length; } ok++; } catch (e) {} };
+      const nyOn = box.getNorth() > 40.9 && box.getSouth() < 45.1, njOn = box.getSouth() < 41.4 && box.getWest() < -73.8;
+      await Promise.all([nyOn ? pull(NYP + '/1', 'PRIMARY_OWNER', a => a.PRIMARY_OWNER) : null, njOn ? pull(NJP, '*', a => { const k = Object.keys(a).find(x => /OWNER/i.test(x) && !/ADD|ADDR|CITY|STATE|ZIP/i.test(x) && a[x]); return k ? a[k] : ''; }) : null]);
+      const R = { t: Date.now(), ok: ok > 0, polys, at(ll) { for (const p of this.polys) { if (ll.lng < p.bb[0] || ll.lng > p.bb[2] || ll.lat < p.bb[1] || ll.lat > p.bb[3]) continue; if (pipRings(p.rings, ll.lng, ll.lat)) return p; } return null; } };
+      if (R.ok) parcelCache[key] = R; return R;
+    }
+    // your own traced hunting areas (from the park's hunting map); where you drew any, AI spots must be inside one
+    const myZones = () => store.get('maps.huntzones', []);
+    const inZone = (ll, zs) => zs.some(z => pipRings([z.pts.map(p => [p[1], p[0]])], ll.lng, ll.lat));
+    // keep spots where the stand, a circle of 'edgeYd' around it (covers your shooting lane) and the deer spot are on huntable land,
+    // not on a private parcel in the county data, inside your traced hunting areas where you have any, and over 150 ft from a building
     async function legalSpots(list, box, opts = {}) {
       if (!legalOnly) { list.forEach(s => { s.land = null; }); return { list, hid: 0, ok: true, off: true }; }
       let H = null; try { H = await huntLand(box); } catch (e) { H = null; }
       if (!H || !H.ok) return { list, hid: 0, ok: false };
+      let P = null; try { P = await ownerParcels(box); } catch (e) { P = null; }
+      const zs = myZones().filter(z => z.pts.some(p => box.contains([p[0], p[1]])) || box.intersects(L.latLngBounds(z.pts)));
+      const edge = opts.noStand ? 0 : (edgeYd || 0) / YD, why = { land: 0, edge: 0, owner: 0, zone: 0, house: 0 };
+      const okAt = ll => { const a = H.at(ll); if (!a) return null; if (!parksOk && a.k === 'permit') return null; return a; };
       const keep = list.filter(s => {
-        const a = H.at(s.ll); let st = null; try { st = opts.noStand ? null : spotText(s).stand; } catch (e) {}
-        const b = st ? H.at(st) : a;
-        if (!a || !b) return false;
-        if (!parksOk && (a.k === 'permit' || b.k === 'permit')) return false;
-        if (s.house != null && s.house < 46) return false;
-        s.land = a.k === 'open' && b.k !== 'open' ? b : a; return true;
+        let st = null; try { st = opts.noStand ? null : spotText(s).stand; } catch (e) {}
+        const c = st || s.ll, a = okAt(s.ll), b = okAt(c);
+        if (!a || !b) { why.land++; return false; }
+        if (s.house != null && s.house < 46) { why.house++; return false; }
+        const ring = [c, s.ll]; if (edge > 0) for (let k = 0; k < 16; k++) ring.push(destPoint(c, k * 22.5, edge));
+        if (edge > 0 && ring.some(p => !okAt(p))) { why.edge++; return false; }
+        if (P && P.ok && ring.some(p => { const q = P.at(p); return q && !q.pub; })) { why.owner++; return false; }
+        if (zs.length && !opts.noStand && !(inZone(c, zs) && inZone(s.ll, zs) && (edge <= 0 || ring.slice(2).filter((p, k) => k % 2 === 0).every(p => inZone(p, zs))))) { why.zone++; return false; }
+        s.land = a.k === 'open' && b.k !== 'open' ? b : a; s.inZone = zs.length > 0; return true;
       });
-      return { list: keep, hid: list.length - keep.length, ok: true };
+      return { list: keep, hid: list.length - keep.length, ok: true, why, owner: !!(P && P.ok), zones: zs.length };
     }
     function spotText(s) {
       const now = new Date(), rut = predict.rut ? predict.rut(now) : '', rutHot = /Seeking|Chasing|Peak/.test(rut), f = s.f, wTo = (WIND.from + 180) % 360;
@@ -7478,6 +7542,7 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
         + `<div class="sec ai-setup"><b>${mDef().n} setup</b><div>${x.setup}</div><div>${x.lane}</div></div>`
         + `<div class="sec"><b>Wind</b><div>${x.wind}</div>${x.house}</div>`
         + (x.press ? `<div class="sec">${x.press}</div>` : '') + (x.sign ? `<div class="sec">${x.sign}</div>` : '')
+        + (s.inZone ? `<div class="sec"><b>Inside your traced hunting area.</b></div>` : '')
         + (s.land ? `<div class="sec">${s.land.k === 'open' ? `<b>Huntable land:</b> ${esc(s.land.name)} (public hunting land; check its posted rules).` : s.land.k === 'zoned' ? `<div class="ai-warn"><b>${esc(s.land.name)}:</b> hunting is allowed only in the areas this park or forest opens for it, and never on Sundays. Check its hunting map before you set up.</div>` : `<div class="ai-warn"><b>State park:</b> hunt here only with this park's hunting permit and only inside its marked hunting areas (for example Sterling Forest or Harriman). Check the park's hunting map.</div>`}</div>` : '')
         + `<div class="sec muted">A prediction from the terrain and satellite land cover, not a sighting. Confirm with tracks, rubs, scrapes or a trail camera, and check who owns the land.</div>`
         + `<div class="acts"><button type="button" data-a="nav">Navigate here</button><button type="button" data-a="land">Owner &amp; rules</button><button type="button" data-a="save">Save as marker</button><button type="button" data-a="share">Share with a friend</button></div>`;
@@ -7538,16 +7603,18 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
         rankSpots();
         drawSpots();
         const rut = predict.rut ? predict.rut(new Date()) : '';
-        $('aiStatus').innerHTML = `<b>${spots.length} spots</b> within about 1 km of ${fromGPS ? 'you' : 'the map center'}. Ranked for <b>${mDef().n}</b> hunting · wind from <b>${cardinal(WIND.from)} ${WIND.speed} mph</b>${rut ? ` · rut: <b>${rut.toLowerCase()}</b>` : ''}.${pok ? '' : ' Could not load trails and roads, so hunting pressure only counts your parking pins and pressure log.'}${r.lcOk ? '' : ' Could not load the satellite land cover, so food, water and cover are missing this time.'}${ok ? '' : ' Could not check for houses (no signal?), so mind the safety zones.'}${lg.off ? ' <b>Showing all land</b> (Only legal hunting land is off): get permission before hunting private land.' : !lg.ok ? ' <b>Could not load the public-land maps</b> (no signal?), so these spots are NOT checked for huntable land.' : lg.hid ? ` Hid <b>${lg.hid}</b> spot${lg.hid > 1 ? 's' : ''} on private or closed land or inside the 150 ft safety zone.` : ''} Tap a spot to see why.`;
+        $('aiStatus').innerHTML = `<b>${spots.length} spots</b> within about 1 km of ${fromGPS ? 'you' : 'the map center'}. Ranked for <b>${mDef().n}</b> hunting · wind from <b>${cardinal(WIND.from)} ${WIND.speed} mph</b>${rut ? ` · rut: <b>${rut.toLowerCase()}</b>` : ''}.${pok ? '' : ' Could not load trails and roads, so hunting pressure only counts your parking pins and pressure log.'}${r.lcOk ? '' : ' Could not load the satellite land cover, so food, water and cover are missing this time.'}${ok ? '' : ' Could not check for houses (no signal?), so mind the safety zones.'}${lg.off ? ' <b>Showing all land</b> (Only legal hunting land is off): get permission before hunting private land.' : !lg.ok ? ' <b>Could not load the public-land maps</b> (no signal?), so these spots are NOT checked for huntable land.' : (lg.hid ? ` Hid <b>${lg.hid}</b>: ${[[lg.why.land, 'on private or closed land'], [lg.why.edge, `within ${edgeYd} yd of a property line`], [lg.why.owner, 'on a private parcel in the county records'], [lg.why.zone, 'outside your traced hunting areas'], [lg.why.house, 'inside the 150 ft safety zone']].filter(x => x[0]).map(x => `${x[0]} ${x[1]}`).join(', ')}.` : '') + (lg.owner ? '' : ' (Owner double-check skipped: county parcels did not load.)') + (lg.zones ? ` Limited to your ${lg.zones} traced hunting area${lg.zones > 1 ? 's' : ''}.` : '')} Tap a spot to see why.`;
         if (spots.length) map.fitBounds(L.latLngBounds(spots.map(s => s.ll).concat([c])).pad(0.15), { maxZoom: 16 });
-        $('map').scrollIntoView({ behavior: 'smooth', block: 'nearest' }); if (!spots.length) toast(lg.hid ? 'No spots on huntable land here. Move the map onto public hunting land and try again.' : 'No spots found in this area.'); else toast(`${spots.length} AI spots found. Tap a colored letter on the map to see why.`);
+        $('map').scrollIntoView({ behavior: 'smooth', block: 'nearest' }); if (!spots.length) toast(lg.hid ? `No spots passed the land checks here. Move deeper into public land${edgeYd > 40 ? ', or set "Stay inside the line" to 40 yd' : ''}, and try again.` : 'No spots found in this area.'); else toast(`${spots.length} AI spots found. Tap a colored letter on the map to see why.`);
       } catch (e) {
         $('aiStatus').textContent = 'Could not load the elevation data. This needs signal, or an area saved with "Download this area for offline".';
       } finally { spotBusy = false; }
     }
     $('aiRun').addEventListener('click', () => runSpots(true));
     $('aiLegal').checked = legalOnly; $('aiParks').checked = parksOk; $('aiParks').disabled = !legalOnly;
-    $('aiLegal').addEventListener('change', () => { legalOnly = $('aiLegal').checked; store.set('ai.legalOnly', legalOnly); $('aiParks').disabled = !legalOnly; toast(legalOnly ? 'AI spots: public hunting land only. Run AI spots again to update.' : 'AI spots: all land. You need the owner\u2019s permission on private land.'); });
+    $('aiLegal').addEventListener('change', () => { legalOnly = $('aiLegal').checked; store.set('ai.legalOnly', legalOnly); $('aiParks').disabled = !legalOnly; $('aiEdge').disabled = !legalOnly; toast(legalOnly ? 'AI spots: public hunting land only. Run AI spots again to update.' : 'AI spots: all land. You need the owner\u2019s permission on private land.'); });
+    $('aiEdge').value = String(edgeYd); $('aiEdge').disabled = !legalOnly;
+    $('aiEdge').addEventListener('change', () => { edgeYd = +$('aiEdge').value; store.set('ai.edgeYd', edgeYd); toast('Run AI spots again to update.'); });
     $('aiParks').addEventListener('change', () => { parksOk = $('aiParks').checked; store.set('ai.parksOk', parksOk); toast('Run AI spots again to update.'); });
     // AI spots button under the map: find spots for the area the map is showing (wherever you are)
     const aiStale = () => !spots.length || !spotCenter || spotCenter.distanceTo(map.getCenter()) > 500;
@@ -8153,6 +8220,112 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
     $('vsText').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); vsParse(); } });
     $('vsAudio').addEventListener('click', () => { if (vRec && vRec.state === 'recording') voiceStop(); else voiceStart(); });
     $('mpVoiceBtn').addEventListener('click', () => { if (vRec && vRec.state === 'recording') { voiceStop(); return; } const open = tool !== 'voice'; setTool('voice'); if (open) { $('mp-voice').scrollIntoView({ behavior: 'smooth', block: 'nearest' }); vsListen(true); } else vsListen(false); });
+    // ---------- park hunting map: load the park's map (picture or PDF), line it up on the real map, trace the open hunting areas ----------
+    const ppSure = (b, msg) => { if (b.dataset.sure) return true; b.dataset.sure = 1; const t = b.textContent; b.textContent = msg; setTimeout(() => { delete b.dataset.sure; b.textContent = t; }, 4000); return false; };
+    const PP = { list: store.get('maps.paper', []), layers: {}, align: null, draw: null, zl: null };
+    const ppSave = () => store.set('maps.paper', PP.list.map(p => ({ id: p.id, name: p.name, W: p.W, H: p.H, A: p.A, pairs: p.pairs, op: p.op, on: p.on })));
+    const W20 = ll => map.project(ll, 20), U20 = P => map.unproject(L.point(P[0], P[1]), 20);
+    const ppFwd = (A, u, v) => [A[0] * u + A[1] * v + A[2], A[3] * u + A[4] * v + A[5]];
+    const ppInv = (A, X, Y) => { const det = A[0] * A[4] - A[1] * A[3], x = X - A[2], y = Y - A[5]; return [(A[4] * x - A[1] * y) / det, (-A[3] * x + A[0] * y) / det]; };
+    function ppFit(pairs) {
+      if (pairs.length === 2) { // similarity: scale, turn and shift
+        const [p, q] = pairs, wu = q.u - p.u, wv = q.v - p.v, zx = q.X - p.X, zy = q.Y - p.Y, d = wu * wu + wv * wv; if (!d) return null;
+        const a = (zx * wu + zy * wv) / d, b = (zy * wu - zx * wv) / d; return [a, -b, p.X - (a * p.u - b * p.v), b, a, p.Y - (b * p.u + a * p.v)];
+      }
+      // 3 or more: least-squares affine (also fixes a map that was printed slightly stretched)
+      const S = [[0, 0, 0], [0, 0, 0], [0, 0, 0]], bx = [0, 0, 0], by = [0, 0, 0];
+      for (const p of pairs) { const r = [p.u, p.v, 1]; for (let i = 0; i < 3; i++) { for (let j = 0; j < 3; j++) S[i][j] += r[i] * r[j]; bx[i] += r[i] * p.X; by[i] += r[i] * p.Y; } }
+      const solve = (M, b) => { const m = M.map((r, i) => r.concat(b[i])); for (let i = 0; i < 3; i++) { let k = i; for (let j = i + 1; j < 3; j++) if (Math.abs(m[j][i]) > Math.abs(m[k][i])) k = j; [m[i], m[k]] = [m[k], m[i]]; if (Math.abs(m[i][i]) < 1e-12) return null; for (let j = 0; j < 3; j++) if (j !== i) { const f = m[j][i] / m[i][i]; for (let c = i; c < 4; c++) m[j][c] -= f * m[i][c]; } } return [m[0][3] / m[0][0], m[1][3] / m[1][1], m[2][3] / m[2][2]]; };
+      const x = solve(S, bx), y = solve(S, by); return x && y ? [x[0], x[1], x[2], y[0], y[1], y[2]] : null;
+    }
+    const mPerPx20 = lat => 156543.03392 * Math.cos(lat * Math.PI / 180) / 2 ** 20;
+    function ppErr(p) { if (!p.A || p.pairs.length < 4) return null; let s = 0; for (const q of p.pairs) { const [X, Y] = ppFwd(p.A, q.u, q.v); s += (X - q.X) ** 2 + (Y - q.Y) ** 2; } return Math.sqrt(s / p.pairs.length) * mPerPx20(map.getCenter().lat) * YD; }
+    const PaperLayer = L.Layer.extend({
+      initialize(p, src) { this.p = p; this.src = src; },
+      onAdd(m) { const im = this.img = L.DomUtil.create('img', 'pp-img', m.getPane('paperPane')); im.src = this.src; im.alt = ''; Object.assign(im.style, { position: 'absolute', left: 0, top: 0, transformOrigin: '0 0', maxWidth: 'none', pointerEvents: 'none' });
+        this._u = () => this.update(); this._h = () => { im.style.display = 'none'; }; m.on('zoomend viewreset moveend', this._u); m.on('zoomstart', this._h); this.update(); },
+      onRemove(m) { m.off('zoomend viewreset moveend', this._u); m.off('zoomstart', this._h); L.DomUtil.remove(this.img); },
+      update() { const m = this._map, p = this.p, im = this.img; if (!m || !im) return; const A = p.A, k = 2 ** (m.getZoom() - 20), o = m.getPixelOrigin();
+        im.style.display = ''; im.style.width = p.W + 'px'; im.style.height = p.H + 'px'; im.style.opacity = (PP.align && PP.align.id === p.id && PP.align.step === 'real') ? 0.3 : p.op;
+        im.style.transform = `matrix(${A[0] * k},${A[3] * k},${A[1] * k},${A[4] * k},${A[2] * k - o.x},${A[5] * k - o.y})`; } });
+    async function ppShow(p) {
+      if (PP.layers[p.id]) { map.removeLayer(PP.layers[p.id]); delete PP.layers[p.id]; }
+      if (!p.on) return; let r = null; try { r = await idb.pinGet('paper:' + p.id); } catch (e) {} if (!r || !r.img) return;
+      PP.layers[p.id] = new PaperLayer(p, r.img).addTo(map);
+    }
+    // PDF pages are drawn with pdf.js, loaded only when you pick a PDF (needs signal once)
+    const loadScript = src => new Promise((res, rej) => { const s = document.createElement('script'); s.src = src; s.onload = res; s.onerror = () => rej(new Error('load')); document.head.appendChild(s); });
+    async function pdfToImage(file) {
+      if (!window.pdfjsLib) { await loadScript('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js'); window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js'; }
+      const doc = await window.pdfjsLib.getDocument({ data: await file.arrayBuffer() }).promise, pg = await doc.getPage(1), v0 = pg.getViewport({ scale: 1 }), sc = Math.min(5, 3600 / Math.max(v0.width, v0.height)), vp = pg.getViewport({ scale: sc });
+      const c = document.createElement('canvas'); c.width = Math.round(vp.width); c.height = Math.round(vp.height); await pg.render({ canvasContext: c.getContext('2d'), viewport: vp }).promise;
+      return { src: c.toDataURL('image/jpeg', 0.85), W: c.width, H: c.height };
+    }
+    const imgToData = file => new Promise((res, rej) => { const f = new FileReader(); f.onload = () => { const im = new Image(); im.onload = () => { const sc = Math.min(1, 3600 / Math.max(im.width, im.height)), c = document.createElement('canvas'); c.width = Math.round(im.width * sc); c.height = Math.round(im.height * sc); c.getContext('2d').drawImage(im, 0, 0, c.width, c.height); res({ src: c.toDataURL('image/jpeg', 0.85), W: c.width, H: c.height }); }; im.onerror = rej; im.src = f.result; }; f.onerror = rej; f.readAsDataURL(file); });
+    $('ppFile').addEventListener('change', async e => {
+      const file = e.target.files && e.target.files[0]; e.target.value = ''; if (!file) return;
+      $('ppMsg').textContent = 'Reading the map…';
+      let d = null; try { d = /pdf/i.test(file.type) || /\.pdf$/i.test(file.name) ? await pdfToImage(file) : await imgToData(file); } catch (er) { $('ppMsg').textContent = /pdf/i.test(file.type) ? 'Could not open the PDF (it needs signal the first time). Or take a screenshot of the map and load the picture.' : 'Could not open that picture.'; return; }
+      const b = map.getBounds(), tl = W20(b.getNorthWest()), br = W20(b.getSouthEast()), s = Math.min((br.x - tl.x) / d.W, (br.y - tl.y) / d.H) * 0.9, cx = (tl.x + br.x) / 2, cy = (tl.y + br.y) / 2;
+      const p = { id: uid(), name: file.name.replace(/\.[^.]+$/, '').slice(0, 40) || 'Park map', W: d.W, H: d.H, A: [s, 0, cx - s * d.W / 2, 0, s, cy - s * d.H / 2], pairs: [], op: 0.75, on: true };
+      try { await idb.pinPut({ id: 'paper:' + p.id, img: d.src, t: Date.now() }); } catch (er) { $('ppMsg').textContent = 'Not enough room on this phone to save the map.'; return; }
+      PP.list.push(p); ppSave(); await ppShow(p); $('ppMsg').textContent = ''; ppRender(); ppAlignStart(p.id);
+    });
+    function ppAlignStart(id) { const p = PP.list.find(x => x.id === id); if (!p) return; if (!p.on) { p.on = true; ppSave(); ppShow(p); } PP.draw = null; PP.align = { id, step: 'pic', pend: null }; ppRender(); }
+    function ppAlignMsg() {
+      const a = PP.align; if (!a) return ''; const p = PP.list.find(x => x.id === a.id), n = p.pairs.length, err = ppErr(p);
+      const how = a.step === 'pic' ? `<b>Step ${n * 2 + 1}:</b> zoom in and tap a sharp landmark <b>on the park map</b>: a road or trail crossing, a parking lot, a lake corner, a dam.` : `<b>Step ${n * 2 + 2}:</b> the park map is faded now. Tap <b>the same place on the real map</b> (switch the base map to satellite or topo if it helps).`;
+      return `<div class="pp-step">${how}</div><div class="caption">${n} point${n === 1 ? '' : 's'} matched.${n < 2 ? ' 2 points line it up; 4 to 6 spread around the edges make it accurate.' : n < 4 ? ' Add a few more, spread far apart, for accuracy.' : ''}${err != null ? ` <b>Fit: about ±${Math.round(err)} yd.</b>${err > 40 ? ' A point may be wrong: tap Undo and redo it.' : ''}` : ''}</div>`
+        + `<div class="actions"><button type="button" class="btn primary" id="ppDone">Done lining up</button><button type="button" class="btn" id="ppUndo"${n || a.pend ? '' : ' disabled'}>Undo</button><button type="button" class="btn" id="ppReset">Start over</button></div>`;
+    }
+    let ppMk = null;
+    function ppClick(ll) {
+      if (PP.draw) { PP.draw.pts.push([+ll.lat.toFixed(6), +ll.lng.toFixed(6)]); hzPreview(); ppRender(); return true; }
+      const a = PP.align; if (!a) return false; const p = PP.list.find(x => x.id === a.id); if (!p) { PP.align = null; return false; }
+      const P = W20(ll);
+      if (a.step === 'pic') { const [u, v] = ppInv(p.A, P.x, P.y); if (u < 0 || v < 0 || u > p.W || v > p.H) { toast('That is outside the park map. Tap on the map picture.'); return true; } a.pend = { u, v }; a.step = 'real'; if (ppMk) map.removeLayer(ppMk); ppMk = L.circleMarker(ll, { radius: 7, color: '#fff', weight: 3, fillColor: '#d32f2f', fillOpacity: 1, interactive: false }).addTo(map); }
+      else { p.pairs.push({ u: a.pend.u, v: a.pend.v, X: P.x, Y: P.y }); a.pend = null; a.step = 'pic'; if (ppMk) { map.removeLayer(ppMk); ppMk = null; } if (p.pairs.length >= 2) { const A = ppFit(p.pairs); if (A) p.A = A; } ppSave(); bz(40); }
+      if (PP.layers[p.id]) PP.layers[p.id].update(); ppRender(); return true;
+    }
+    // hunting areas you trace (open zones from the park's map). Where any exist, AI spots must be inside one.
+    const hzLayer = L.layerGroup();
+    function hzDraw() { hzLayer.clearLayers(); for (const z of myZones()) { L.polygon(z.pts, { color: '#ff6d00', weight: 3, dashArray: '8 6', fillColor: '#ff6d00', fillOpacity: 0.06, interactive: false }).addTo(hzLayer); const c = L.latLngBounds(z.pts).getCenter(); L.marker(c, { interactive: false, keyboard: false, icon: L.divIcon({ className: 'own-lbl', html: `<span style="--c:#e65100">✓ ${esc(z.name)}</span>`, iconSize: null }) }).addTo(hzLayer); } if (PP.draw) hzPreview(); }
+    let hzPrev = null;
+    function hzPreview() { if (hzPrev) map.removeLayer(hzPrev); hzPrev = null; const d = PP.draw; if (!d || !d.pts.length) return; hzPrev = L.layerGroup().addTo(map); L.polyline(d.pts.concat(d.pts.length > 2 ? [d.pts[0]] : []), { color: '#ff6d00', weight: 3, interactive: false }).addTo(hzPrev); d.pts.forEach((p, i) => L.circleMarker(p, { radius: i ? 4 : 6, color: '#fff', weight: 2, fillColor: '#ff6d00', fillOpacity: 1, interactive: false }).addTo(hzPrev)); }
+    function ppRender() {
+      const box = $('ppList'); if (!box) return;
+      if (map) { const on = !!(PP.align || PP.draw); map.getContainer().classList.toggle('pp-mode', on); if (on) map.closePopup(); }
+      box.innerHTML = PP.list.map(p => { const err = ppErr(p); return `<div class="pp-row"><label><input type="checkbox" data-pon="${p.id}"${p.on ? ' checked' : ''}> <b>${esc(p.name)}</b></label><span class="caption">${p.pairs.length >= 2 ? `lined up with ${p.pairs.length} points${err != null ? `, ±${Math.round(err)} yd` : ''}` : '<b style="color:#b45309">not lined up yet</b>'}</span><input type="range" min="15" max="100" value="${Math.round(p.op * 100)}" data-pop="${p.id}" aria-label="See-through"><div class="actions"><button type="button" class="btn" data-pal="${p.id}">Line it up</button><button type="button" class="btn" data-pdel="${p.id}">Delete</button></div></div>`; }).join('') || '<div class="caption">No park map loaded yet.</div>';
+      $('ppAlign').innerHTML = ppAlignMsg(); $('ppAlign').hidden = !PP.align;
+      const zs = myZones(), d = PP.draw;
+      $('hzBox').innerHTML = (d ? `<div class="pp-step"><b>Tracing:</b> tap around the edge of one open hunting area on the park map, point by point. ${d.pts.length} point${d.pts.length === 1 ? '' : 's'}.</div><input type="text" id="hzName" placeholder="Name (e.g. Zone 3)" value="${esc(d.name || '')}"><div class="actions"><button type="button" class="btn primary" id="hzDone"${d.pts.length >= 3 ? '' : ' disabled'}>Save this area</button><button type="button" class="btn" id="hzUndo"${d.pts.length ? '' : ' disabled'}>Undo point</button><button type="button" class="btn" id="hzCancel">Cancel</button></div>`
+        : `<div class="actions"><button type="button" class="btn primary" id="hzStart">Trace an open hunting area</button></div>`)
+        + (zs.length ? `<div class="pp-zones">${zs.map(z => `<div class="pp-z"><span>✓ ${esc(z.name)}</span><button type="button" class="btn" data-zdel="${z.id}">Delete</button></div>`).join('')}</div><div class="caption">AI spots near these areas must be inside one, at least the distance you set in AI spots (“Stay inside the property line”) from its edge.</div>` : '');
+      box.querySelectorAll('[data-pon]').forEach(c => c.onchange = () => { const p = PP.list.find(x => x.id === c.dataset.pon); p.on = c.checked; ppSave(); ppShow(p); });
+      box.querySelectorAll('[data-pop]').forEach(r => r.oninput = () => { const p = PP.list.find(x => x.id === r.dataset.pop); p.op = +r.value / 100; ppSave(); if (PP.layers[p.id]) PP.layers[p.id].update(); });
+      box.querySelectorAll('[data-pal]').forEach(b => b.onclick = () => ppAlignStart(b.dataset.pal));
+      box.querySelectorAll('[data-pdel]').forEach(b => b.onclick = () => { if (!ppSure(b, 'Tap again to delete')) return; const id = b.dataset.pdel; PP.list = PP.list.filter(x => x.id !== id); ppSave(); if (PP.layers[id]) { map.removeLayer(PP.layers[id]); delete PP.layers[id]; } idb.pinPut({ id: 'paper:' + id, img: null, t: Date.now() }).catch(() => {}); if (PP.align && PP.align.id === id) PP.align = null; ppRender(); });
+      const al = $('ppAlign');
+      if (PP.align) {
+        al.querySelector('#ppDone').onclick = () => { PP.align = null; if (ppMk) { map.removeLayer(ppMk); ppMk = null; } PP.list.forEach(p => PP.layers[p.id] && PP.layers[p.id].update()); ppRender(); toast('Saved. Now trace the open hunting areas on it.'); };
+        al.querySelector('#ppUndo').onclick = () => { const a = PP.align, p = PP.list.find(x => x.id === a.id); if (a.pend) { a.pend = null; a.step = 'pic'; if (ppMk) { map.removeLayer(ppMk); ppMk = null; } } else if (p.pairs.length) { p.pairs.pop(); if (p.pairs.length >= 2) p.A = ppFit(p.pairs) || p.A; ppSave(); } if (PP.layers[p.id]) PP.layers[p.id].update(); ppRender(); };
+        al.querySelector('#ppReset').onclick = () => { const a = PP.align, p = PP.list.find(x => x.id === a.id); p.pairs = []; a.pend = null; a.step = 'pic'; ppSave(); ppRender(); };
+      }
+      const hb = $('hzBox');
+      if (hb.querySelector('#hzStart')) hb.querySelector('#hzStart').onclick = () => { if (PP.align) { PP.align = null; if (ppMk) { map.removeLayer(ppMk); ppMk = null; } } PP.draw = { pts: [], name: `Hunting area ${myZones().length + 1}` }; ppRender(); toast('Tap around the edge of the open area, point by point.'); };
+      if (d) {
+        hb.querySelector('#hzName').oninput = e => { d.name = e.target.value; };
+        hb.querySelector('#hzUndo').onclick = () => { d.pts.pop(); hzPreview(); ppRender(); };
+        hb.querySelector('#hzCancel').onclick = () => { PP.draw = null; hzPreview(); ppRender(); };
+        hb.querySelector('#hzDone').onclick = () => { const zs2 = myZones(); zs2.push({ id: uid(), name: (d.name || '').trim() || `Hunting area ${zs2.length + 1}`, pts: d.pts, t: Date.now() }); store.set('maps.huntzones', zs2); PP.draw = null; hzPreview(); hzDraw(); ppRender(); toast('Saved. AI spots here now stay inside your hunting areas.'); };
+      }
+      hb.querySelectorAll('[data-zdel]').forEach(b => b.onclick = () => { if (!ppSure(b, 'Tap again')) return; store.set('maps.huntzones', myZones().filter(z => z.id !== b.dataset.zdel)); hzDraw(); ppRender(); });
+    }
+    function ppInit() { // runs once the map exists
+      if (!map.getPane('paperPane')) { map.createPane('paperPane'); map.getPane('paperPane').style.zIndex = 390; map.getPane('paperPane').style.pointerEvents = 'none'; }
+      hzLayer.addTo(map); PP.list.forEach(p => ppShow(p)); hzDraw();
+      window.__deTest = { map, PP, W20, spots: () => spots, st: s => spotText(s).stand };
+    }
 
     // ---------- week-ahead stand schedule: which stand, which morning or evening, from the 10-day wind forecast ----------
     const C8W = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'], c8w = d => Math.round(((d % 360) + 360) % 360 / 45) % 8;
@@ -9548,7 +9721,7 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
       if (tool === 'layers') tool = null; // layers is a panel, not a map mode
       document.querySelectorAll('.mtools [data-tool]').forEach(b => b.classList.toggle('on', b.dataset.tool === tool));
       $('mpAiBtn').classList.toggle('on', tool === 'ai');
-      for (const id of ['add', 'measure', 'track', 'saved', 'rules', 'ai', 'route', 'blood', 'bearing', 'approach', 'scout', 'profile', 'chain', 'ready', 'food', 'voice']) $('mp-' + id).hidden = tool !== id;
+      for (const id of ['add', 'measure', 'track', 'saved', 'rules', 'ai', 'route', 'blood', 'bearing', 'approach', 'scout', 'profile', 'chain', 'ready', 'food', 'voice', 'paper']) $('mp-' + id).hidden = tool !== id;
       if (tool === 'chain') drawChain(); if (tool === 'ready') fillReady();
       if (tool === 'approach') fillApproach(); if (tool === 'scout') fillScout(); if (tool === 'food') { fillFood(); startGPS(false); } if (tool === 'bearing' && compass.heading() != null && !$('brgDeg').value) $('brgDeg').value = Math.round(compass.heading()) % 360;
       if (tool === 'blood') { renderBlood(); if (curBT()) { startGPS(false); keepAwake(true); } }
@@ -9559,6 +9732,7 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
       if (tool === 'saved') buildList();
       if (tool !== 'voice') { if (typeof vsListen === 'function' && vs.on) vsListen(false); if (vsMark) { map.removeLayer(vsMark); vsMark = null; } } else if (vs.parsed) vsRender();
       $('mpVoiceBtn').setAttribute('aria-pressed', tool === 'voice');
+      if (tool !== 'paper') { if (PP.align || PP.draw) { PP.align = null; PP.draw = null; hzPreview(); if (ppMk) { map.removeLayer(ppMk); ppMk = null; } } if (map) map.getContainer().classList.remove('pp-mode'); } else ppRender();
       if (!tool) onMove();
     }
     document.querySelectorAll('.mtools [data-tool]').forEach(b => b.addEventListener('click', () => {
@@ -9916,6 +10090,7 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
       const v = store.get('maps.view', { lat: LOC.lat, lon: LOC.lon, z: 14 });
       try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist(); } catch (e) {} // ask the phone not to clear saved markers and maps
       map = L.map('map', { zoomControl: true, attributionControl: true, maxZoom: 21, tap: false }).setView([v.lat, v.lon], v.z);
+      try { ppInit(); } catch (e) {}
       let zBig = map.getZoom() >= 16, zLane = map.getZoom() >= 17; map.on('zoomend', () => { const b = map.getZoom() >= 16, b2 = map.getZoom() >= 17; if (b !== zBig) { zBig = b; drawSaved(); } else if (b2 !== zLane) drawLanes(); zLane = b2; });
       map.attributionControl.setPrefix('<a href="https://leafletjs.com" target="_blank" rel="noopener">Leaflet</a>');
       buildLayerPanel(); fillAreas();
@@ -9928,6 +10103,7 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
       map.on('click', e => {
         if (tool === 'measure') { msPts.push(e.latlng); drawMeasure(); return; }
         if (tool === 'voice' && vs.parsed) { vs.tapped = e.latlng; vsRender(); return; }
+        if (tool === 'paper' && ppClick(e.latlng)) return;
         if (tool === 'scout') { scoutExtra.push(e.latlng); L.circleMarker(e.latlng, { radius: 7, color: '#fff', weight: 2, fillColor: '#6d28d9', fillOpacity: 1 }).addTo(scoutLayer || (scoutLayer = L.layerGroup().addTo(map))); $('scOut').textContent = `${scoutExtra.length} stop${scoutExtra.length === 1 ? '' : 's'} of your own added. Tap Plan the loop.`; return; }
         if (tool === 'add' && pending) { pending.setLatLng(e.latlng); pend.acc = null; pend.moved = 0; pendUI(); return; }
         if (tool === 'blood' && curBT()) { if (tapMode === 'grid' && curBT().grid && toggleCell(e.latlng)) return; addBlood(e.latlng, 0, curBT().pts.length ? 'blood' : 'hit'); return; }
