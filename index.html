@@ -1624,6 +1624,9 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
 .fd-grid small { display: block; font-size: .7rem; opacity: .75; }
 .fd-grid small.on { color: #2e7d32; opacity: 1; font-weight: 700; }
 .fd-grid button[aria-pressed="true"] svg, .fd-grid button:active svg { color: #fff; }
+.ai-land { display: grid; gap: 4px; margin: 6px 0; font-size: .85rem; }
+.ai-land label { display: flex; gap: 8px; align-items: flex-start; }
+.ai-land input { width: 18px; height: 18px; flex: none; margin-top: 1px; }
 .vs-mic { width: 100%; justify-content: center; padding: 14px; font-size: 1.05rem; margin: 8px 0; }
 .vs-mic[aria-pressed="true"] { animation: recp 1s infinite; }
 #vsText { width: 100%; box-sizing: border-box; font: inherit; padding: 8px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); color: var(--fg); }
@@ -2620,6 +2623,7 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
         <h2 style="margin:0">AI hunt spots</h2>
         <div class="caption" id="aiStatus">Finds the places where deer are most likely to move or bed within about 1 km, from the shape of the land, satellite land cover (food, water, cover), today's wind and the rut.</div>
         <div class="ai-legend"><span><i class="ai-pin sm" style="--c:#c2185b">N</i>Funnel</span><span><i class="ai-pin sm" style="--c:#7b3fd1">S</i>Saddle</span><span><i class="ai-pin sm" style="--c:#c9a227">F</i>Food (field edge)</span><span><i class="ai-pin sm" style="--c:#1b8a8a">B</i>Bench</span><span><i class="ai-pin sm" style="--c:#d9530f">P</i>Ridge point</span><span><i class="ai-pin sm" style="--c:#1e88e5">W</i>Water</span><span><i class="ai-pin sm" style="--c:#2e7d32">C</i>Thick cover</span><span><i class="ai-pin sm" style="--c:#7cb342">Y</i>Young growth</span><span><i class="ai-pin sm" style="--c:#3949ab">D</i>Draw</span><span><i class="ai-pin sm" style="--c:#a0522d">A</i>Hardwoods (acorns?)</span><span><i class="ai-pin sm" style="--c:#6d4c41">Z</i>Bedding</span></div><div class="ai-hunt-leg"><span class="ai-hunt"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.5"/><path d="M12 1v5M12 18v5M1 12h5M18 12h5"/></svg><b>1</b></span><div><b>Hunt here.</b> Where to set up for each spot, numbered by rank, already placed downwind of today's wind. The small letters are the deer features (food, water, bedding…) it is hunting.</div></div>
+        <div class="ai-land"><label><input type="checkbox" id="aiLegal" checked> Only legal hunting land (public hunting land, 150 ft from buildings)</label><label><input type="checkbox" id="aiParks" checked> Include state parks with permit hunts (Sterling Forest, Harriman, Ringwood…)</label></div>
         <div class="k">How are you hunting?</div>
         <div class="ai-meth" id="aiMeth" role="group" aria-label="How are you hunting"><button type="button" data-m="ground"><svg><use href="#i-blind"/></svg>Ground / blind</button><button type="button" data-m="saddle"><svg><use href="#i-tether"/></svg>Saddle</button><button type="button" data-m="stand"><svg><use href="#i-stand"/></svg>Tree stand</button></div>
         <div class="caption" id="aiMethTip"></div>
@@ -7285,6 +7289,56 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
       for (const s of list) { let d = Infinity; for (const p of pts) { const x = s.ll.distanceTo(p); if (x < d) d = x; } s.house = d; }
       return true;
     }
+    // ---------- huntable land: AI spots only on public hunting land (DEC lands, WMAs, NJ state land open to hunting), state parks with permit hunts optional ----------
+    const landCache = {};
+    const pipRings = (rings, x, y) => { let inn = false; for (const r of rings) for (let i = 0, j = r.length - 1; i < r.length; j = i++) { const [xi, yi] = r[i], [xj, yj] = r[j]; if ((yi > y) !== (yj > y) && x < (xj - xi) * (y - yi) / (yj - yi) + xi) inn = !inn; } return inn; };
+    async function huntLand(box) {
+      const key = [box.getWest(), box.getSouth(), box.getEast(), box.getNorth()].map(v => v.toFixed(3)).join();
+      if (landCache[key] && Date.now() - landCache[key].t < 6e5) return landCache[key];
+      const q = fields => new URLSearchParams({ where: '1=1', geometry: `${box.getWest()},${box.getSouth()},${box.getEast()},${box.getNorth()}`, geometryType: 'esriGeometryEnvelope', inSR: '4326', spatialRel: 'esriSpatialRelIntersects', outFields: fields, returnGeometry: 'true', outSR: '4326', maxAllowableOffset: '0.00005', resultRecordCount: '1000', f: 'json' });
+      const get = (u, f) => fetch(`${u}/query?${q(f)}`).then(r => r.json()).then(j => { if (j.error) throw new Error(j.error.message); return j.features || []; });
+      const inNY = box.getSouth() < 45.1 && box.getNorth() > 40.9 - 0.4, inNJp = box.getSouth() < 41.4 && box.getNorth() > 38.9 && box.getWest() < -73.8;
+      const jobs = [
+        ['dec', inNY ? get(DEC + '/0', 'CATEGORY,FACILITY') : Promise.resolve([])],
+        ['wma', inNY ? get(DEC + '/2', 'WMA,WILDAREA') : Promise.resolve([])],
+        ['nys', inNY ? get(NYS + '/0', 'NYS_NAME,PRIMARY_OWNER') : Promise.resolve([])],
+        ['nj', inNJp ? get(NJL + '/67', 'FEATURE_NAME,OWNERSHIP_USE,HUNTING_PERMITTED') : Promise.resolve([])]];
+      const res = await Promise.allSettled(jobs.map(j => j[1]));
+      const polys = []; let okN = 0;
+      res.forEach((r, i) => {
+        if (r.status !== 'fulfilled') return; okN++;
+        for (const f of r.value) {
+          const a = f.attributes || {}, rings = f.geometry && f.geometry.rings; if (!rings) continue;
+          let k = null, name = '';
+          if (jobs[i][0] === 'dec') { if (/easement|hatchery|campground|day use|administrative|nursery|education center|boat launch|fishing access/i.test(a.CATEGORY || '')) continue; k = 'open'; name = a.FACILITY || a.CATEGORY || 'DEC land'; }
+          else if (jobs[i][0] === 'wma') { k = 'open'; name = a.WMA || a.WILDAREA || 'Wildlife Management Area'; }
+          else if (jobs[i][0] === 'nys') { const o = `${a.NYS_NAME || ''} ${a.PRIMARY_OWNER || ''}`; if (!/park|recreation|oprhp|palisades/i.test(o)) continue; k = 'permit'; name = 'NY state park'; }
+          else if (jobs[i][0] === 'nj') { const h = String(a.HUNTING_PERMITTED || '').trim(); if (/^n/i.test(h)) continue; k = /park|forest|recreation/i.test(a.OWNERSHIP_USE || a.FEATURE_NAME || '') && !/wildlife|wma/i.test(a.OWNERSHIP_USE || a.FEATURE_NAME || '') ? 'zoned' : 'open'; name = a.FEATURE_NAME || 'NJ state land'; }
+          let w = 180, s = 90, e = -180, n = -90; for (const rg of rings) for (const [x, y] of rg) { if (x < w) w = x; if (x > e) e = x; if (y < s) s = y; if (y > n) n = y; }
+          polys.push({ k, name, rings, bb: [w, s, e, n] });
+        }
+      });
+      const L2 = { t: Date.now(), ok: okN === res.length || (okN > 0 && polys.length > 0), polys,
+        at(ll) { let best = null; for (const p of this.polys) { if (ll.lng < p.bb[0] || ll.lng > p.bb[2] || ll.lat < p.bb[1] || ll.lat > p.bb[3]) continue; if (!pipRings(p.rings, ll.lng, ll.lat)) continue; if (!best || (best.k !== 'open' && p.k === 'open')) best = p; } return best; } };
+      if (L2.ok) landCache[key] = L2;
+      return L2;
+    }
+    let legalOnly = store.get('ai.legalOnly', true), parksOk = store.get('ai.parksOk', true);
+    // keep spots where both the spot and your stand spot are on huntable land and over 150 ft from a building; returns how many were hidden
+    async function legalSpots(list, box, opts = {}) {
+      if (!legalOnly) { list.forEach(s => { s.land = null; }); return { list, hid: 0, ok: true, off: true }; }
+      let H = null; try { H = await huntLand(box); } catch (e) { H = null; }
+      if (!H || !H.ok) return { list, hid: 0, ok: false };
+      const keep = list.filter(s => {
+        const a = H.at(s.ll); let st = null; try { st = opts.noStand ? null : spotText(s).stand; } catch (e) {}
+        const b = st ? H.at(st) : a;
+        if (!a || !b) return false;
+        if (!parksOk && (a.k === 'permit' || b.k === 'permit')) return false;
+        if (s.house != null && s.house < 46) return false;
+        s.land = a.k === 'open' && b.k !== 'open' ? b : a; return true;
+      });
+      return { list: keep, hid: list.length - keep.length, ok: true };
+    }
     function spotText(s) {
       const now = new Date(), rut = predict.rut ? predict.rut(now) : '', rutHot = /Seeking|Chasing|Peak/.test(rut), f = s.f, wTo = (WIND.from + 180) % 360;
       const ft = m => Math.round(m * 3.28084);
@@ -7341,8 +7395,14 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
         + `<div class="sec ai-setup"><b>${mDef().n} setup</b><div>${x.setup}</div><div>${x.lane}</div></div>`
         + `<div class="sec"><b>Wind</b><div>${x.wind}</div>${x.house}</div>`
         + (x.press ? `<div class="sec">${x.press}</div>` : '') + (x.sign ? `<div class="sec">${x.sign}</div>` : '')
+        + (s.land ? `<div class="sec">${s.land.k === 'open' ? `<b>Huntable land:</b> ${esc(s.land.name)} (public hunting land; check its posted rules).` : s.land.k === 'zoned' ? `<div class="ai-warn"><b>${esc(s.land.name)}:</b> hunting is allowed only in the areas this park or forest opens for it, and never on Sundays. Check its hunting map before you set up.</div>` : `<div class="ai-warn"><b>State park:</b> hunt here only with this park's hunting permit and only inside its marked hunting areas (for example Sterling Forest or Harriman). Check the park's hunting map.</div>`}</div>` : '')
         + `<div class="sec muted">A prediction from the terrain and satellite land cover, not a sighting. Confirm with tracks, rubs, scrapes or a trail camera, and check who owns the land.</div>`
-        + `<div class="acts"><button type="button" data-a="nav">Navigate here</button><button type="button" data-a="land">Owner &amp; rules</button><button type="button" data-a="save">Save as marker</button></div>`;
+        + `<div class="acts"><button type="button" data-a="nav">Navigate here</button><button type="button" data-a="land">Owner &amp; rules</button><button type="button" data-a="save">Save as marker</button><button type="button" data-a="share">Share with a friend</button></div>`;
+      box.querySelector('[data-a=share]').onclick = () => {
+        const plain = h => String(h || '').replace(/<[^>]+>/g, '').replace(/&amp;/g, '&').replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim();
+        const nm = `${SPOT[s.t][0]} #${k + 1}`, ll = s.ll, st = x.stand;
+        shareText(`Deer Eyes: ${nm}`, `${nm} (Deer Eyes AI spot)\nBest wind: ${x.best.join(', ')} · avoid ${x.avoid} · best time: ${x.timeLbl}\nWhy: ${plain(x.why)}\n\nSpot: https://maps.google.com/?q=${ll.lat.toFixed(6)},${ll.lng.toFixed(6)}\nStand here: https://maps.google.com/?q=${st.lat.toFixed(6)},${st.lng.toFixed(6)}\nOpen in Deer Eyes (walks you there): ${appLink(st.lat, st.lng, nm + ' (stand spot)')}${s.land ? `\nLand: ${s.land.name}${s.land.k === 'permit' ? ' (state park: park hunting permit needed)' : s.land.k === 'zoned' ? ' (designated hunting areas only, no Sundays)' : ' (public hunting land)'}` : ''}\n\nA prediction from terrain and land cover, not a sighting. Check the area's rules.`);
+      };
       box.querySelector('[data-a=nav]').onclick = () => { map.closePopup(); setGoTo(x.stand, `${SPOT[s.t][0]} #${k + 1} (stand spot)`); };
       box.querySelector('[data-a=land]').onclick = () => { map.closePopup(); landInfo(s.ll); };
       box.querySelector('[data-a=save]').onclick = () => {
@@ -7387,20 +7447,25 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
         const r = await findSpots(c); spots = r.spots; spotGrid = r.grid;
         $('aiStatus').textContent = 'Checking for houses nearby…';
         const ok = await nearHouses(spots, r.box).catch(() => false);
+        $('aiStatus').textContent = 'Checking which land is open to hunting…';
+        const lg = await legalSpots(spots, r.box); spots = lg.list;
         $('aiStatus').textContent = 'Checking trails, roads and parking (hunting pressure)…';
         const pok = await loadPressure(r.box);
         spots.forEach(s => { s.press = pressureAt(s.ll); s.sign = ownSign(s.ll); });
         rankSpots();
         drawSpots();
         const rut = predict.rut ? predict.rut(new Date()) : '';
-        $('aiStatus').innerHTML = `<b>${spots.length} spots</b> within about 1 km of ${fromGPS ? 'you' : 'the map center'}. Ranked for <b>${mDef().n}</b> hunting · wind from <b>${cardinal(WIND.from)} ${WIND.speed} mph</b>${rut ? ` · rut: <b>${rut.toLowerCase()}</b>` : ''}.${pok ? '' : ' Could not load trails and roads, so hunting pressure only counts your parking pins and pressure log.'}${r.lcOk ? '' : ' Could not load the satellite land cover, so food, water and cover are missing this time.'}${ok ? '' : ' Could not check for houses (no signal?), so mind the safety zones.'} Tap a spot to see why.`;
+        $('aiStatus').innerHTML = `<b>${spots.length} spots</b> within about 1 km of ${fromGPS ? 'you' : 'the map center'}. Ranked for <b>${mDef().n}</b> hunting · wind from <b>${cardinal(WIND.from)} ${WIND.speed} mph</b>${rut ? ` · rut: <b>${rut.toLowerCase()}</b>` : ''}.${pok ? '' : ' Could not load trails and roads, so hunting pressure only counts your parking pins and pressure log.'}${r.lcOk ? '' : ' Could not load the satellite land cover, so food, water and cover are missing this time.'}${ok ? '' : ' Could not check for houses (no signal?), so mind the safety zones.'}${lg.off ? ' <b>Showing all land</b> (Only legal hunting land is off): get permission before hunting private land.' : !lg.ok ? ' <b>Could not load the public-land maps</b> (no signal?), so these spots are NOT checked for huntable land.' : lg.hid ? ` Hid <b>${lg.hid}</b> spot${lg.hid > 1 ? 's' : ''} on private or closed land or inside the 150 ft safety zone.` : ''} Tap a spot to see why.`;
         if (spots.length) map.fitBounds(L.latLngBounds(spots.map(s => s.ll).concat([c])).pad(0.15), { maxZoom: 16 });
-        $('map').scrollIntoView({ behavior: 'smooth', block: 'nearest' }); if (!spots.length) toast('No spots found in this area.'); else toast(`${spots.length} AI spots found. Tap a colored letter on the map to see why.`);
+        $('map').scrollIntoView({ behavior: 'smooth', block: 'nearest' }); if (!spots.length) toast(lg.hid ? 'No spots on huntable land here. Move the map onto public hunting land and try again.' : 'No spots found in this area.'); else toast(`${spots.length} AI spots found. Tap a colored letter on the map to see why.`);
       } catch (e) {
         $('aiStatus').textContent = 'Could not load the elevation data. This needs signal, or an area saved with "Download this area for offline".';
       } finally { spotBusy = false; }
     }
     $('aiRun').addEventListener('click', () => runSpots(true));
+    $('aiLegal').checked = legalOnly; $('aiParks').checked = parksOk; $('aiParks').disabled = !legalOnly;
+    $('aiLegal').addEventListener('change', () => { legalOnly = $('aiLegal').checked; store.set('ai.legalOnly', legalOnly); $('aiParks').disabled = !legalOnly; toast(legalOnly ? 'AI spots: public hunting land only. Run AI spots again to update.' : 'AI spots: all land. You need the owner\u2019s permission on private land.'); });
+    $('aiParks').addEventListener('change', () => { parksOk = $('aiParks').checked; store.set('ai.parksOk', parksOk); toast('Run AI spots again to update.'); });
     // AI spots button under the map: find spots for the area the map is showing (wherever you are)
     const aiStale = () => !spots.length || !spotCenter || spotCenter.distanceTo(map.getCenter()) > 500;
     $('mpAiBtn').addEventListener('click', () => {
@@ -8474,7 +8539,7 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
       $('scPlan').disabled = true; $('scOut').textContent = 'Finding the best stops…';
       try {
         let cand = [];
-        if ($('scAi').checked) { try { const r = await findSpots(start, 1300); cand = cand.concat(r.spots.map(s => ({ ll: s.ll, name: (SPOT[s.t] || ['Spot'])[0], w: 1 + (s.w || 0) }))); } catch (e) {} }
+        if ($('scAi').checked) { try { const r = await findSpots(start, 1300); try { await nearHouses(r.spots, r.box); } catch (e) {} r.spots = (await legalSpots(r.spots, r.box, { noStand: true })).list; cand = cand.concat(r.spots.map(s => ({ ll: s.ll, name: (SPOT[s.t] || ['Spot'])[0], w: 1 + (s.w || 0) }))); } catch (e) {} }
         if ($('scPins').checked) cand = cand.concat(DB.markers.filter(inArea).filter(m => deerish(m) && L.latLng(m.lat, m.lon).distanceTo(start) < 1700).map(m => ({ ll: L.latLng(m.lat, m.lon), name: m.name || (MT[m.type] || MT.note)[0], w: 2 })));
         cand = cand.concat(scoutExtra.map(ll => ({ ll, name: 'Your stop', w: 3 })));
         const pick = []; cand.sort((a, b) => b.w - a.w).forEach(c => { if (!pick.some(p => p.ll.distanceTo(c.ll) < 90)) pick.push(c); });
@@ -8551,7 +8616,7 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
         for (const s of M.filter(m => m.type === 'scrape' && m.t > yr)) add(L.latLng(s.lat, s.lon), s.name || 'Scrape', 'Check the licking branch. Bucks reuse the same scrape trees year after year: if the branch is there, it is a good spot for a camera next October.', 2.5, 'scrape');
         for (const s of M.filter(m => (m.type === 'buck' || m.type === 'shed') && m.t > yr)) add(L.latLng(s.lat, s.lon), s.name || MT[s.type][0], 'Shed hunt the cover near here, and look for the trail he used. Big bucks bed within a few hundred yards of where you see them.', 3, 'buck');
         // 4. terrain the model sees, checked against what you already know
-        let r = null; try { r = await findSpots(start, 1000); } catch (e) { r = null; }
+        let r = null; try { r = await findSpots(start, 1000); try { r.spots = (await legalSpots(r.spots, r.box, { noStand: true })).list; } catch (e) {} } catch (e) { r = null; }
         if (r) {
           const known = (ll, types, d) => M.some(m => types.includes(m.type) && L.latLng(m.lat, m.lon).distanceTo(ll) < d);
           for (const s of r.spots) {
