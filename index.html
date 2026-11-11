@@ -6157,15 +6157,16 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
     });
     const GROUPS = [['legal', 'Property, public land and rules'], ['terrain', 'Terrain'], ['photos', 'Aerial photos and old maps'], ['land', 'Land and water'], ['access', 'Access'], ['mine', 'Your sign']];
     const OVERS = {
-      nyParcels: ['NY property lines', 'Tax parcels with owners (38 counties incl. Orange, Rockland, Ulster, Putnam). Zoom in close.', () => arc(NYP, 'show:1', { minZoom: 14 }), 'legal'],
+      nyParcels: ['NY property lines', 'Tax parcels with owners (38 counties incl. Orange, Rockland, Ulster, Putnam). Zoom in close.', () => arc(NYP, 'show:1', { minZoom: 14, pane: 'legalPane' }), 'legal'],
+      sfMap:     ['Sterling Forest hunting map (official)', 'The park\u2019s own 2026 hunting map, placed exactly with the coordinates built into the park\u2019s file. Green: hunting allowed. Tan: archery only. Orange: no hunting. AI spots in Sterling Forest follow it even when this layer is off.', () => new SFLayer(), 'legal'],
       owners:    ['Property by owner (colors)', 'Every parcel of the same owner in one color and one stripe angle, with the lines between them removed and the owner\u2019s name on it. All of Sterling Forest shows as one green block. Green = state land, teal = county, town or land trust.', () => new OwnerParcels(), 'legal'],
       njParcels: ['NJ property lines', 'Statewide tax parcels. Zoom in close.', () => new NJParcels(), 'legal'],
-      nyState:   ['NY state land', 'All state-owned land: state parks, forests, DEC land', () => arc(NYS, 'show:0', { minZoom: 11 }), 'legal'],
-      nyDec:     ['NY DEC lands and WMAs', 'State forests, wildlife management areas', () => arc(DEC, 'show:0,2', { minZoom: 9 }), 'legal'],
-      njState:   ['NJ state land', 'State parks, forests and WMAs (with hunting info)', () => arc(NJL, 'show:67', { minZoom: 9 }), 'legal'],
+      nyState:   ['NY state land', 'All state-owned land: state parks, forests, DEC land', () => arc(NYS, 'show:0', { minZoom: 11, pane: 'legalPane' }), 'legal'],
+      nyDec:     ['NY DEC lands and WMAs', 'State forests, wildlife management areas', () => arc(DEC, 'show:0,2', { minZoom: 9, pane: 'legalPane' }), 'legal'],
+      njState:   ['NJ state land', 'State parks, forests and WMAs (with hunting info)', () => arc(NJL, 'show:67', { minZoom: 9, pane: 'legalPane' }), 'legal'],
       safety:    ['Safety zones around buildings', 'Approximate no-shoot rings. Red dashed: firearm (NY 500 ft, NJ 450 ft). Orange: bow (150 ft). Zoom in close.', () => new SafetyRings(), 'legal'],
-      nyWmu:     ['NY hunting units (WMUs)', 'Wildlife Management Unit boundaries', () => arc(DEC, 'show:4', { minZoom: 7 }), 'legal'],
-      njDmz:     ['NJ deer zones', 'Deer Management Zone boundaries', () => arc('https://mapsdep.nj.gov/arcgis/rest/services/Features/Environmental_admin/MapServer', 'show:17', { minZoom: 7 }), 'legal'],
+      nyWmu:     ['NY hunting units (WMUs)', 'Wildlife Management Unit boundaries', () => arc(DEC, 'show:4', { minZoom: 7, pane: 'legalPane' }), 'legal'],
+      njDmz:     ['NJ deer zones', 'Deer Management Zone boundaries', () => arc('https://mapsdep.nj.gov/arcgis/rest/services/Features/Environmental_admin/MapServer', 'show:17', { minZoom: 7, pane: 'legalPane' }), 'legal'],
       lidar:     ['LiDAR terrain (1 m)', 'High-detail shading: benches, saddles, ditches and old roads that regular topo misses', () => imgSrv(TDEP, { rasterFunction: 'Hillshade Multidirectional' }, { opacity: 0.6, zIndex: 3, attribution: 'USGS 3DEP' }), 'terrain'],
       contours:  ['LiDAR contours (10 ft)', 'Detailed contour lines from lidar. Zoom in close.', () => imgSrv(TDEP, { rasterFunction: 'Preset 10ft Contour Interval' }, { minZoom: 14, zIndex: 6, attribution: 'USGS 3DEP' }), 'terrain'],
       hill:      ['Terrain shading (basic)', 'Lighter, faster shading for ridges and valleys', () => L.tileLayer(USGS('USGSShadedReliefOnly'), { maxNativeZoom: 16, maxZoom: 21, opacity: 0.4, zIndex: 3, attribution: 'USGS' }), 'terrain'],
@@ -7446,6 +7447,30 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
       if (L2.ok) landCache[key] = L2;
       return L2;
     }
+    // ---------- Sterling Forest: the park's official hunting map (GeoPDF, NYS OPRHP July 2026), placed with its own coordinates ----------
+    // sf-zones.png: one pixel per Web Mercator zoom-14 pixel (~7 m): 1 hunting, 2 archery only, 3 no hunting, 4 other state land, 5 water, 0 outside
+    let SFZ = null, SFZp = null;
+    function sfZones() {
+      if (SFZ) return Promise.resolve(SFZ); if (SFZp) return SFZp;
+      SFZp = (async () => {
+        const meta = await (await fetch('sf-zones.json')).json();
+        const img = await new Promise((res, rej) => { const im = new Image(); im.onload = () => res(im); im.onerror = rej; im.src = 'sf-zones.png'; });
+        const c = document.createElement('canvas'); c.width = meta.W; c.height = meta.H; const g = c.getContext('2d', { willReadFrequently: true }); g.drawImage(img, 0, 0);
+        const d = g.getImageData(0, 0, meta.W, meta.H).data, z = new Uint8Array(meta.W * meta.H); for (let i = 0; i < z.length; i++) z[i] = Math.round(d[i * 4] / 40);
+        const bb = L.latLngBounds(meta.bounds), park = meta.parking.map(p => L.latLng(p[0], p[1])), trail = meta.trail.map(p => L.latLng(p[0], p[1]));
+        SFZ = { meta, z, bb, park, trail,
+          at(ll) { if (!bb.contains(ll)) return null; const P = map.project(ll, meta.z), x = Math.floor(P.x - meta.x0), y = Math.floor(P.y - meta.y0); if (x < 0 || y < 0 || x >= meta.W || y >= meta.H) return null; return z[y * meta.W + x]; },
+          near(ll, list, r) { let best = Infinity; for (const p of list) { if (Math.abs(p.lat - ll.lat) > 0.01 || Math.abs(p.lng - ll.lng) > 0.013) continue; const d = ll.distanceTo(p); if (d < best) best = d; } return best <= r ? best : null; } };
+        return SFZ;
+      })().catch(() => { SFZp = null; return null; });
+      return SFZp;
+    }
+    const SF_BB = L.latLngBounds([41.12476, -74.32242], [41.32624, -74.1373]);
+    const SFLayer = L.Layer.extend({
+      onAdd(m) { this._m = m; sfZones().then(Z => { if (!Z || !this._m) { if (!Z) toast('Could not load the Sterling Forest map (needs signal the first time).'); return; } const M = Z.meta, k = 2 ** (20 - M.z); this.p = { id: 'sf', W: M.W, H: M.H, A: [k, 0, M.x0 * k, 0, k, M.y0 * k], op: this._op != null ? this._op : 0.6 }; this.pl = new PaperLayer(this.p, 'sf-map.jpg').addTo(m); }); if (!m.getBounds().intersects(SF_BB)) toast('The Sterling Forest map shows only around Sterling Forest.'); },
+      onRemove(m) { if (this.pl) m.removeLayer(this.pl); this.pl = null; this._m = null; },
+      setOpacity(v) { this._op = Math.max(0.25, v); if (this.p) { this.p.op = this._op; this.pl && this.pl.update(); } }
+    });
     let legalOnly = store.get('ai.legalOnly', true), parksOk = store.get('ai.parksOk', true), edgeYd = store.get('ai.edgeYd', 75);
     // county tax parcels with their owner, to double-check that the stand is not on private land (both data sets must agree)
     const parcelCache = {};
@@ -7470,21 +7495,31 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
       let H = null; try { H = await huntLand(box); } catch (e) { H = null; }
       if (!H || !H.ok) return { list, hid: 0, ok: false };
       let P = null; try { P = await ownerParcels(box); } catch (e) { P = null; }
+      const SF = box.intersects(SF_BB) ? await sfZones() : null, sep = new Date().getMonth() === 8;
       const zs = myZones().filter(z => z.pts.some(p => box.contains([p[0], p[1]])) || box.intersects(L.latLngBounds(z.pts)));
-      const edge = opts.noStand ? 0 : (edgeYd || 0) / YD, why = { land: 0, edge: 0, owner: 0, zone: 0, house: 0 };
-      const okAt = ll => { const a = H.at(ll); if (!a) return null; if (!parksOk && a.k === 'permit') return null; return a; };
+      const edge = opts.noStand ? 0 : (edgeYd || 0) / YD, why = { land: 0, edge: 0, owner: 0, zone: 0, house: 0, sfno: 0, sfsafe: 0, sfsep: 0 };
+      // inside the Sterling Forest map, the park's own zones decide; elsewhere the state land data does
+      const SFOK = { name: 'Sterling Forest: open hunting area', k: 'sf' }, SFARCH = { name: 'Sterling Forest: archery only', k: 'sf', arch: 1 };
+      const okAt = ll => { const q = SF ? SF.at(ll) : null; if (q != null) { if (!parksOk) return null; return q === 1 ? SFOK : q === 2 ? SFARCH : null; } const a = H.at(ll); if (!a) return null; if (!parksOk && a.k === 'permit') return null; return a; };
       const keep = list.filter(s => {
         let st = null; try { st = opts.noStand ? null : spotText(s).stand; } catch (e) {}
-        const c = st || s.ll, a = okAt(s.ll), b = okAt(c);
+        const c = st || s.ll, inSF = !!(SF && SF.at(c) != null);
+        if (inSF && parksOk) {
+          const q1 = SF.at(c), q2 = SF.at(s.ll);
+          if (q1 === 3 || q2 === 3) { why.sfno++; return false; }
+          if (sep && !opts.noStand) { why.sfsep++; return false; }
+          if (!opts.noStand && (SF.near(c, SF.park, 152) != null || (s.house != null && s.house < 152) || SF.near(c, SF.trail, 46) != null)) { why.sfsafe++; return false; }
+        }
+        const a = okAt(s.ll), b = okAt(c);
         if (!a || !b) { why.land++; return false; }
         if (s.house != null && s.house < 46) { why.house++; return false; }
         const ring = [c, s.ll]; if (edge > 0) for (let k = 0; k < 16; k++) ring.push(destPoint(c, k * 22.5, edge));
-        if (edge > 0 && ring.some(p => !okAt(p))) { why.edge++; return false; }
+        if (edge > 0 && ring.some(p => !okAt(p) && !(SF && SF.at(p) === 5))) { why.edge++; return false; }
         if (P && P.ok && ring.some(p => { const q = P.at(p); return q && !q.pub; })) { why.owner++; return false; }
         if (zs.length && !opts.noStand && !(inZone(c, zs) && inZone(s.ll, zs) && (edge <= 0 || ring.slice(2).filter((p, k) => k % 2 === 0).every(p => inZone(p, zs))))) { why.zone++; return false; }
         s.land = a.k === 'open' && b.k !== 'open' ? b : a; s.inZone = zs.length > 0; return true;
       });
-      return { list: keep, hid: list.length - keep.length, ok: true, why, owner: !!(P && P.ok), zones: zs.length };
+      return { list: keep, hid: list.length - keep.length, ok: true, why, owner: !!(P && P.ok), zones: zs.length, sf: !!SF };
     }
     function spotText(s) {
       const now = new Date(), rut = predict.rut ? predict.rut(now) : '', rutHot = /Seeking|Chasing|Peak/.test(rut), f = s.f, wTo = (WIND.from + 180) % 360;
@@ -7543,13 +7578,13 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
         + `<div class="sec"><b>Wind</b><div>${x.wind}</div>${x.house}</div>`
         + (x.press ? `<div class="sec">${x.press}</div>` : '') + (x.sign ? `<div class="sec">${x.sign}</div>` : '')
         + (s.inZone ? `<div class="sec"><b>Inside your traced hunting area.</b></div>` : '')
-        + (s.land ? `<div class="sec">${s.land.k === 'open' ? `<b>Huntable land:</b> ${esc(s.land.name)} (public hunting land; check its posted rules).` : s.land.k === 'zoned' ? `<div class="ai-warn"><b>${esc(s.land.name)}:</b> hunting is allowed only in the areas this park or forest opens for it, and never on Sundays. Check its hunting map before you set up.</div>` : `<div class="ai-warn"><b>State park:</b> hunt here only with this park's hunting permit and only inside its marked hunting areas (for example Sterling Forest or Harriman). Check the park's hunting map.</div>`}</div>` : '')
+        + (s.land && s.land.k === 'sf' ? `<div class="sec"><b>${esc(s.land.name)}</b> (official park map). Park hunting permit and DEC license needed; no hunting in September; stay 500 ft from buildings and parking lots and off the trails.</div>` : s.land ? `<div class="sec">${s.land.k === 'open' ? `<b>Huntable land:</b> ${esc(s.land.name)} (public hunting land; check its posted rules).` : s.land.k === 'zoned' ? `<div class="ai-warn"><b>${esc(s.land.name)}:</b> hunting is allowed only in the areas this park or forest opens for it, and never on Sundays. Check its hunting map before you set up.</div>` : `<div class="ai-warn"><b>State park:</b> hunt here only with this park's hunting permit and only inside its marked hunting areas (for example Sterling Forest or Harriman). Check the park's hunting map.</div>`}</div>` : '')
         + `<div class="sec muted">A prediction from the terrain and satellite land cover, not a sighting. Confirm with tracks, rubs, scrapes or a trail camera, and check who owns the land.</div>`
         + `<div class="acts"><button type="button" data-a="nav">Navigate here</button><button type="button" data-a="land">Owner &amp; rules</button><button type="button" data-a="save">Save as marker</button><button type="button" data-a="share">Share with a friend</button></div>`;
       box.querySelector('[data-a=share]').onclick = () => {
         const plain = h => String(h || '').replace(/<[^>]+>/g, '').replace(/&amp;/g, '&').replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim();
         const nm = `${SPOT[s.t][0]} #${k + 1}`, ll = s.ll, st = x.stand;
-        shareText(`Deer Eyes: ${nm}`, `${nm} (Deer Eyes AI spot)\nBest wind: ${x.best.join(', ')} · avoid ${x.avoid} · best time: ${x.timeLbl}\nWhy: ${plain(x.why)}\n\nSpot: https://maps.google.com/?q=${ll.lat.toFixed(6)},${ll.lng.toFixed(6)}\nStand here: https://maps.google.com/?q=${st.lat.toFixed(6)},${st.lng.toFixed(6)}\nOpen in Deer Eyes (walks you there): ${appLink(st.lat, st.lng, nm + ' (stand spot)')}${s.land ? `\nLand: ${s.land.name}${s.land.k === 'permit' ? ' (state park: park hunting permit needed)' : s.land.k === 'zoned' ? ' (designated hunting areas only, no Sundays)' : ' (public hunting land)'}` : ''}\n\nA prediction from terrain and land cover, not a sighting. Check the area's rules.`);
+        shareText(`Deer Eyes: ${nm}`, `${nm} (Deer Eyes AI spot)\nBest wind: ${x.best.join(', ')} · avoid ${x.avoid} · best time: ${x.timeLbl}\nWhy: ${plain(x.why)}\n\nSpot: https://maps.google.com/?q=${ll.lat.toFixed(6)},${ll.lng.toFixed(6)}\nStand here: https://maps.google.com/?q=${st.lat.toFixed(6)},${st.lng.toFixed(6)}\nOpen in Deer Eyes (walks you there): ${appLink(st.lat, st.lng, nm + ' (stand spot)')}${s.land ? `\nLand: ${s.land.name}${s.land.k === 'sf' ? ' (park hunting permit needed)' : s.land.k === 'permit' ? ' (state park: park hunting permit needed)' : s.land.k === 'zoned' ? ' (designated hunting areas only, no Sundays)' : ' (public hunting land)'}` : ''}\n\nA prediction from terrain and land cover, not a sighting. Check the area's rules.`);
       };
       box.querySelector('[data-a=nav]').onclick = () => { map.closePopup(); setGoTo(x.stand, `${SPOT[s.t][0]} #${k + 1} (stand spot)`); };
       box.querySelector('[data-a=land]').onclick = () => { map.closePopup(); landInfo(s.ll); };
@@ -7603,7 +7638,7 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
         rankSpots();
         drawSpots();
         const rut = predict.rut ? predict.rut(new Date()) : '';
-        $('aiStatus').innerHTML = `<b>${spots.length} spots</b> within about 1 km of ${fromGPS ? 'you' : 'the map center'}. Ranked for <b>${mDef().n}</b> hunting · wind from <b>${cardinal(WIND.from)} ${WIND.speed} mph</b>${rut ? ` · rut: <b>${rut.toLowerCase()}</b>` : ''}.${pok ? '' : ' Could not load trails and roads, so hunting pressure only counts your parking pins and pressure log.'}${r.lcOk ? '' : ' Could not load the satellite land cover, so food, water and cover are missing this time.'}${ok ? '' : ' Could not check for houses (no signal?), so mind the safety zones.'}${lg.off ? ' <b>Showing all land</b> (Only legal hunting land is off): get permission before hunting private land.' : !lg.ok ? ' <b>Could not load the public-land maps</b> (no signal?), so these spots are NOT checked for huntable land.' : (lg.hid ? ` Hid <b>${lg.hid}</b>: ${[[lg.why.land, 'on private or closed land'], [lg.why.edge, `within ${edgeYd} yd of a property line`], [lg.why.owner, 'on a private parcel in the county records'], [lg.why.zone, 'outside your traced hunting areas'], [lg.why.house, 'inside the 150 ft safety zone']].filter(x => x[0]).map(x => `${x[0]} ${x[1]}`).join(', ')}.` : '') + (lg.owner ? '' : ' (Owner double-check skipped: county parcels did not load.)') + (lg.zones ? ` Limited to your ${lg.zones} traced hunting area${lg.zones > 1 ? 's' : ''}.` : '')} Tap a spot to see why.`;
+        $('aiStatus').innerHTML = `<b>${spots.length} spots</b> within about 1 km of ${fromGPS ? 'you' : 'the map center'}. Ranked for <b>${mDef().n}</b> hunting · wind from <b>${cardinal(WIND.from)} ${WIND.speed} mph</b>${rut ? ` · rut: <b>${rut.toLowerCase()}</b>` : ''}.${pok ? '' : ' Could not load trails and roads, so hunting pressure only counts your parking pins and pressure log.'}${r.lcOk ? '' : ' Could not load the satellite land cover, so food, water and cover are missing this time.'}${ok ? '' : ' Could not check for houses (no signal?), so mind the safety zones.'}${lg.off ? ' <b>Showing all land</b> (Only legal hunting land is off): get permission before hunting private land.' : !lg.ok ? ' <b>Could not load the public-land maps</b> (no signal?), so these spots are NOT checked for huntable land.' : (lg.hid ? ` Hid <b>${lg.hid}</b>: ${[[lg.why.land, 'on private or closed land'], [lg.why.edge, `within ${edgeYd} yd of a property line`], [lg.why.owner, 'on a private parcel in the county records'], [lg.why.zone, 'outside your traced hunting areas'], [lg.why.house, 'inside the 150 ft safety zone'], [lg.why.sfno, 'in a Sterling Forest no-hunting area'], [lg.why.sfsafe, 'within 500 ft of a parking lot or building, or within 50 yd of a trail (Sterling Forest rules)'], [lg.why.sfsep, 'in Sterling Forest, which is closed to hunting in September']].filter(x => x[0]).map(x => `${x[0]} ${x[1]}`).join(', ')}.` : '') + (lg.owner ? '' : ' (Owner double-check skipped: county parcels did not load.)') + (lg.zones ? ` Limited to your ${lg.zones} traced hunting area${lg.zones > 1 ? 's' : ''}.` : '') + (lg.sf ? ' Checked against the official Sterling Forest hunting map.' : '')} Tap a spot to see why.`;
         if (spots.length) map.fitBounds(L.latLngBounds(spots.map(s => s.ll).concat([c])).pad(0.15), { maxZoom: 16 });
         $('map').scrollIntoView({ behavior: 'smooth', block: 'nearest' }); if (!spots.length) toast(lg.hid ? `No spots passed the land checks here. Move deeper into public land${edgeYd > 40 ? ', or set "Stay inside the line" to 40 yd' : ''}, and try again.` : 'No spots found in this area.'); else toast(`${spots.length} AI spots found. Tap a colored letter on the map to see why.`);
       } catch (e) {
@@ -8323,6 +8358,7 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
     }
     function ppInit() { // runs once the map exists
       if (!map.getPane('paperPane')) { map.createPane('paperPane'); map.getPane('paperPane').style.zIndex = 390; map.getPane('paperPane').style.pointerEvents = 'none'; }
+      if (!map.getPane('legalPane')) { map.createPane('legalPane'); map.getPane('legalPane').style.zIndex = 395; map.getPane('legalPane').style.pointerEvents = 'none'; } // property lines draw on top of a park map
       hzLayer.addTo(map); PP.list.forEach(p => ppShow(p)); hzDraw();
       window.__deTest = { map, PP, W20, spots: () => spots, st: s => spotText(s).stand };
     }
