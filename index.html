@@ -1624,6 +1624,17 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
 .fd-grid small { display: block; font-size: .7rem; opacity: .75; }
 .fd-grid small.on { color: #2e7d32; opacity: 1; font-weight: 700; }
 .fd-grid button[aria-pressed="true"] svg, .fd-grid button:active svg { color: #fff; }
+.vs-mic { width: 100%; justify-content: center; padding: 14px; font-size: 1.05rem; margin: 8px 0; }
+.vs-mic[aria-pressed="true"] { animation: recp 1s infinite; }
+#vsText { width: 100%; box-sizing: border-box; font: inherit; padding: 8px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); color: var(--fg); }
+.vs-items { display: grid; gap: 6px; margin: 8px 0; }
+.vs-it { display: grid; grid-template-columns: auto 1fr; gap: 4px 8px; align-items: center; padding: 8px; border: 1px solid var(--line); border-radius: 8px; }
+.vs-it input[type=checkbox] { width: 20px; height: 20px; }
+.vs-it select { font: inherit; padding: 4px; border-radius: 6px; border: 1px solid var(--line); background: var(--surface); color: var(--fg); max-width: 100%; }
+.vs-it .vs-d { grid-column: 2; font-size: .82rem; color: var(--muted, #666); }
+.vs-it.ask { border-color: #b45309; }
+.vs-meta { display: grid; gap: 4px; font-size: .9rem; margin: 6px 0; }
+.vs-meta input { font: inherit; padding: 4px; border-radius: 6px; border: 1px solid var(--line); background: var(--surface); color: var(--fg); }
 .fd-prod { margin-top: 6px; display: flex; flex-wrap: wrap; gap: 4px; align-items: center; }
 .fd-prod button { border: 1px solid var(--line); background: transparent; color: inherit; border-radius: 6px; padding: 3px 7px; font: inherit; font-size: .78rem; cursor: pointer; }
 .dm-head { font-size: .9rem; margin: 6px 0; }
@@ -2349,7 +2360,7 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
           <button type="button" id="mpLayersBtn" aria-label="Map layers"><svg><use href="#i-layers"/></svg></button>
           <button type="button" id="mpLocBtn" aria-label="Show my location"><svg><use href="#i-locate"/></svg></button>
           <button type="button" id="mpPinMeBtn" aria-label="Save where I am standing"><svg><use href="#i-pinadd"/></svg></button>
-          <button type="button" id="mpVoiceBtn" aria-pressed="false" aria-label="Record a voice note here"><svg><use href="#i-mic"/></svg></button>
+          <button type="button" id="mpVoiceBtn" aria-pressed="false" aria-label="Voice scouting: say what you see"><svg><use href="#i-mic"/></svg></button>
           <button type="button" id="mp3dBtn" class="b3d" aria-pressed="false" aria-label="Show 3D terrain view">3D</button>
         </div>
         <div class="crosshair" id="mpCross" hidden aria-hidden="true"></div>
@@ -2494,6 +2505,15 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
         <div class="row"><label for="fdSec">GPS averaging</label><select id="fdSec" class="full"><option value="6">6 s (quick)</option><option value="10" selected>10 s</option><option value="20">20 s (most exact)</option></select><span class="v"></span></div>
         <div class="fd-grid" id="fdGrid"></div>
         <div class="caption" id="fdNow"></div>
+      </div>
+
+      <div class="panel mp" id="mp-voice" hidden>
+        <h2 style="margin:0">Voice scouting</h2>
+        <div class="caption">Say what you see. The app turns it into the right pins and the AI uses them. For example: <i>"white oak dropping heavy here"</i>, <i>"saw three bucks here last week heading north"</i>, <i>"fresh scrape 50 yards east"</i>, <i>"two trucks at the parking lot"</i>.</div>
+        <button type="button" class="btn primary vs-mic" id="vsMic" aria-pressed="false"><svg style="width:22px;height:22px"><use href="#i-mic"/></svg><span>Tap and talk</span></button>
+        <textarea id="vsText" rows="2" placeholder="What you said shows here. You can fix it, type it, or use the microphone key on your keyboard."></textarea>
+        <div class="actions"><button type="button" class="btn" id="vsRead">Read it again</button><button type="button" class="btn" id="vsAudio">Record audio only</button></div>
+        <div id="vsOut"></div>
       </div>
 
       <div class="panel mp" id="mp-scout" hidden>
@@ -2815,6 +2835,9 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
       <div class="actions"><button class="btn" type="button" data-pl="hunter">Hunter seen</button><button class="btn" type="button" data-pl="shot">Shot heard</button><button class="btn" type="button" data-pl="stand">Someone else's stand</button><button class="btn" type="button" data-pl="people">Hikers / dogs / ATV</button></div>
       <div id="plSum" class="caption"></div>
       <div class="actions"><a class="btn" href="#maps">See it on the map (Layers: Pressure you logged)</a></div></div>
+    <div class="panel"><h2 style="margin:0">Voice scouting</h2>
+      <div class="caption">Walk and talk. Say <i>"white oak dropping heavy here"</i> or <i>"saw three bucks here last week"</i> and the app drops the right pins where you stand, with the date you said. Your deer model and the AI spots use them right away.</div>
+      <div class="actions"><a class="btn primary" href="#voicescout">Start voice scouting</a></div></div>
     <div class="panel"><h2 style="margin:0">New piece of public land?</h2>
       <div class="caption">Plan one efficient scouting loop through saddles, benches, funnels, food and water, walked with the wind in your face. Then use <b>Approach</b> on the map to check your walk-in against bedding.</div>
       <div class="actions"><a class="btn primary" href="#scoutloop">Plan a scouting loop</a></div></div>
@@ -7823,7 +7846,165 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
       try { await idb.pinPut({ id: 'v:' + id, aud: url, t: Date.now() }); toast(`Voice note saved ${me ? 'where you are standing' : 'at the map center (no GPS yet)'}. Tap the pin to play it.`); }
       catch (e) { toast('Could not save the recording on this phone.'); }
     }
-    $('mpVoiceBtn').addEventListener('click', () => { if (vRec && vRec.state === 'recording') voiceStop(); else voiceStart(); });
+    // ---------- voice scouting: say what you see, the app turns it into pins the AI uses ----------
+    const VS_NUM = { a: 1, an: 1, one: 1, single: 1, two: 2, pair: 2, couple: 2, three: 3, few: 3, four: 4, several: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9, ten: 10, eleven: 11, twelve: 12, fifteen: 15, twenty: 20, thirty: 30, forty: 40, fifty: 50, sixty: 60, seventy: 70, eighty: 80, ninety: 90, hundred: 100 };
+    const vsN = w => w == null ? null : /^\d+$/.test(w) ? +w : VS_NUM[w] != null ? VS_NUM[w] : null;
+    const NUMW = '(\\d+|a|an|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|fifteen|twenty|thirty|forty|fifty|sixty|seventy|eighty|ninety|hundred|couple(?: of)?|pair of|few|several)';
+    const VS_FOOD = [
+      [/\b(swamp white|bur|white) oaks?\b/, 'whiteoak'], [/\bchestnut oaks?\b/, 'chestnutoak'], [/\b(northern red|red|pin|black|scarlet) oaks?\b/, 'redoak'],
+      [/\bbeech(nut)?(es|s)?\b/, 'beech'], [/\b(crab ?apples?|apples?|pears?)\b/, 'fruit'], [/\bpersimmons?\b/, 'persimmon'], [/\bgrapes?( ?vines?)?\b/, 'grape'], [/\bmushrooms?\b/, 'mushroom'],
+      [/\b(clover|alfalfa)\b/, 'clover'], [/\b(turnips?|brassicas?|radish(es)?|rape)\b/, 'brassica'], [/\bcorn\b/, 'corn'], [/\b(soy ?beans?|beans)\b/, 'soy'], [/\bfood ?plots?\b/, 'plot'],
+      [/\b(green ?bri[ae]r|cat ?bri[ae]r)\b/, 'greenbrier'], [/\bhoneysuckle\b/, 'honeysuckle'], [/\b(blackberr(y|ies)|raspberr(y|ies)|brambles?)\b/, 'bramble'], [/\b(hemlocks?|cedars?)\b/, 'hemlock'],
+      [/\b(cut ?over|clear ?cut|browse|regrowth)\b/, 'browse'], [/\b(minerals?|salt lick)\b/, 'mineral'], [/\b(seep|natural spring|a spring|spring here)\b/, 'spring'], [/(?<!(?:to|toward|towards|across|along|from|over|past|cross|crossed|crossing|by|near) (?:the |a )?)\b(pond|creek|stream|puddle|water ?hole|swamp water|water)\b/, 'water'],
+      [/\b(acorns?|oaks?)\b/, 'redoak', true]];
+    const VS_SIGN = [[/\brub ?lines?\b/, 'rub', 'rub line'], [/\brubs?\b/, 'rub'], [/\bscrapes?\b/, 'scrape'], [/\blicking branch(es)?\b/, 'lick'], [/\b(beds?|bedding)\b/, 'bed'],
+      [/\b(trails?|runs?|deer paths?|tracks)\b/, 'trail'], [/\b(droppings|poop|pellets|scat)\b/, 'droppings'], [/\bsheds?\b/, 'shed'], [/\b(funnel|pinch( point)?)\b/, 'funnel'], [/\b(posted|no trespassing)\b/, 'boundary']];
+    const VS_DIR = { north: 0, northeast: 45, east: 90, southeast: 135, south: 180, southwest: 225, west: 270, northwest: 315 };
+    const VS_DAYS = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+    function vsWhen(low, now) {
+      const d = new Date(now), day = 864e5; let txt = null, set = false;
+      const at = (dd, h, m) => { const x = new Date(dd); x.setHours(h, m || 0, 0, 0); return x; };
+      let base = null, part = null;
+      let mm;
+      if ((mm = low.match(new RegExp(`\\b${NUMW} (days?|weeks?|months?|years?) ago\\b`)))) { const n = vsN(mm[1].replace(/ of$/, '')) || 1, u = mm[2][0]; base = new Date(now - n * (u === 'd' ? 1 : u === 'w' ? 7 : u === 'm' ? 30 : 365) * day); txt = mm[0]; }
+      else if (/\blast weekend\b/.test(low)) { const x = new Date(now); x.setDate(x.getDate() - ((x.getDay() + 1) % 7 || 7)); base = x; txt = 'last weekend'; }
+      else if (/\blast week\b/.test(low)) { base = new Date(now - 7 * day); txt = 'last week'; }
+      else if (/\b(last|this past) (year|season|fall)\b/.test(low)) { base = new Date(now - 365 * day); txt = 'last season'; }
+      else if (/\blast night\b/.test(low)) { base = new Date(now - day); part = 19; txt = 'last night'; }
+      else if (/\byesterday\b/.test(low)) { base = new Date(now - day); txt = 'yesterday'; }
+      else if ((mm = low.match(/\b(last |on |this past )?(sunday|monday|tuesday|wednesday|thursday|friday|saturday)\b/))) { let back = (d.getDay() - VS_DAYS.indexOf(mm[2]) + 7) % 7; if (back === 0 && mm[1] && /last|past/.test(mm[1])) back = 7; base = new Date(now - back * day); txt = mm[0].trim(); }
+      else if (/\b(earlier today|this morning|this afternoon|this evening|tonight|today)\b/.test(low)) { base = new Date(now); txt = low.match(/\b(earlier today|this morning|this afternoon|this evening|tonight|today)\b/)[0]; }
+      if (part == null) { if (/\bmorning\b/.test(low)) part = 7.5; else if (/\b(afternoon)\b/.test(low)) part = 15; else if (/\b(evening|tonight|dusk|last light)\b/.test(low)) part = 17; else if (/\b(dawn|first light|daybreak)\b/.test(low)) part = 6.5; else if (/\bmidday|noon\b/.test(low)) part = 12; }
+      // a clock time: "at 7:30", "around 5 pm" (not "at 50 yards")
+      const ck = low.match(/\b(?:at|around|about|by)\s+(\d{1,2})(?::(\d{2})|\s(\d{2}))?\s*(a\.?m\.?|p\.?m\.?|o'?clock)?(?!\s*(?:yards?|yds?|feet|foot|ft|meters?|steps?|paces?|\d))/);
+      if (ck) { let h = +ck[1], m = +(ck[2] || ck[3] || 0); if (h <= 12 && m < 60) { const ap = ck[4] || ''; if (/p/.test(ap) && h < 12) h += 12; else if (/a/.test(ap) && h === 12) h = 0; else if (!/[ap]/.test(ap)) { if (h >= 1 && h <= 4) h += 12; else if (h >= 5 && h <= 8 && part != null && part >= 15) h += 12; } part = h + m / 60; } }
+      if (!base && part == null) return { t: now, txt: 'now', set: false };
+      if (!base) base = new Date(now);
+      let r = part != null ? at(base, Math.floor(part), Math.round((part % 1) * 60)) : base;
+      if (r.getTime() > now) r = part != null && !txt ? new Date(r.getTime() - day) : new Date(now);
+      set = true; return { t: r.getTime(), txt: txt || 'today', set };
+    }
+    function vsPlace(low) {
+      const re = new RegExp(`\\b${NUMW}\\s*(yards?|yds?|feet|foot|ft|meters?|steps?|paces?)\\s+(?:to the\\s+|towards?\\s+(?:the\\s+)?|off to the\\s+|due\\s+)?(north ?east|north ?west|south ?east|south ?west|north|south|east|west|left|right|ahead|in front|behind)\\b`);
+      const mm = low.match(re); if (!mm) return null;
+      const n = vsN(mm[1].replace(/ of$/, '')); if (!n) return null;
+      const u = mm[2], m = n * (/^y/.test(u) ? 0.9144 : /^f/.test(u) ? 0.3048 : /^(st|pa)/.test(u) ? 0.76 : 1);
+      const w = mm[3].replace(' ', ''); return { m, dir: w, deg: VS_DIR[w], txt: mm[0] };
+    }
+    function vsTravel(low) {
+      const mm = low.match(/\b(?:heading|headed|going|went|moving|walking|walked|travel+ing|crossed|crossing|working)\s+(?:to the\s+|towards?\s+(?:the\s+)?)?(north ?east|north ?west|south ?east|south ?west|north|south|east|west|uphill|downhill|up the ridge|down the ridge|to the creek|to the swamp|to the field)/);
+      return mm ? { txt: mm[1].replace(/^(north|south) (east|west)$/, '$1$2'), deg: VS_DIR[mm[1].replace(' ', '')] } : null;
+    }
+    function parseScout(text, now) {
+      const low = ' ' + text.toLowerCase().replace(/[’']/g, "'").replace(/[^a-z0-9:'.\s-]/g, ' ').replace(/-/g, ' ').replace(/\s+/g, ' ') + ' ';
+      const items = [], used = [];
+      const take = (re, fn) => { const g = new RegExp(re.source, 'g'); let mm; while ((mm = g.exec(low))) { if (used.some(([a, b]) => mm.index < b && mm.index + mm[0].length > a)) continue; used.push([mm.index, mm.index + mm[0].length]); fn(mm); } };
+      // production / crop words, assigned to the nearest food said
+      const PRODW = [[/\b(no acorns|nothing (on|under) it|none|not dropping|no crop|no fruit|bare|empty)\b/, 'none'], [/\b(heavy|loaded|lots of|tons of|raining|covered|carpet(ed)?|bumper|plenty|a lot of|everywhere)\b/, 'heavy'], [/\b(light|few|a little|scattered|spotty|barely)\b/, 'light'], [/\b(good|decent|dropping|falling|steady|some)\b/, 'good']];
+      const prods = []; for (const [re, v] of PRODW) { const g = new RegExp(re.source, 'g'); let mm; while ((mm = g.exec(low))) if (!prods.some(p => Math.abs(p.i - mm.index) < 2)) prods.push({ i: mm.index, v }); }
+      // buck details before counting, so "8 pointer" is not 8 bucks
+      let pts = null; take(new RegExp(`\\b${NUMW}\\s*point(er)?s?\\b`), mm => { pts = vsN(mm[1]); });
+      const big = /\b(big|shooter|giant|monster|mature|wide|heavy racked|good) (buck|one|deer)\b/.test(low);
+      const young = /\b(spike|fork ?horn|small buck|young buck|button buck)\b/.test(low);
+      const act = ['chasing', 'rutting', 'grunting', 'cruising', 'feeding', 'bedded', 'bedding down', 'tending', 'snort(ed|ing)?', 'fighting', 'sparring'].map(w => (low.match(new RegExp(`\\b${w}\\b`)) || [])[0]).filter(Boolean);
+      const trav = vsTravel(low);
+      let bucks = 0, does = 0, fawns = 0, deer = 0;
+      const cnt = (re, add) => take(new RegExp(`\\b(?:${NUMW}\\s+)?(?:big |small |young |nice |mature |shooter )?${re}`), mm => add(vsN((mm[1] || '').replace(/ of$/, '')) || 1));
+      cnt('(bucks?|spikes?|fork ?horns?|button bucks?)\\b', n => bucks += n);
+      if (!bucks && (pts || big || /\b(pointer|rack|antlers? on)\b/.test(low))) bucks = 1;
+      cnt('(does?)\\b', n => does += n);
+      cnt('(fawns?)\\b', n => fawns += n);
+      cnt('(deer)\\b(?!\\s+(trail|path|run|bed|sign|track|poop|droppings|stand|crossing))', n => deer += n);
+      const dn = []; if (act.length) dn.push(act.join(', ')); if (trav) dn.push('heading ' + trav.txt);
+      if (bucks) items.push({ type: 'buck', n: bucks, name: `${pts ? pts + '-pointer' : big ? 'Big buck' : young ? 'Young buck' : bucks > 1 ? bucks + ' bucks' : 'Buck'}${pts && bucks > 1 ? ` + ${bucks - 1} more buck${bucks > 2 ? 's' : ''}` : ''}`, extra: dn.slice(), dir: trav && trav.deg });
+      if (does || fawns) items.push({ type: 'doe', n: does + fawns, name: `${does ? `${does} doe${does > 1 ? 's' : ''}` : ''}${does && fawns ? ' + ' : ''}${fawns ? `${fawns} fawn${fawns > 1 ? 's' : ''}` : ''}`, extra: dn.slice(), dir: trav && trav.deg });
+      if (deer && !bucks && !does && !fawns) items.push({ type: 'sighting', n: deer, name: `${deer} deer`, extra: dn.slice(), dir: trav && trav.deg });
+      // pressure: other hunters, trucks, shots, people
+      const press = [];
+      take(new RegExp(`\\b(?:${NUMW}\\s+)?(trucks?|cars?|vehicles?)\\b`), mm => press.push({ k: 'trucks', n: vsN((mm[1] || '').replace(/ of$/, '')) || 1, name: `${vsN((mm[1] || '').replace(/ of$/, '')) || 1} truck${(vsN((mm[1] || '').replace(/ of$/, '')) || 1) > 1 ? 's' : ''} parked` }));
+      take(new RegExp(`\\b(?:${NUMW}\\s+)?(other hunters?|hunters?|guys? in orange|bow hunters?)\\b`), mm => press.push({ k: 'hunter', n: vsN((mm[1] || '').replace(/ of$/, '')) || 1, name: 'Hunter seen' }));
+      if (!/\bi shot\b/.test(low)) take(/\b(heard (a |some |two |three )?(gun ?)?shots?|gun ?shots?|shots? fired)\b/, () => press.push({ k: 'shot', n: 1, name: 'Shot heard' }));
+      take(/\b(someone else'?s stand|another (tree )?stand|other (guy'?s )?stands?|somebody'?s stand)\b/, () => press.push({ k: 'stand', n: 1, name: "Someone else's stand" }));
+      take(/\b(hikers?|dogs?|atvs?|four wheelers?|bikers?|mountain bikes?)\b/, () => press.push({ k: 'people', n: 1, name: 'Hikers / dogs / ATV' }));
+      // food
+      for (const [re, ty, unsure] of VS_FOOD) take(re, mm => { const mine = items.filter(i => i.type === ty && i.food); if (mine.length) return; items.push({ type: ty, food: 1, i: mm.index, name: MT[ty][0], ask: unsure, said: mm[0].trim() }); });
+      const foods = items.filter(i => i.food);
+      for (const p of prods) { let best = null; for (const f of foods) if (!best || Math.abs(f.i - p.i) < Math.abs(best.i - p.i)) best = f; if (best && (!best.prod || best.prod === 'good')) best.prod = p.v; }
+      // sign
+      for (const [re, ty, label] of VS_SIGN) take(new RegExp(`\\b(?:${NUMW}\\s+)?(?:fresh |old |big |huge |new |active )?${re.source.replace(/^\\b/, '')}`), mm => { if (items.some(i => i.type === ty)) return; const n = vsN((mm[1] || '').replace(/ of$/, '')); items.push({ type: ty, n: n && n > 1 ? n : null, name: `${n && n > 1 ? n + ' ' : ''}${/\bfresh\b/.test(mm[0]) ? 'Fresh ' : ''}${label || MT[ty][0].toLowerCase()}${n > 1 && !label ? 's' : ''}`.replace(/^./, c => c.toUpperCase()) }); });
+      for (const p of press) items.push({ type: 'press', k: p.k, n: p.n, name: p.name });
+      if (!items.length && text.trim()) items.push({ type: 'note', name: text.trim().slice(0, 60) });
+      for (const it of items) if (it.food) { it.name = `${MT[it.type][0].replace(/ \(.*\)$/, '')}${it.prod ? ` · ${PROD[it.prod][0].toLowerCase()}${it.prod === 'none' ? '' : ' crop'}` : ''}`; }
+      return { items, when: vsWhen(low, Date.now()), off: vsPlace(low), here: /\b(here|right here|this spot|this tree|where i am|i'?m standing)\b/.test(low) };
+    }
+    let vs = { rec: null, on: false, parsed: null, at: null, atTxt: '' };
+    const vsPinNear = low => { let best = null; for (const m of DB.markers) { const nm = (m.name || '').toLowerCase().trim(); if (nm.length < 4 || /^(voice note|tree stand|rub|scrape|buck seen|doe seen|deer sighting)/.test(nm)) continue; if (low.includes(nm) && (!best || nm.length > best.name.length)) best = m; } return best; };
+    function vsWhere() {
+      const P = vs.parsed; if (!P) return;
+      if (vs.tapped) { vs.at = vs.tapped; vs.atTxt = 'Where you tapped on the map'; return; }
+      const low = $('vsText').value.toLowerCase(), pin = !P.here && vsPinNear(low);
+      let at = pin ? L.latLng(pin.lat, pin.lon) : (me || map.getCenter()), txt = pin ? `At your pin “${esc(pin.name)}”` : me ? `Here, where you stand (GPS ±${Math.round(meAcc * YD)} yd)` : 'Map center (no GPS yet; tap the map to place it)';
+      if (P.off) { let deg = P.off.deg; if (deg == null) { const hd = headingNow(); const rel = { ahead: 0, 'infront': 0, right: 90, behind: 180, left: 270 }[P.off.dir.replace(' ', '')]; if (hd && rel != null) deg = (hd.h + rel) % 360; } if (deg != null) { at = destPoint(at, deg, P.off.m); txt = `${Math.round(P.off.m * YD)} yd ${cardinal(deg)} of ${pin ? 'that pin' : me ? 'you' : 'the map center'}`; } else txt += ` (I could not tell which way “${P.off.dir}” is; tap the map to place it)`; }
+      vs.at = at; vs.atTxt = txt;
+    }
+    function vsRender() {
+      const P = vs.parsed, out = $('vsOut'); if (!P) { out.innerHTML = ''; return; }
+      vsWhere();
+      const opts = sel => Object.entries(MT).filter(([k]) => !['voice'].includes(k)).map(([k, v]) => `<option value="${k}"${k === sel ? ' selected' : ''}>${v[0]}</option>`).join('');
+      out.innerHTML = `<div class="k" style="font-size:.85rem;margin-top:8px">I understood</div><div class="vs-items">${P.items.map((it, k) => `<div class="vs-it${it.ask ? ' ask' : ''}"><input type="checkbox" data-vk="${k}" checked aria-label="Save this"><div>${it.type === 'press' ? `<b>${esc(it.name)}</b>` : `<select data-vt="${k}" aria-label="Pin type">${opts(it.type)}</select>`}</div><div class="vs-d">${esc(it.type === 'press' ? 'Pressure report (Hunting pressure layer)' : it.name)}${it.n > 1 && it.type !== 'press' && !/^\d/.test(it.name) ? ` · ${it.n}` : ''}${it.extra && it.extra.length ? ` · ${esc(it.extra.join(', '))}` : ''}${it.ask ? ` · <b>Which oak?</b> You said “${esc(it.said)}”: pick white, red or chestnut above` : ''}${it.food && !it.prod ? ' · say “heavy”, “good”, “light” or “none” for the crop' : ''}</div></div>`).join('')}</div>`
+        + `<div class="vs-meta"><div>📍 ${vs.atTxt}. <span class="muted">Tap the map to move it.</span></div><label>🕒 When you saw it (${esc(P.when.txt)}) <input type="datetime-local" id="vsWhen" value="${vsIso(P.when.t)}"></label>${me && !vs.tapped && !P.off ? `<label><input type="checkbox" id="vsAvg" checked> Stand still 6 s for an exact GPS spot</label>` : ''}</div>`
+        + `<div class="actions"><button type="button" class="btn primary" id="vsSave">Save ${P.items.length > 1 ? 'all ' + P.items.length : 'it'}</button><button type="button" class="btn" id="vsClear">Clear</button></div>`;
+      out.querySelectorAll('[data-vt]').forEach(s => s.onchange = () => { const it = P.items[+s.dataset.vt]; it.type = s.value; it.ask = false; it.food = MT[s.value][3] === 'food' && s.value !== 'water' ? 1 : 0; });
+      out.querySelectorAll('[data-vk]').forEach(c => c.onchange = () => { const n = out.querySelectorAll('[data-vk]:checked').length; $('vsSave').textContent = n ? `Save ${n > 1 ? n : 'it'}` : 'Nothing picked'; $('vsSave').disabled = !n; });
+      $('vsClear').onclick = () => { vs.parsed = null; vs.tapped = null; $('vsText').value = ''; vsRender(); };
+      $('vsSave').onclick = vsSave;
+      if (vsMark) { map.removeLayer(vsMark); vsMark = null; }
+      vsMark = L.circleMarker(vs.at, { radius: 9, color: '#fff', weight: 3, fillColor: '#0e7490', fillOpacity: 1 }).addTo(map);
+    }
+    let vsMark = null;
+    const vsIso = t => { const d = new Date(t - new Date(t).getTimezoneOffset() * 6e4); return d.toISOString().slice(0, 16); };
+    async function vsSave() {
+      const P = vs.parsed; if (!P) return;
+      const text = $('vsText').value.trim(), picks = [...$('vsOut').querySelectorAll('[data-vk]:checked')].map(c => P.items[+c.dataset.vk]);
+      if (!picks.length) return;
+      let t = Date.parse($('vsWhen').value); if (!isFinite(t)) t = P.when.t; t = Math.min(t, Date.now());
+      let at = vs.at, acc = me && !vs.tapped ? Math.round(meAcc) : null;
+      if ($('vsAvg') && $('vsAvg').checked) { $('vsSave').disabled = true; const r = await precise(6, 'Exact spot for your voice pins'); if (r && r.ll) { at = r.ll; acc = Math.round(r.acc); if (P.off) vsWhere(), at = vs.at; } }
+      let k = 0, pins = 0, pr = 0; const press = store.get('maps.pressure', []);
+      for (const it of picks) {
+        if (it.type === 'press') { press.push({ t, k: it.k, lat: +at.lat.toFixed(5), lon: +at.lng.toFixed(5), n: it.n || 1, voice: 1 }); pr++; continue; }
+        const ll = k ? destPoint(at, (k * 137) % 360, 2.5) : at; k++;
+        const m = { id: uid(), area: newArea(), t, type: it.type, name: it.food ? it.name : (it.type === it.type0 || !it.name ? it.name : it.name) || MT[it.type][0], notes: `🎤 “${text}”${it.extra && it.extra.length ? `\n${it.extra.join(', ')}` : ''}`, lat: +ll.lat.toFixed(6), lon: +ll.lng.toFixed(6), acc, src: 'voice' };
+        if (it.n > 1) m.n = it.n; if (it.dir != null) m.dir = it.dir;
+        if (it.food && it.prod) { m.prod = it.prod; m.prodT = t; }
+        DB.markers.push(m); pins++;
+      }
+      if (pr) store.set('maps.pressure', press.slice(-2000));
+      saveDB(); drawSaved(); bz([40, 60, 40]);
+      if (vsMark) { map.removeLayer(vsMark); vsMark = null; }
+      vs.parsed = null; vs.tapped = null; $('vsText').value = ''; vsRender();
+      $('vsOut').innerHTML = `<div class="caption" style="margin-top:8px">✔ Saved ${[pins ? `${pins} pin${pins > 1 ? 's' : ''}` : '', pr ? `${pr} pressure report${pr > 1 ? 's' : ''}` : ''].filter(Boolean).join(' and ')}. Your deer model, AI spots and movement lines use ${pins + pr > 1 ? 'them' : 'it'} now. Tap and talk for the next one.</div>`;
+      toast(`Saved ${pins + pr} from your voice.`);
+    }
+    function vsParse() { let txt = $('vsText').value.trim(); const pin = vsPinNear(txt.toLowerCase()); if (pin) txt = txt.replace(new RegExp(pin.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'ig'), ' '); vs.parsed = txt ? parseScout(txt, Date.now()) : null; vsRender(); }
+    function vsListen(on) {
+      const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (on && !SR) { toast('This browser cannot turn speech into text. Tap the box and use the microphone key on your keyboard.'); $('vsText').focus(); return; }
+      vs.on = on; $('vsMic').setAttribute('aria-pressed', on); $('vsMic').lastChild.textContent = on ? 'Listening… tap to stop' : 'Tap and talk';
+      if (!on) { try { vs.rec && vs.rec.stop(); } catch (e) {} return; }
+      if (watchId == null) startGPS(false);
+      const r = vs.rec = new SR(); r.lang = 'en-US'; r.continuous = false; r.interimResults = true; r.maxAlternatives = 1;
+      const before = $('vsText').value.trim(); let fin = '';
+      r.onresult = e => { let inter = ''; for (let k = e.resultIndex; k < e.results.length; k++) { if (e.results[k].isFinal) fin += e.results[k][0].transcript; else inter += e.results[k][0].transcript; } $('vsText').value = [before, (fin + ' ' + inter).trim()].filter(Boolean).join('. '); };
+      r.onerror = e => { if (e.error === 'not-allowed' || e.error === 'service-not-allowed') toast('Microphone access was blocked.'); else if (e.error === 'network') toast('Speech-to-text needs signal here. Use the microphone key on your keyboard (works offline on most Android phones), or Record audio only.'); else if (e.error === 'no-speech') toast('I did not hear anything. Tap and talk again.'); };
+      r.onend = () => { vs.on = false; $('vsMic').setAttribute('aria-pressed', false); $('vsMic').lastChild.textContent = 'Tap and talk'; vs.rec = null; if ($('vsText').value.trim() !== before) { bz(40); vsParse(); } };
+      try { r.start(); bz(30); } catch (e) { vsListen(false); }
+    }
+    $('vsMic').addEventListener('click', () => vsListen(!vs.on));
+    $('vsRead').addEventListener('click', () => { vs.tapped = null; vsParse(); });
+    $('vsText').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); vsParse(); } });
+    $('vsAudio').addEventListener('click', () => { if (vRec && vRec.state === 'recording') voiceStop(); else voiceStart(); });
+    $('mpVoiceBtn').addEventListener('click', () => { if (vRec && vRec.state === 'recording') { voiceStop(); return; } const open = tool !== 'voice'; setTool('voice'); if (open) { $('mp-voice').scrollIntoView({ behavior: 'smooth', block: 'nearest' }); vsListen(true); } else vsListen(false); });
 
     // ---------- week-ahead stand schedule: which stand, which morning or evening, from the 10-day wind forecast ----------
     const C8W = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'], c8w = d => Math.round(((d % 360) + 360) % 360 / 45) % 8;
@@ -9219,7 +9400,7 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
       if (tool === 'layers') tool = null; // layers is a panel, not a map mode
       document.querySelectorAll('.mtools [data-tool]').forEach(b => b.classList.toggle('on', b.dataset.tool === tool));
       $('mpAiBtn').classList.toggle('on', tool === 'ai');
-      for (const id of ['add', 'measure', 'track', 'saved', 'rules', 'ai', 'route', 'blood', 'bearing', 'approach', 'scout', 'profile', 'chain', 'ready', 'food']) $('mp-' + id).hidden = tool !== id;
+      for (const id of ['add', 'measure', 'track', 'saved', 'rules', 'ai', 'route', 'blood', 'bearing', 'approach', 'scout', 'profile', 'chain', 'ready', 'food', 'voice']) $('mp-' + id).hidden = tool !== id;
       if (tool === 'chain') drawChain(); if (tool === 'ready') fillReady();
       if (tool === 'approach') fillApproach(); if (tool === 'scout') fillScout(); if (tool === 'food') { fillFood(); startGPS(false); } if (tool === 'bearing' && compass.heading() != null && !$('brgDeg').value) $('brgDeg').value = Math.round(compass.heading()) % 360;
       if (tool === 'blood') { renderBlood(); if (curBT()) { startGPS(false); keepAwake(true); } }
@@ -9228,6 +9409,8 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
       $('mpCross').hidden = true;
       if (tool === 'measure') $('mpInfo').innerHTML = 'Tap points on the map to measure.';
       if (tool === 'saved') buildList();
+      if (tool !== 'voice') { if (typeof vsListen === 'function' && vs.on) vsListen(false); if (vsMark) { map.removeLayer(vsMark); vsMark = null; } } else if (vs.parsed) vsRender();
+      $('mpVoiceBtn').setAttribute('aria-pressed', tool === 'voice');
       if (!tool) onMove();
     }
     document.querySelectorAll('.mtools [data-tool]').forEach(b => b.addEventListener('click', () => {
@@ -9596,6 +9779,7 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
       map.on('moveend', () => { if (tool === 'ai' && !spotBusy && typeof aiStale === 'function') $('aiHere').hidden = !aiStale(); const c = map.getCenter(); store.set('maps.view', { lat: +c.lat.toFixed(5), lon: +c.lng.toFixed(5), z: map.getZoom() }); onMove(); });
       map.on('click', e => {
         if (tool === 'measure') { msPts.push(e.latlng); drawMeasure(); return; }
+        if (tool === 'voice' && vs.parsed) { vs.tapped = e.latlng; vsRender(); return; }
         if (tool === 'scout') { scoutExtra.push(e.latlng); L.circleMarker(e.latlng, { radius: 7, color: '#fff', weight: 2, fillColor: '#6d28d9', fillOpacity: 1 }).addTo(scoutLayer || (scoutLayer = L.layerGroup().addTo(map))); $('scOut').textContent = `${scoutExtra.length} stop${scoutExtra.length === 1 ? '' : 's'} of your own added. Tap Plan the loop.`; return; }
         if (tool === 'add' && pending) { pending.setLatLng(e.latlng); pend.acc = null; pend.moved = 0; pendUI(); return; }
         if (tool === 'blood' && curBT()) { if (tapMode === 'grid' && curBT().grid && toggleCell(e.latlng)) return; addBlood(e.latlng, 0, curBT().pts.length ? 'blood' : 'hit'); return; }
@@ -9629,6 +9813,7 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
         if (store.get('pendingSpots', 0)) { store.set('pendingSpots', 0); setTimeout(() => runSpots(true), 150); }
         if (store.get('pendingBest', 0)) { store.set('pendingBest', 0); setTimeout(() => $('aiBest').click(), 200); }
         { const ps = store.get('pendingScout', 0); if (ps) { store.set('pendingScout', 0); setTimeout(() => { setTool('scout'); startGPS(false); $('mp-scout').scrollIntoView({ behavior: 'smooth', block: 'nearest' }); if (ps === 2) setTimeout(() => springPlan(), 400); }, 150); } }
+        { const pv = store.get('pendingVoice', 0); if (pv) { store.set('pendingVoice', 0); setTimeout(() => { if (tool !== 'voice') setTool('voice'); startGPS(false); $('mp-voice').scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }, 150); } }
         const pg = store.get('pendingGo', null);
         if (pg) { store.set('pendingGo', null); const ll = L.latLng(pg.lat, pg.lon); map.setView(ll, 16); setGoTo(ll, pg.name || 'Shared spot'); toast(`Navigating to ${pg.name || 'the shared spot'}`); }
       },
@@ -10053,11 +10238,11 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
       }
       // what your sightings and kills say about foods: deer seen within 150 yd of each food type, by season
       const SIGHT = ['sighting', 'buck', 'doe', 'shot', 'recovery'];
-      const ev = ms.filter(m => SIGHT.includes(m.type)).map(m => ({ ll: m, t: m.t, buck: m.type === 'buck' }))
+      const ev = ms.filter(m => SIGHT.includes(m.type)).map(m => ({ ll: m, t: m.t, buck: m.type === 'buck', w: Math.min(m.n || 1, 5) }))
         .concat(J.filter(e => e.harvest).map(e => ({ ll: e.stand, t: e.t0, buck: true })))
         .concat((store.get('maps.blood', []) || []).flatMap(t => t.pts.filter(p => p.kind === 'found').map(p => ({ ll: p, t: p.t, buck: false }))));
       const fUse = {};
-      for (const x of ev) { const fa = foodAt(x.ll, new Date(x.t), ms); if (fa.top && fa.x !== undefined); if (fa.top && fa.top.x < 140) { const ty = fa.top.m.type; fUse[ty] = (fUse[ty] || 0) + 1; } }
+      for (const x of ev) { const fa = foodAt(x.ll, new Date(x.t), ms); if (fa.top && fa.x !== undefined); if (fa.top && fa.top.x < 140) { const ty = fa.top.m.type; fUse[ty] = (fUse[ty] || 0) + (x.w || 1); } }
       const n = Object.fromEntries(F.map((f, k) => [k, {}])); rows.forEach((r, i) => F.forEach((f, k) => { const l = lv[i][k]; if (l != null) { const o = n[k][l] = n[k][l] || { sits: 0, y: 0, h: 0 }; o.sits++; o.y += r.y; o.h += r.hrs; } }));
       const sn = {}; rows.forEach(r => { const o = sn[r.sk] = sn[r.sk] || { name: r.sn, sits: 0, y: 0, h: 0, b: 0 }; o.sits++; o.y += r.y; o.h += r.hrs; o.b += r.bucks; });
       MOD = { base, mult, stand, n, sn, sits: rows.length, H, Y, ev: ev.length, fUse, t: Date.now() };
@@ -11727,6 +11912,7 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
     if (location.hash === '#best') { store.set('pendingBest', 1); location.replace('#maps'); return; }
     if (location.hash === '#scoutloop') { store.set('pendingScout', 1); location.replace('#maps'); return; }
     if (location.hash === '#springplan') { store.set('pendingScout', 2); location.replace('#maps'); return; }
+    if (location.hash === '#voicescout') { store.set('pendingVoice', 1); location.replace('#maps'); return; }
     const name = (location.hash || '').replace('#', '');
     const next = TOOLS[name] ? name : 'home';
     if (current !== next && TOOLS[current] && TOOLS[current].hide) TOOLS[current].hide();
