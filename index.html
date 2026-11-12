@@ -102,6 +102,63 @@ h2 { font-family: var(--font-display); font-weight: 600; font-size: 1.25rem; let
 .hsec-ic svg { width: 30px; height: 30px; color: #fff; }
 .hsec-h h2 { margin: 0; font-family: var(--font-display); font-size: 1.35rem; letter-spacing: .07em; text-transform: uppercase; line-height: 1.1; color: #fff; }
 .hsec-h p { margin: 3px 0 0; font-size: .84rem; line-height: 1.35; color: rgba(255,255,255,.92); }
+/* ---- cleaner home (v89) ---- */
+.htoday { border: 1px solid var(--line); border-radius: 14px; background: var(--surface); padding: 12px 14px; display: grid; gap: 4px; }
+.htoday[hidden] { display: none; }
+.ht-d { font-family: var(--font-display); font-size: 1.05rem; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); }
+.ht-big { font-size: 1.25rem; font-weight: 700; line-height: 1.2; }
+.ht-big b { color: var(--accent); font-variant-numeric: tabular-nums; }
+.ht-sub { font-size: .86rem; color: var(--muted); }
+.hquick { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+@media (min-width: 640px) { .hquick { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.hquick a { display: flex; align-items: center; gap: 10px; min-height: 64px; padding: 10px 12px; border-radius: 14px; border: 2px solid var(--q); background: color-mix(in srgb, var(--q) 13%, var(--surface)); color: var(--fg); text-decoration: none; font: 800 1rem/1.15 var(--font-body); }
+.hquick a svg { flex: none; width: 30px; height: 30px; color: var(--q); }
+.hquick a:active { background: #1565c0; border-color: #1565c0; color: #fff; }
+.hquick a:active svg { color: #fff; }
+.hsos { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 12px; background: #c62828; color: #fff; text-decoration: none; font-size: .95rem; }
+.hsos svg { width: 22px; height: 22px; flex: none; }
+.hsos:active { background: #1565c0; }
+.hall { margin: 10px 0 -6px; font-family: var(--font-display); font-size: .95rem; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.hsec { margin: 8px 0 0; }
+.hsec-h { grid-template-columns: 40px minmax(0, 1fr) auto; padding: 9px 12px; margin: 0; cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent; }
+.hsec-h:focus-visible { outline: 3px solid var(--fg); outline-offset: 2px; }
+.hsec-ic { width: 40px; height: 40px; }
+.hsec-ic svg { width: 24px; height: 24px; }
+.hsec-h h2 { font-size: 1.2rem; }
+.hsec-h p { font-size: .78rem; }
+.hsec-chev { width: 30px; height: 30px; display: grid; place-items: center; font-size: 1.4rem; line-height: 1; color: #fff; transition: transform .2s; }
+.hsec.open .hsec-chev { transform: rotate(90deg); }
+.hsec.open .hsec-h { margin-bottom: 10px; }
+.hsec:not(.open) .tiles { display: none; }
+.hsec:not(.open) .hsec-h p { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#v-home.searching .hsec .tiles { display: grid; }
+#v-home.searching .hsec .hsec-h { margin-bottom: 10px; }
+#v-home.searching .htoday, #v-home.searching .hquick, #v-home.searching .hsos, #v-home.searching .hall { display: none; }
+.hmk { margin-top: 14px; }
+.hmk[hidden] { display: none; }
+.hhunt { border: 2px solid #4f7a34; border-radius: 14px; background: color-mix(in srgb, #4f7a34 8%, var(--surface)); padding: 10px 14px 10px; display: grid; gap: 8px; }
+.hhunt.busy .hh-r { animation: hhspin 1s linear infinite; }
+@keyframes hhspin { to { transform: rotate(360deg); } }
+.hh-top { display: flex; align-items: center; justify-content: space-between; }
+.hh-t { font-family: var(--font-display); font-size: 1.05rem; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.hh-r { width: 38px; height: 38px; border-radius: 50%; border: 1px solid var(--line); background: var(--surface); color: var(--fg); font-size: 1.3rem; line-height: 1; cursor: pointer; }
+.hh-r:active { background: #1565c0; color: #fff; border-color: #1565c0; }
+.hh-msg { color: var(--muted); font-size: .92rem; }
+.hh-main { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 14px; align-items: center; color: var(--fg); text-decoration: none; }
+.hh-pct { display: grid; justify-items: center; min-width: 92px; padding: 8px 6px; border-radius: 12px; color: #fff; background: #4f7a34; }
+.hh-pct.mid { background: #b7791f; } .hh-pct.bad { background: #a33a2a; }
+.hh-pct b { font-size: 2rem; line-height: 1; font-variant-numeric: tabular-nums; }
+.hh-pct span { font-size: .8rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; }
+.hh-side { display: grid; gap: 4px; font-size: .92rem; min-width: 0; }
+.hh-bar { height: 8px; border-radius: 4px; background: var(--line); overflow: hidden; }
+.hh-bar i { display: block; height: 100%; background: #4f7a34; } .hh-bar i.mid { background: #b7791f; } .hh-bar i.bad { background: #a33a2a; }
+.hh-s { font-size: .82rem; color: var(--muted); line-height: 1.35; }
+.hh-wind { display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 10px; align-items: center; padding-top: 8px; border-top: 1px solid var(--line); font-size: .95rem; }
+.hh-arr { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; background: #2f6fae; color: #fff; }
+.hh-arr svg { width: 26px; height: 26px; }
+.hh-foot { font-size: .75rem; color: var(--muted); }
+.hh-foot a { color: var(--accent); font-weight: 600; }
+#v-home.searching .hhunt { display: none; }
 .hnone { padding: 18px 6px; color: var(--muted); }
 @media (max-width: 639px) { .tile.wide { grid-column: 1 / -1; } }
 .tile {
@@ -1862,7 +1919,16 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
     <div class="hfind" id="hFind">
       <label class="hq"><svg aria-hidden="true"><use href="#i-search"/></svg><input id="homeQ" type="search" placeholder="Find a tool… (blood, wind, pins)" autocomplete="off" enterkeyhint="search" aria-label="Find a tool"><button type="button" id="homeQx" aria-label="Clear" hidden>×</button></label>
     </div>
-    <div class="hjump" role="group" aria-label="Jump to section"><button type="button" data-s="hunt" style="--sc:#2e7d32"><svg aria-hidden="true"><use href="#i-map"/></svg>Hunt day</button><button type="button" data-s="track" style="--sc:#c62828"><svg aria-hidden="true"><use href="#i-blood"/></svg>After the shot</button><button type="button" data-s="scout" style="--sc:#b7791f"><svg aria-hidden="true"><use href="#i-track"/></svg>Scout</button><button type="button" data-s="hidden" style="--sc:#e8590c"><svg aria-hidden="true"><use href="#i-deer"/></svg>Stay hidden</button><button type="button" data-s="bow" style="--sc:#1565c0"><svg aria-hidden="true"><use href="#i-bow"/></svg>Bow</button><button type="button" data-s="more" style="--sc:#6a3fb5"><svg aria-hidden="true"><use href="#i-stats"/></svg>More</button></div>
+    <div class="htoday" id="homeToday" aria-live="polite"></div>
+    <div class="hhunt" id="homeHunt"></div>
+    <nav class="hquick" aria-label="Quick start">
+      <a href="#maps" style="--q:#4f7a34"><svg aria-hidden="true"><use href="#i-map"/></svg><span>Maps</span></a>
+      <a href="#best" style="--q:#7b3fd1"><svg aria-hidden="true"><use href="#i-ai"/></svg><span>Best spot now</span></a>
+      <a href="#journal" style="--q:#8a5a2b"><svg aria-hidden="true"><use href="#i-journal"/></svg><span>Log a sit</span></a>
+      <a href="#predict" style="--q:#b7791f"><svg aria-hidden="true"><use href="#i-predict"/></svg><span>Next days</span></a>
+    </nav>
+    <a class="hsos" href="#sos"><svg aria-hidden="true"><use href="#i-hazard"/></svg><span><b>Emergency</b> · 911 with your exact position</span></a>
+    <div class="hall" id="homeAll">All tools</div>
     <div class="hnone" id="homeNone" hidden>Nothing found. Try another word, like “trail”, “meat” or “arrow”.</div>
     <section class="hsec" id="hs-hunt" aria-labelledby="hs-hunt-t" style="--sc:#2e7d32">
       <div class="hsec-h"><span class="hsec-ic"><svg aria-hidden="true"><use href="#i-map"/></svg></span><div><h2 id="hs-hunt-t">Hunt day</h2><p>Maps · wind & weather · compass · sun & moon · deer movement · shot distance · hunt journal · emergency</p></div></div>
@@ -1924,9 +1990,12 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
         <a data-k="season debrief summary report what worked spring scouting pdf" class="tile wide" href="#debrief" style="--h: var(--h-slate)"><span class="ic"><svg><use href="#i-debrief"/></svg></span><span class="tt">Season debrief</span><span class="td">What worked this season, and where to scout in spring</span></a>
         <a data-k="harvest numbers wmu county" class="tile hero" href="#stats" style="--h: var(--h-sky)"><span class="ic"><svg><use href="#i-stats"/></svg></span><span class="tt">Hunting stats</span><span class="td">Deer harvest in New York and New Jersey: last season, 10 years, and by method.</span></a>
         <a data-k="save restore export import share partner file" class="tile hero" href="#backup" style="--h: var(--h-slate)"><span class="ic"><svg><use href="#i-backup"/></svg></span><span class="tt">Backup &amp; share</span><span class="td">Save all your spots and logs to a file, restore, or swap spots with a partner.</span></a>
-        <a data-k="fun mission silly" class="tile mikecon" href="#mikecon"><span class="mk-badge"><svg><use href="#i-mikecon"/></svg></span><span class="mk-text"><span class="mk-name">MIKECON</span></span><span class="mk-arrow" aria-hidden="true">›</span><span class="mk-warn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="currentColor"/><path d="M12 9.5v5M12 17.2v.3" stroke="#a83a06" stroke-width="2.4" stroke-linecap="round"/></svg><span>WARNING: JUST FOR EXPERT<span class="mk-bigs">S</span></span></span></a>
+        
       </nav>
     </section>
+    <nav class="tiles hmk" aria-label="Just for fun">
+        <a data-k="fun mission silly" class="tile mikecon" href="#mikecon"><span class="mk-badge"><svg><use href="#i-mikecon"/></svg></span><span class="mk-text"><span class="mk-name">MIKECON</span></span><span class="mk-arrow" aria-hidden="true">›</span><span class="mk-warn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="currentColor"/><path d="M12 9.5v5M12 17.2v.3" stroke="#a83a06" stroke-width="2.4" stroke-linecap="round"/></svg><span>WARNING: JUST FOR EXPERT<span class="mk-bigs">S</span></span></span></a>
+    </nav>
   </section>
 
   <!-- ============ DEER VISION ============ -->
@@ -5327,11 +5396,41 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
         $('pdSrc').textContent = 'Could not load the weather. Showing time of day and the rut only.';
       } finally { $('pdFetch').disabled = false; }
     }
+    // ---------- front page: today's score where you stand, plus the wind now ----------
+    async function quick(lat, lon) {
+      const u = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&hourly=pressure_msl`
+        + `&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,wind_speed_10m_max,wind_direction_10m_dominant`
+        + `&current=wind_speed_10m,wind_direction_10m,wind_gusts_10m,temperature_2m`
+        + `&wind_speed_unit=mph&temperature_unit=fahrenheit&timezone=auto&past_days=1&forecast_days=16`;
+      const r = await fetch(u); if (!r.ok) throw new Error(r.status);
+      const j = await r.json();
+      if (!j || !j.daily || !Array.isArray(j.daily.time) || !j.hourly) throw new Error('bad forecast');
+      const nk = `pd.norm.${lat.toFixed(1)},${lon.toFixed(1)}`;
+      let nm = store.get(nk, null);
+      if (!nm) {
+        try {
+          const now = new Date(), a = `${now.getFullYear() - 10}-01-01`, b = `${now.getFullYear() - 1}-12-31`;
+          const r2 = await fetch(`https://archive-api.open-meteo.com/v1/archive?latitude=${lat}&longitude=${lon}&start_date=${a}&end_date=${b}&daily=temperature_2m_max&temperature_unit=fahrenheit&timezone=auto`);
+          if (r2.ok) { const j2 = await r2.json(), acc = {}; j2.daily.time.forEach((t, i) => { const v = j2.daily.temperature_2m_max[i]; if (v != null) (acc[t.slice(5)] = acc[t.slice(5)] || []).push(v); }); nm = {}; for (const k in acc) nm[k] = [+(acc[k].reduce((x, y) => x + y, 0) / acc[k].length).toFixed(1)]; store.set(nk, nm); }
+        } catch (e) { nm = null; }
+      }
+      wx = j; normals = nm; LOC.lat = lat; LOC.lon = lon; store.set('loc', LOC);
+      $('pdLat').value = lat; $('pdLon').value = lon;
+      build(); built = true;
+      $('pdSrc').textContent = `Weather from Open-Meteo for ${lat.toFixed(2)}, ${lon.toFixed(2)}${normals ? ', compared with the 10-year normal for each date' : ''}.`;
+      const one = d => { const c = curve(d), [rt, rc] = rating(d.score); return { score: d.score, rt, rc, wins: windows(c).map(w => `${fmtH(w[0])}–${fmtH(w[1])}`.replace(/ /g, '\u00a0')), c }; };
+      const t0 = one(days[0]), t1 = days[1] ? one(days[1]) : null;
+      const n = new Date(), h = n.getHours() + n.getMinutes() / 60;
+      let act = null;
+      if (h >= t0.c.sr - 0.5 && h <= t0.c.ss + 0.5) { const p = t0.c.pts.reduce((b, q) => Math.abs(q[0] - h) < Math.abs(b[0] - h) ? q : b); act = Math.round(p[1] * 100); }
+      delete t0.c; if (t1) delete t1.c;
+      return { today: t0, tom: t1, now: act, rut: days[0].r[2], cur: j.current || null };
+    }
     $('pdFetch').addEventListener('click', fetchAll);
     $('pdLocBtn').addEventListener('click', () => getLocation((lat, lon) => { $('pdLat').value = lat; $('pdLon').value = lon; fetchAll(); }));
     let built = false;
     return {
-      rut: d => rutFor(d)[2],
+      rut: d => rutFor(d)[2], quick,
       show() {
         $('pdLat').value = LOC.lat; $('pdLon').value = LOC.lon;
         if (!built) { build(); built = true; if (CAN_LIVE && !IN_CLAUDE) fetchAll(); } else showDay(sel);
@@ -12286,21 +12385,93 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
   }
   const PARENT = { blood: 'tracking', track: 'tracking' };
   document.querySelectorAll('.back').forEach(b => b.addEventListener('click', () => { location.hash = PARENT[current] || ''; }));
-  // ---------- home: search and section jump ----------
+  // ---------- home: today card, folding sections, search ----------
   (() => {
-    const q = $('homeQ'), x = $('homeQx'), secs = [...document.querySelectorAll('#v-home .hsec')];
+    const q = $('homeQ'), x = $('homeQx'), secs = [...document.querySelectorAll('#v-home .hsec')], home = $('v-home'), mk = document.querySelector('#v-home .hmk');
     const norm = t => t.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    // sections fold; the ones you leave open stay open next time
+    const openSet = new Set(store.get('home.open', []));
+    secs.forEach(sec => {
+      const h = sec.querySelector('.hsec-h'), key = sec.id;
+      h.setAttribute('role', 'button'); h.tabIndex = 0;
+      if (!h.querySelector('.hsec-chev')) h.insertAdjacentHTML('beforeend', '<span class="hsec-chev" aria-hidden="true">›</span>');
+      const set = on => { sec.classList.toggle('open', on); h.setAttribute('aria-expanded', on); };
+      set(openSet.has(key));
+      const flip = () => { const on = !sec.classList.contains('open'); set(on); on ? openSet.add(key) : openSet.delete(key); store.set('home.open', [...openSet]); if (on) setTimeout(() => sec.scrollIntoView({ behavior: 'smooth', block: 'start' }), 60); };
+      h.addEventListener('click', flip);
+      h.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); flip(); } });
+    });
     const run = () => {
       const words = norm(q.value.trim()).split(/\s+/).filter(Boolean); let any = false; x.hidden = !words.length;
+      home.classList.toggle('searching', !!words.length);
       secs.forEach(sec => { let n = 0; sec.querySelectorAll('.tile').forEach(t => { const hay = norm(t.textContent + ' ' + (t.dataset.k || '')); const ok = words.every(w => hay.includes(w)); t.hidden = !ok; if (ok) n++; }); sec.hidden = !n; if (n) any = true; });
-      $('homeNone').hidden = any; document.querySelector('#v-home .hjump').hidden = !!words.length;
+      if (mk) { const t = mk.querySelector('.tile'), ok = words.every(w => norm(t.textContent + ' ' + (t.dataset.k || '')).includes(w)); mk.hidden = !ok; if (ok && words.length) any = true; }
+      $('homeNone').hidden = any || !words.length;
     };
     q.addEventListener('input', run);
-    q.addEventListener('keydown', e => { if (e.key === 'Enter') { const vis = [...document.querySelectorAll('#v-home .tile:not([hidden])')], w = norm(q.value.trim()), t = vis.find(v => norm(v.querySelector('.tt, .mk-name')?.textContent || '').includes(w)) || vis[0]; if (t) { q.blur(); location.hash = t.getAttribute('href'); } } });
+    q.addEventListener('keydown', e => { if (e.key === 'Enter') { const vis = [...document.querySelectorAll('#v-home .tile:not([hidden])')].filter(v => !v.closest('[hidden]')), w = norm(q.value.trim()), t = vis.find(v => norm(v.querySelector('.tt, .mk-name')?.textContent || '').includes(w)) || vis[0]; if (t) { q.blur(); location.hash = t.getAttribute('href'); } } });
     x.addEventListener('click', () => { q.value = ''; run(); q.focus(); });
     window.addEventListener('hashchange', () => { if (q.value) { q.value = ''; run(); } });
-    document.querySelectorAll('#v-home .hjump button').forEach(b => b.addEventListener('click', () => { const s = $('hs-' + b.dataset.s); if (s) s.scrollIntoView({ behavior: 'smooth', block: 'start' }); }));
-    // chips are not sticky any more: the colored section headers mark where you are
+    // today: legal light countdown, rut phase, moon
+    const tm = d => d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }).replace(' ', '\u00a0');
+    const dur = ms => { const m = Math.max(0, Math.round(ms / 6e4)), h = Math.floor(m / 60); return h ? `${h} h ${m % 60} min` : `${m} min`; };
+    const today = () => {
+      const el = $('homeToday'); if (!el) return;
+      try {
+        const now = new Date(), sd = dt => sunmoon.day(dt.getFullYear(), dt.getMonth() + 1, dt.getDate(), LOC.lat, LOC.lon);
+        const t0 = sd(now); if (!t0.rise || !t0.set) { el.hidden = true; return; }
+        const a = new Date(t0.rise.getTime() - 18e5), b = new Date(t0.set.getTime() + 18e5);
+        let big;
+        if (now < a) big = `Legal light in <b>${dur(a - now)}</b> · ${tm(a)}`;
+        else if (now <= b) big = `Legal light ends in <b>${dur(b - now)}</b> · ${tm(b)}`;
+        else { const tmw = new Date(now.getTime() + 864e5), t1 = sd(tmw); big = t1.rise ? `Tomorrow legal light <b>${tm(new Date(t1.rise.getTime() - 18e5))}</b> – ${tm(new Date(t1.set.getTime() + 18e5))}` : 'Done for today'; }
+        const rut = predict.rut(now);
+        el.innerHTML = `<div class="ht-d">${now.toLocaleDateString([], { weekday: 'long', month: 'short', day: 'numeric' })}</div><div class="ht-big">${big}</div>`
+          + `<div class="ht-sub">Sunrise ${tm(t0.rise)} · sunset ${tm(t0.set)} · ${rut === 'Off season' ? 'off season' : 'rut: ' + rut.toLowerCase()} · ${t0.phase.toLowerCase()}</div>`;
+        el.hidden = false;
+      } catch (e) { el.hidden = true; }
+    };
+    // hunting here: today's movement score at your GPS position and the wind right now
+    const HK = 'home.hunt', ago = t => { const m = Math.round((Date.now() - t) / 6e4); return m < 1 ? 'just now' : m < 60 ? `${m} min ago` : `${Math.round(m / 60)} h ago`; };
+    let busy = false;
+    const drawHunt = (st, msg) => {
+      const el = $('homeHunt'); if (!el) return;
+      const c = store.get(HK, null);
+      if (!c) { el.innerHTML = `<div class="hh-top"><span class="hh-t">Hunting here today</span><button type="button" class="hh-r" aria-label="Refresh">↻</button></div><div class="hh-msg">${msg || 'Getting your location and the wind…'}</div>`; }
+      else {
+        const d = c.d, t = d.today, w = d.cur;
+        const wind = w && w.wind_direction_10m != null ? `<div class="hh-wind"><span class="hh-arr" style="transform:rotate(${(w.wind_direction_10m + 180) % 360}deg)" aria-hidden="true"><svg><use href="#i-arrow"/></svg></span><div><b>Wind from the ${cardinal(w.wind_direction_10m)} ${Math.round(w.wind_speed_10m)} mph</b>${w.wind_gusts_10m != null ? `, gusts ${Math.round(w.wind_gusts_10m)}` : ''}<br><span class="hh-s">Your scent drifts ${cardinal(w.wind_direction_10m + 180)}. Set up with deer coming from the ${cardinal(w.wind_direction_10m)}.</span></div></div>` : '';
+        el.innerHTML = `<div class="hh-top"><span class="hh-t">Hunting here today</span><button type="button" class="hh-r" aria-label="Refresh">↻</button></div>`
+          + `<a class="hh-main" href="#predict"><div class="hh-pct ${t.rc}"><b>${t.score}%</b><span>${t.rt}</span></div><div class="hh-side">`
+          + `<div class="hh-bar"><i class="${t.rc}" style="width:${t.score}%"></i></div>`
+          + `<div>${d.now != null ? `Right now: <b>${d.now}%</b> of today's peak movement` : 'Deer are moving in the dark now'}</div>`
+          + `<div class="hh-s">${t.wins.length ? 'Best: ' + t.wins.join(', ') : ''}${d.tom ? `${t.wins.length ? ' · ' : ''}Tomorrow ${d.tom.score}% ${d.tom.rt.toLowerCase()}` : ''}</div></div></a>`
+          + wind
+          + `<div class="hh-foot">${msg ? msg + ' · ' : ''}${c.lat.toFixed(3)}, ${c.lon.toFixed(3)} · ${ago(c.t)} · <a href="#predict">details</a></div>`;
+      }
+      el.querySelector('.hh-r').onclick = () => refreshHunt(true);
+      el.classList.toggle('busy', !!st);
+    };
+    const refreshHunt = force => {
+      const c = store.get(HK, null);
+      if (busy || (!force && c && Date.now() - c.t < 20 * 6e4)) { drawHunt(); return; }
+      busy = true; drawHunt(true, c ? 'Updating…' : null);
+      const go = async (lat, lon, note) => {
+        try { const d = await predict.quick(lat, lon); store.set(HK, { t: Date.now(), lat, lon, d }); drawHunt(false, note); }
+        catch (e) { drawHunt(false, store.get(HK, null) ? 'No signal, showing the last result' : 'No signal right now. Tap ↻ to try again.'); }
+        finally { busy = false; }
+      };
+      if (!navigator.geolocation) { go(LOC.lat, LOC.lon, 'Saved location'); return; }
+      navigator.geolocation.getCurrentPosition(
+        p => go(+p.coords.latitude.toFixed(3), +p.coords.longitude.toFixed(3)),
+        () => go(LOC.lat, LOC.lon, 'GPS off, using your saved location'),
+        { enableHighAccuracy: false, timeout: 12000, maximumAge: 300000 });
+    };
+    refreshHunt(false);
+    window.addEventListener('hashchange', () => { if (!location.hash || location.hash === '#') refreshHunt(false); });
+    setInterval(() => { if (!home.hidden) drawHunt(); }, 60e3);
+    today(); setInterval(() => { if (!home.hidden) today(); }, 60e3);
+    window.addEventListener('hashchange', () => { if (!location.hash || location.hash === '#') today(); });
   })();
 
   window.addEventListener('hashchange', route);
