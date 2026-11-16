@@ -1218,6 +1218,21 @@ svg.leaflet-image-layer.leaflet-interactive path {
 	}
 
 /* ---- maps ---- */
+/* go there: walk or drive */
+.go-pop .go-sug { margin: 6px 0; font-size: .86rem; }
+.go-pop .go-btns { display: grid; gap: 6px; margin-top: 6px; }
+.go-pop .go-b { display: grid; gap: 2px; text-align: left; padding: 9px 10px; border: 1px solid #c9ced6; border-radius: 10px; background: #fff; color: #111; font: 500 .82rem var(--font-body); cursor: pointer; }
+.go-pop .go-b b { font-size: .95rem; }
+.go-pop .go-b span { color: #555; font-size: .76rem; }
+.go-pop .go-b.sug { border: 2px solid #1565c0; }
+.go-pop .go-b:active, .go-pop .go-b[aria-pressed="true"] { background: #1565c0; color: #fff; border-color: #1565c0; }
+.go-pop .go-b:active span { color: #e3ecf8; }
+.go-pop .go-b:disabled { opacity: .6; }
+.go-pop .go-app { margin-top: 8px; font-size: .78rem; color: #555; display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+.go-pop .go-app button { border: 1px solid #c9ced6; background: #fff; color: #111; border-radius: 999px; padding: 4px 10px; font: 600 .76rem var(--font-body); }
+.go-pop .go-app button[aria-pressed="true"], .go-pop .go-app button:active { background: #1565c0; color: #fff; border-color: #1565c0; }
+.go-pop .go-chk { display: flex; gap: 6px; align-items: flex-start; margin-top: 8px; font-size: .8rem; }
+
 .mpsearch { position: relative; }
 .mpsearch .sbox { display: flex; align-items: center; gap: 8px; padding: 0 6px 0 12px; border: 1.5px solid var(--line); border-radius: 12px; background: var(--surface); }
 .mpsearch .sbox:focus-within { border-color: var(--accent); }
@@ -6636,7 +6651,7 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
       box.querySelector('[data-a=add]').onclick = () => { closePops(); if (is3d) set3d(false); startAdd(null, ll); };
       box.querySelector('[data-a=rules]').onclick = () => { closePops(); showRules(ll, land); };
       box.querySelector('[data-a=drag]').onclick = () => { closePops(); if (is3d) set3d(false); dragRoute(ll); };
-      box.querySelector('[data-a=nav]').onclick = () => { closePops(); setGoTo(ll, sPin && sPin.getLatLng().equals(ll) && qEl.value ? qEl.value : `Spot ${ll.lat.toFixed(4)}, ${ll.lng.toFixed(4)}`); };
+      box.querySelector('[data-a=nav]').onclick = () => { closePops(); goChoose(ll, sPin && sPin.getLatLng().equals(ll) && qEl.value ? qEl.value : `Spot ${ll.lat.toFixed(4)}, ${ll.lng.toFixed(4)}`); };
       box.querySelector('[data-a=share]').onclick = () => shareSpot(ll, sPin && sPin.getLatLng().equals(ll) && qEl.value ? qEl.value : 'Spot');
       box.querySelector('[data-a=copy]').onclick = () => copyText(`${ll.lat.toFixed(6)}, ${ll.lng.toFixed(6)}`);
       pop.set(box);
@@ -7111,7 +7126,7 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
         + `<div class="sec pcoord">${coordTxt(m.lat, m.lon)}${elevTxt ? elevTxt(ll) : ''}</div>`
         + (dMe != null ? `<div class="sec muted">${fmtDist(dMe)} ${cardinal(bearing(me, ll))} of you (${Math.round(bearing(me, ll))}°)</div>` : '')
         + `<div class="acts"><button type="button" data-a="go">Navigate here</button>${m.type === 'blood' ? '<button type="button" data-a="drag">Drag route to truck</button>' : ''}<button type="button" data-a="share">Share</button>${dMe != null && dMe < 60 ? '<button type="button" data-a="refine">Refine here</button>' : ''}<button type="button" data-a="copy">Copy coordinates</button>${loggable(m) ? '<button type="button" data-a="log">Log a visit</button>' : ''}${t[3] === 'setup' ? `<button type="button" data-a="rings">${m.rings ? 'Hide' : 'Show'} range rings</button>` : ''}<button type="button" data-a="scent">Scent cone here</button><button type="button" data-a="edit">Edit</button><button type="button" data-a="del">Delete</button></div>`;
-      box.querySelector('[data-a=go]').onclick = () => { map.closePopup(); setGoTo(ll, m.name || t[0]); if (goTo) goTo.pin = m; };
+      box.querySelector('[data-a=go]').onclick = () => { map.closePopup(); goChoose(ll, m.name || t[0], () => { if (goTo) goTo.pin = m; }); };
       box.querySelector('[data-a=scent]').onclick = () => { map.closePopup(); scentFrom = ll; setScent(true); };
       box.querySelector('[data-a=share]').onclick = () => shareSpot(ll, m.name || t[0]);
       const dg = box.querySelector('[data-a=drag]'); if (dg) dg.onclick = () => { map.closePopup(); dragRoute(ll); };
@@ -7165,6 +7180,87 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
       navUI(!!goTo); if (!goTo) { $('navFinal').hidden = true; if (!$('navSum').hidden) $('mpNav').hidden = false; } else $('navSum').hidden = true;
       onMove();
     }
+
+    // ---------- "Go there": walk with the app, or drive (to the spot or to the nearest parking, then walk) ----------
+    const DRIVE_AT = 1500; // farther than this from you: suggest driving
+    let parkOSM = {};
+    async function nearParking(ll) {
+      const out = [];
+      DB.markers.filter(m => m.type === 'parking' || m.type === 'entry').forEach(m => out.push({ ll: L.latLng(m.lat, m.lon), name: m.name || 'Your parking pin', src: 'your pin' }));
+      try { if (typeof sfZones === 'function') { const z = await Promise.race([sfZones(), new Promise(r => setTimeout(() => r(null), 4000))]); if (z && z.bb.pad(0.3).contains(ll)) z.park.forEach(p => out.push({ ll: p, name: 'Sterling Forest hunter parking', src: 'official park map' })); } } catch (e) {}
+      const key = ll.lat.toFixed(2) + ',' + ll.lng.toFixed(2);
+      if (!parkOSM[key] && navigator.onLine) {
+        const q = `[out:json][timeout:15];nwr["amenity"="parking"]["access"!~"private|customers|no"](around:3500,${ll.lat},${ll.lng});out center tags;`;
+        try { const r = await Promise.race([fetch('https://overpass-api.de/api/interpreter', { method: 'POST', body: 'data=' + encodeURIComponent(q), headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }), new Promise((_, rej) => setTimeout(() => rej(0), 9000))]);
+          if (r.ok) parkOSM[key] = ((await r.json()).elements || []).map(e => { const c = e.center || e; return c.lat != null ? { ll: L.latLng(c.lat, c.lon), name: (e.tags && (e.tags.name || e.tags.description)) || 'Parking area', src: 'OpenStreetMap' } : null; }).filter(Boolean); } catch (e) {}
+      }
+      (parkOSM[key] || []).forEach(p => out.push(p));
+      return out.filter(p => p.ll.distanceTo(ll) < 5000).sort((a, b) => a.ll.distanceTo(ll) - b.ll.distanceTo(ll))[0] || null;
+    }
+    const driveURL = (ll, app) => app === 'waze' ? `https://waze.com/ul?ll=${ll.lat.toFixed(6)},${ll.lng.toFixed(6)}&navigate=yes`
+      : `https://www.google.com/maps/dir/?api=1&destination=${ll.lat.toFixed(6)},${ll.lng.toFixed(6)}&travelmode=driving`;
+    function openDrive(ll, app) { const u = driveURL(ll, app || store.get('drive.app', 'google')); const w = window.open(u, '_blank'); if (!w) location.href = u; }
+    function goChoose(ll, name, after) {
+      ll = L.latLng(ll); map.closePopup();
+      const app = store.get('drive.app', 'google');
+      const box = document.createElement('div'); box.className = 'pop go-pop';
+      box.innerHTML = `<h4>Go to ${esc(name)}</h4><div class="muted go-d"></div><div class="go-sug"></div>`
+        + `<div class="go-btns">`
+        + `<button type="button" class="go-b" data-g="walk"><b>🚶 Walk there</b><span>The app's compass, route and voice guide you on foot</span></button>`
+        + `<button type="button" class="go-b" data-g="park"><b>🚗 Drive to parking, then walk</b><span class="go-pk">Finding the nearest parking…</span></button>`
+        + `<button type="button" class="go-b" data-g="drive"><b>🚗 Drive right to the spot</b><span>Only if a road goes there. Woods spots: use parking instead</span></button>`
+        + `</div><div class="go-app">Drive with: <button type="button" data-app="google" aria-pressed="${app === 'google'}">Google Maps</button><button type="button" data-app="waze" aria-pressed="${app === 'waze'}">Waze</button></div>`;
+      const upd = from => {
+        const d = from ? from.distanceTo(ll) : null, far = d == null || d > DRIVE_AT;
+        box.querySelector('.go-d').textContent = d != null ? fmtDist(d) + ' from you, straight line' : 'Finding your location…';
+        box.querySelector('.go-sug').innerHTML = d == null ? 'Far away? Drive to the parking, then walk in.' : far ? 'Suggested: <b>drive to the nearest parking</b>, then let the app walk you in.' : 'Suggested: <b>walk</b>. It\u2019s close.';
+        box.querySelector('[data-g=walk]').classList.toggle('sug', !far); box.querySelector('[data-g=park]').classList.toggle('sug', far);
+      };
+      upd(me);
+      if (!me && navigator.geolocation) navigator.geolocation.getCurrentPosition(q => upd(L.latLng(q.coords.latitude, q.coords.longitude)), () => { const e = box.querySelector('.go-d'); if (e) e.textContent = 'Location is off: turn on GPS to see the distance.'; }, { enableHighAccuracy: false, timeout: 8000, maximumAge: 300000 });
+      let park = null; const pkP = nearParking(ll).then(p => { park = p; const s = box.querySelector('.go-pk'); if (s) s.innerHTML = p ? `${esc(p.name)} (${p.src}), ${fmtDist(p.ll.distanceTo(ll))} walk to the spot` : 'No parking found within 3 miles. Drop a Parking pin, or drive to the spot.'; return p; });
+      box.querySelectorAll('[data-app]').forEach(b => b.onclick = ev => { ev.stopPropagation(); store.set('drive.app', b.dataset.app); box.querySelectorAll('[data-app]').forEach(x => x.setAttribute('aria-pressed', x === b)); });
+      box.querySelector('[data-g=walk]').onclick = () => { map.closePopup(); setGoTo(ll, name); if (after) after(); };
+      box.querySelector('[data-g=drive]').onclick = () => { map.closePopup(); openDrive(ll); };
+      box.querySelector('[data-g=park]').onclick = async ev => {
+        const b = ev.currentTarget; b.disabled = true; const p = park || await pkP; b.disabled = false;
+        if (!p) { toast('No parking found nearby. Drop a Parking pin at your lot, or drive to the spot.'); return; }
+        map.closePopup();
+        store.set('drive.pending', { t: Date.now(), lat: ll.lat, lon: ll.lng, name, plat: p.ll.lat, plon: p.ll.lng, pname: p.name, pin: !!DB.markers.find(m => (m.type === 'parking' || m.type === 'entry') && L.latLng(m.lat, m.lon).distanceTo(p.ll) < 60) });
+        toast(`Driving to ${p.name}. Come back to the app when you park: it will walk you in.`);
+        openDrive(p.ll);
+      };
+      if (!map.getBounds().contains(ll)) map.setView(ll, Math.max(map.getZoom(), 15));
+      L.popup({ maxWidth: 300, offset: [0, -24] }).setLatLng(ll).setContent(box).openOn(map);
+      const mp = $('map'); if (mp && mp.getBoundingClientRect().top < 0) mp.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+    // back from driving: offer to walk in from the parking
+    function parkedCheck() {
+      const p = store.get('drive.pending', null); if (!p || document.visibilityState !== 'visible') return;
+      if (Date.now() - p.t > 8 * 3600e3) { store.set('drive.pending', null); return; }
+      if (goTo) return;
+      const pll = L.latLng(p.plat, p.plon), dll = L.latLng(p.lat, p.lon), dMe = me ? me.distanceTo(pll) : null;
+      if (dMe != null && dMe > 3000) return; // still on the road: ask later
+      if (location.hash !== '#maps') location.hash = '#maps';
+      setTimeout(() => {
+        const box = document.createElement('div'); box.className = 'pop go-pop';
+        box.innerHTML = `<h4>Parked?</h4><div>Walk from <b>${esc(p.pname)}</b> to <b>${esc(p.name)}</b>: ${fmtDist(pll.distanceTo(dll))}.</div>`
+          + `<div class="go-btns"><button type="button" class="go-b sug" data-g="walk"><b>🚶 Walk me in</b><span>Starts the app's walking guide</span></button></div>`
+          + `<label class="go-chk"><input type="checkbox" ${p.pin ? 'disabled' : 'checked'}> ${p.pin ? 'Already saved as a parking pin' : 'Save this lot as my truck (Parking pin) so the app can walk me back out'}</label>`
+          + `<div class="acts"><button type="button" data-g="later">Not yet</button><button type="button" data-g="cancel">Cancel this trip</button></div>`;
+        box.querySelector('[data-g=walk]').onclick = () => {
+          const ck = box.querySelector('.go-chk input');
+          if (ck && ck.checked && !ck.disabled) { DB.markers.push({ id: uid(), area: newArea(), t: Date.now(), type: 'parking', name: p.pname === 'Parking area' ? 'Truck' : p.pname, lat: +p.plat.toFixed(6), lon: +p.plon.toFixed(6) }); saveDB(); drawSaved(); }
+          store.set('drive.pending', null); map.closePopup(); setGoTo(dll, p.name);
+        };
+        box.querySelector('[data-g=later]').onclick = () => { store.set('drive.pending', Object.assign(p, { t: Date.now() })); map.closePopup(); };
+        box.querySelector('[data-g=cancel]').onclick = () => { store.set('drive.pending', null); map.closePopup(); toast('Trip cancelled.'); };
+        map.setView(pll, Math.max(map.getZoom(), 15));
+        L.popup({ maxWidth: 300, offset: [0, -10] }).setLatLng(pll).setContent(box).openOn(map);
+      }, 700);
+    }
+    document.addEventListener('visibilitychange', () => setTimeout(parkedCheck, 400));
+    setTimeout(parkedCheck, 2500);
 
 
     // ---------- navigate on foot to a pin ----------
@@ -7739,7 +7835,7 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
         const nm = `${SPOT[s.t][0]} #${k + 1}`, ll = s.ll, st = x.stand;
         shareText(`Deer Eyes: ${nm}`, `${nm} (Deer Eyes AI spot)\nBest wind: ${x.best.join(', ')} · avoid ${x.avoid} · best time: ${x.timeLbl}\nWhy: ${plain(x.why)}\n\nSpot: https://maps.google.com/?q=${ll.lat.toFixed(6)},${ll.lng.toFixed(6)}\nStand here: https://maps.google.com/?q=${st.lat.toFixed(6)},${st.lng.toFixed(6)}\nOpen in Deer Eyes (walks you there): ${appLink(st.lat, st.lng, nm + ' (stand spot)')}${s.land ? `\nLand: ${s.land.name}${s.land.k === 'sf' ? ' (park hunting permit needed)' : s.land.k === 'permit' ? ' (state park: park hunting permit needed)' : s.land.k === 'zoned' ? ' (designated hunting areas only, no Sundays)' : ' (public hunting land)'}` : ''}\n\nA prediction from terrain and land cover, not a sighting. Check the area's rules.`);
       };
-      box.querySelector('[data-a=nav]').onclick = () => { map.closePopup(); setGoTo(x.stand, `${SPOT[s.t][0]} #${k + 1} (stand spot)`); };
+      box.querySelector('[data-a=nav]').onclick = () => { map.closePopup(); goChoose(x.stand, `${SPOT[s.t][0]} #${k + 1} (stand spot)`); };
       box.querySelector('[data-a=land]').onclick = () => { map.closePopup(); landInfo(s.ll); };
       box.querySelector('[data-a=save]').onclick = () => {
         DB.markers.push({ id: uid(), area: newArea(), t: Date.now(), type: ({ bedding: 'bed', cover: 'bed', food: 'food', browse: 'food', mast: 'food' })[s.t] || 'note', name: `AI: ${SPOT[s.t][0]} #${k + 1}`, notes: x.why, lat: +s.ll.lat.toFixed(6), lon: +s.ll.lng.toFixed(6) });
@@ -7979,7 +8075,7 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
       out.onclick = e => {
         const g = e.target.closest('[data-go]'), sv = e.target.closest('[data-see]'); if (!g && !sv) return;
         const cc = top[+((g && g.dataset.go) || (sv && sv.dataset.see))];
-        if (g) { setGoTo(cc.ll, cc.kind === 'pin' ? cc.name : `${cc.name} (stand spot)`); if (goTo && cc.m) goTo.pin = cc.m; }
+        if (g) { goChoose(cc.ll, cc.kind === 'pin' ? cc.name : `${cc.name} (stand spot)`, () => { if (goTo && cc.m) goTo.pin = cc.m; }); }
         else { map.setView(cc.kind === 'ai' ? cc.s.ll : cc.ll, Math.max(map.getZoom(), 16)); if (cc.kind === 'ai') spotPopup(cc.s, cc.k); else $('map').scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }
       };
     }
@@ -8072,11 +8168,11 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
       movePinch.forEach(p => {
         const sp = destPoint(p.ll, wTo, mDef().yd / YD);
         L.polyline([p.ll, sp], { color: '#ff6d00', weight: 2, dashArray: '3 4', interactive: false }).addTo(moveLayer);
-        L.marker(sp, { icon: huntIcon('★', false), zIndexOffset: 1300, title: 'Hunt here: pinch point setup' }).on('click', () => { map.setView(sp); setGoTo(sp, 'pinch point (setup spot)'); }).addTo(moveLayer);
+        L.marker(sp, { icon: huntIcon('★', false), zIndexOffset: 1300, title: 'Hunt here: pinch point setup' }).on('click', () => { goChoose(sp, 'pinch point (setup spot)'); }).addTo(moveLayer);
         L.marker(p.ll, { icon: L.divIcon({ className: '', iconSize: [28, 28], iconAnchor: [14, 14], html: `<div class="mv-pinch">★</div>` }), zIndexOffset: 900 }).on('click', () => {
           const box = document.createElement('div'); box.className = 'pop';
           box.innerHTML = `<h4>★ Pinch point</h4><div class="sec"><b>${p.n} predicted deer routes</b> come together here. Deer moving between bedding and food funnel through this spot, morning and evening.</div><div class="sec">Today's wind is from the ${cardinal(WIND.from)}: set up on the <b>${cardinal(wTo)}</b> side, about ${mDef().yd} yd off (${mDef().n.toLowerCase()}).</div><div class="sec muted">A prediction from terrain and land cover: look for trails, rubs and tracks here first.</div><div class="acts"><button type="button" data-a="go">Navigate to the setup spot</button><button type="button" data-a="save">Save as marker</button></div>`;
-          box.querySelector('[data-a=go]').onclick = () => { map.closePopup(); setGoTo(sp, 'pinch point (setup spot)'); };
+          box.querySelector('[data-a=go]').onclick = () => { map.closePopup(); goChoose(sp, 'pinch point (setup spot)'); };
           box.querySelector('[data-a=save]').onclick = () => { DB.markers.push({ id: uid(), area: newArea(), t: Date.now(), type: 'funnel', name: 'AI pinch point', notes: `${p.n} predicted deer routes cross here.`, lat: +p.ll.lat.toFixed(6), lon: +p.ll.lng.toFixed(6) }); saveDB(); drawSaved(); map.closePopup(); toast('Saved as a funnel marker'); };
           L.popup({ maxWidth: 260 }).setLatLng(p.ll).setContent(box).openOn(map);
         }).addTo(moveLayer);
@@ -8100,7 +8196,7 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
           + `<div class="sec"><b>Morning</b> (back to bed): deer pass here about <b>${at2(m.am1, m.am2, 1 - f)}</b>, mostly in the first hour of light.</div>`
           + (m.press === 'High' ? `<div class="sec ai-warn">High pressure nearby: these deer may wait until dark. Hunt closer to the bedding, or midweek.</div>` : '');
       box.innerHTML = head + `<div class="sec"><b>Wind here</b><div>${wtxt}</div></div><div class="sec muted">Predicted from terrain, land cover, roads and your own sign. Confirm with tracks and trails before you hang a stand.</div><div class="acts"><button type="button" data-a="go">Navigate to a setup here</button></div>`;
-      box.querySelector('[data-a=go]').onclick = () => { map.closePopup(); setGoTo(destPoint(m.pts[bi], (WIND.from + 180) % 360, mDef().yd / YD), 'setup beside the deer route'); };
+      box.querySelector('[data-a=go]').onclick = () => { map.closePopup(); goChoose(destPoint(m.pts[bi], (WIND.from + 180) % 360, mDef().yd / YD), 'setup beside the deer route'); };
       L.popup({ maxWidth: 270, maxHeight: 360 }).setLatLng(at).setContent(box).openOn(map);
     }
     async function showMoves() {
@@ -8242,7 +8338,7 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
       $('arOut').onclick = e => {
         const tr = e.target.closest('tr[data-k]'), pn = e.target.closest('[data-pin]'), a = e.target.closest('[data-a]');
         if (tr) { const k = +tr.dataset.k, s = spots[k]; map.setView(s.ll, Math.max(map.getZoom(), 16)); spotPopup(s, k); $('map').scrollIntoView({ behavior: 'smooth', block: 'nearest' }); return; }
-        if (pn) { const p = movePinch[+pn.dataset.pin]; setGoTo(destPoint(p.ll, wTo, mDef().yd / YD), 'pinch point (setup spot)'); return; }
+        if (pn) { const p = movePinch[+pn.dataset.pin]; goChoose(destPoint(p.ll, wTo, mDef().yd / YD), 'pinch point (setup spot)'); return; }
         if (!a) return;
         if (a.dataset.a === 'map') { if (spots.length) map.fitBounds(L.latLngBounds(spots.map(s => s.ll).concat([c])).pad(0.15), { maxZoom: 16 }); $('map').scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }
         if (a.dataset.a === 'save') {
@@ -10489,7 +10585,7 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
         if (store.get('pendingArea', 0)) { store.set('pendingArea', 0); setTimeout(() => { if (tool !== 'area') setTool('area'); $('mp-area').scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 150); }
         { const pv = store.get('pendingVoice', 0); if (pv) { store.set('pendingVoice', 0); setTimeout(() => { if (tool !== 'voice') setTool('voice'); startGPS(false); $('mp-voice').scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }, 150); } }
         const pg = store.get('pendingGo', null);
-        if (pg) { store.set('pendingGo', null); const ll = L.latLng(pg.lat, pg.lon); map.setView(ll, 16); setGoTo(ll, pg.name || 'Shared spot'); toast(`Navigating to ${pg.name || 'the shared spot'}`); }
+        if (pg) { store.set('pendingGo', null); const ll = L.latLng(pg.lat, pg.lon); map.setView(ll, 16); goChoose(ll, pg.name || 'Shared spot'); }
       },
       weekShow, zoneAt, seasonsFor, legalHours, walkBack, clearTrail, trailInfo: () => ({ n: trailSeg().length, len: trailLen() }),
       hide() { if (!rec && watchId != null) stopGPS(); },
