@@ -7552,8 +7552,8 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
     function sfZones() {
       if (SFZ) return Promise.resolve(SFZ); if (SFZp) return SFZp;
       SFZp = (async () => {
-        const meta = await (await fetch('sf-zones.json')).json();
-        const img = await new Promise((res, rej) => { const im = new Image(); im.onload = () => res(im); im.onerror = rej; im.src = 'sf-zones.png'; });
+        const meta = await (await fetch('sf-zones.json?v=2')).json();
+        const img = await new Promise((res, rej) => { const im = new Image(); im.onload = () => res(im); im.onerror = rej; im.src = 'sf-zones.png?v=2'; });
         const c = document.createElement('canvas'); c.width = meta.W; c.height = meta.H; const g = c.getContext('2d', { willReadFrequently: true }); g.drawImage(img, 0, 0);
         const d = g.getImageData(0, 0, meta.W, meta.H).data, z = new Uint8Array(meta.W * meta.H); for (let i = 0; i < z.length; i++) z[i] = Math.round(d[i * 4] / 40);
         const bb = L.latLngBounds(meta.bounds), park = meta.parking.map(p => L.latLng(p[0], p[1])), trail = meta.trail.map(p => L.latLng(p[0], p[1]));
