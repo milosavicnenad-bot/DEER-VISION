@@ -1474,6 +1474,18 @@ body.nav-big { overflow: hidden; }
 .mtypes button svg { width: 20px; height: 20px; flex: none; }
 .mtypes button[aria-pressed="true"] { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
 #mp-add textarea { font: .95rem var(--font-body); padding: 8px; border-radius: 6px; border: 1px solid var(--line); background: var(--bg); color: var(--fg); width: 100%; resize: vertical; }
+#mp-scouts textarea, #mp-scouts input[type=text] { font: .95rem var(--font-body); padding: 8px; border-radius: 6px; border: 1px solid var(--line); background: var(--bg); color: var(--fg); width: 100%; box-sizing: border-box; }
+#mp-scouts textarea { resize: vertical; min-height: 56px; }
+.sc-item { border: 1px solid var(--line); border-radius: 8px; background: var(--bg); padding: 8px 10px; display: grid; gap: 6px; }
+.sc-item.cur { border-color: #1565c0; box-shadow: inset 0 0 0 1px #1565c0; }
+.sc-item b { font-size: 1rem; }
+.sc-item .sc-meta { font-size: .82rem; color: var(--muted, #777); }
+.sc-item .sc-note { font-size: .88rem; white-space: pre-wrap; }
+.sc-acts { display: flex; flex-wrap: wrap; gap: 6px; }
+.sc-acts button { flex: 1 1 auto; min-width: 70px; padding: 7px 8px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); color: var(--fg); font: 600 .85rem var(--font-body); cursor: pointer; }
+.sc-acts button:active, .sc-acts button[data-sure] { background: #1565c0; border-color: #0d47a1; color: #fff; }
+.sc-bar { height: 6px; border-radius: 3px; background: var(--line); overflow: hidden; }
+.sc-bar i { display: block; height: 100%; width: 0; background: #1565c0; }
 .slist { display: grid; gap: 4px; max-height: 340px; overflow: auto; }
 .sitem { display: grid; grid-template-columns: 30px 1fr auto; gap: 10px; align-items: center; padding: 7px 8px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); cursor: pointer; text-align: left; font: inherit; color: var(--fg); }
 .sitem .mk { position: static; }
@@ -2537,6 +2549,7 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
         <button type="button" id="mpScentBtn" aria-pressed="false"><svg><use href="#i-wind"/></svg>Scent</button>
         <button type="button" data-tool="rules"><svg><use href="#i-rules"/></svg>Rules</button>
         <button type="button" data-tool="saved"><svg><use href="#i-list"/></svg>Saved</button>
+        <button type="button" data-tool="scouts"><svg><use href="#i-flag"/></svg>Scouting</button>
         <button type="button" data-tool="route"><svg><use href="#i-route"/></svg>Route</button>
         <button type="button" id="mpAiBtn"><svg><use href="#i-ai"/></svg>AI spots</button>
         <button type="button" data-tool="blood" class="bt-tool"><svg><use href="#i-blood"/></svg>Blood</button>
@@ -2795,8 +2808,22 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
           <button class="btn" id="aiMoveHide" type="button">Hide movement lines</button>
         </div>
         <div class="slist" id="aiList"></div>
-        <div class="actions"><button class="btn primary" id="aiRun" type="button">Find spots around me</button><button class="btn" id="aiRunMap" type="button">Around map center</button><button class="btn" id="aiClear" type="button">Clear</button></div>
+        <div class="actions"><button class="btn primary" id="aiRun" type="button">Find spots around me</button><button class="btn" id="aiRunMap" type="button">Around map center</button><button class="btn" id="aiClear" type="button">Clear</button><button class="btn" id="aiScoutSave" type="button">Save scouting</button></div>
         <p class="caption" style="margin:0">How it works: a model on your phone reads the elevation data the way an experienced hunter reads a topo map, and the yearly satellite land-cover map (Annual NLCD, from Landsat, 30 m detail) for fields, crops, young growth, thick cover and water. Then it adds today's wind (set in Wind &amp; weather), thermals, the rut phase and nearby houses. It also weighs hunting pressure (distance from parking, trails and roads, plus pressure you log) and your own scouting: sign markers, camera checks and journal sits near a spot push it up. It can't see deer, this year's crops or acorns, so treat the spots as places to scout first.</p>
+      </div>
+      <div class="panel mp" id="mp-scouts" hidden>
+        <h2 style="margin:0">Saved scouting</h2>
+        <div class="caption">Saves the map region you're scouting exactly as it is now: where the map is, the base map and layers, the AI stand spots, deer routes and pinch points, and the Plan area report if you made one, with your own notes. Open it again any time, even without signal. Your pins stay saved as always.</div>
+        <div class="row"><label for="scName">Name</label><input type="text" id="scName" class="full" placeholder="e.g. Sterling Forest north ridge" maxlength="60"></div>
+        <textarea id="svNote" placeholder="Notes: what you found, sign, wind, where to hang a stand…" maxlength="2000"></textarea>
+        <label class="lyr"><input type="checkbox" id="scOff" checked><div><b>Also keep this map for offline</b><span>Saves the map pictures and terrain for this region so it opens in the woods without signal (needs signal now).</span></div></label>
+        <div class="caption" id="scWhat"></div>
+        <div class="actions"><button class="btn primary" id="scSave" type="button">Save this scouting</button></div>
+        <div class="sc-bar" id="scBarW" hidden><i id="scBar"></i></div>
+        <div class="caption" id="scMsg"></div>
+        <div class="k">Your scouting saves</div>
+        <div class="pin-listbar"><input type="search" id="scQ" style="width:100%" placeholder="Search your scouting" aria-label="Search your scouting"></div>
+        <div class="slist" id="scList" style="max-height:none"></div>
       </div>
       <div class="panel mp" id="mp-saved" hidden>
         <h2 style="margin:0">Saved markers and tracks</h2>
@@ -3607,7 +3634,7 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
   function toast(msg) { const t = $('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), 3200); }
   // ---- safety copy: pins, tracks and journal are also kept in a second place on the phone ----
   // If regular storage is wiped or full, the app puts them back on the next start.
-  const SAFE_KEYS = ['maps.markers', 'maps.tracks', 'maps.areas', 'maps.chains', 'journal', 'stand.winds', 'tags', 'maps.huntzones', 'maps.paper'];
+  const SAFE_KEYS = ['maps.markers', 'maps.tracks', 'maps.areas', 'maps.chains', 'journal', 'stand.winds', 'tags', 'maps.huntzones', 'maps.paper', 'maps.scouts'];
   const safe = (() => {
     let p = null;
     const open = () => p || (p = new Promise((res, rej) => { try { const r = indexedDB.open('deereyes-safe', 1); r.onupgradeneeded = () => r.result.createObjectStore('kv'); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); } catch (e) { rej(e); } }));
@@ -8201,6 +8228,7 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
     }
     async function showMoves() {
       if (tool !== 'ai') setTool('ai');
+      if (!spotGrid && moves.length && spots.length) { $('aiMoveBox').hidden = false; drawMoves(); return; } // routes from a saved scouting
       if (!spots.length || !spotGrid) { await runSpots(!!me && me.distanceTo(map.getCenter()) < 3000); }
       if (!spots.length || !spotGrid) { toast('Find AI spots first (needs signal or a saved offline area).'); return; }
       $('aiMoveBox').hidden = false; $('aiMoveNow').textContent = 'Working out the deer routes…';
@@ -8332,7 +8360,7 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
         h += `<div class="caption">Routes are drawn on the map. Move the time slider in AI hunt spots → Deer movement lines to see which ones are active.</div>`;
       }
       h += `</div>`;
-      h += `<div class="ar-acts"><button type="button" class="btn primary" data-a="map">Show on map</button><button type="button" class="btn" data-a="save">Save top 5 as pins</button><button type="button" class="btn" data-a="area">Save this area</button><button type="button" class="btn" data-a="share">Share</button><button type="button" class="btn" data-a="print">Print / PDF</button></div>`;
+      h += `<div class="ar-acts"><button type="button" class="btn primary" data-a="map">Show on map</button><button type="button" class="btn" data-a="save">Save top 5 as pins</button><button type="button" class="btn" data-a="area">Save this area</button><button type="button" class="btn" data-a="scout">Save scouting</button><button type="button" class="btn" data-a="share">Share</button><button type="button" class="btn" data-a="print">Print / PDF</button></div>`;
       h += `<div class="caption">Predictions from elevation, satellite land cover, roads and trails, state land data and the weather, not from tracking deer. Walk it and confirm with tracks, rubs and scrapes before you hang a stand, and check the land rules on the ground.</div></div>`;
       $('arOut').innerHTML = h;
       $('arOut').onclick = e => {
@@ -8346,6 +8374,7 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
           saveDB(); drawSaved(); toast(`Saved ${Math.min(5, spots.length)} stands as pins (with their good winds)`);
         }
         if (a.dataset.a === 'area') { const L2 = arSaved().filter(p => p.n !== name); L2.unshift({ n: name, lat: +c.lat.toFixed(5), lon: +c.lng.toFixed(5) }); store.set('area.saved', L2.slice(0, 8)); arChips(); toast(`${name} added to your areas`); }
+        if (a.dataset.a === 'scout') openScoutSave(name);
         if (a.dataset.a === 'share') shareText(`Deer Eyes: hunt plan for ${name}`, arPlainText(A));
         if (a.dataset.a === 'print') arPrint(A);
       };
@@ -10166,7 +10195,8 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
       if (tool === 'layers') tool = null; // layers is a panel, not a map mode
       document.querySelectorAll('.mtools [data-tool]').forEach(b => b.classList.toggle('on', b.dataset.tool === tool));
       $('mpAiBtn').classList.toggle('on', tool === 'ai');
-      for (const id of ['add', 'measure', 'track', 'saved', 'rules', 'ai', 'route', 'blood', 'bearing', 'approach', 'scout', 'profile', 'chain', 'ready', 'food', 'voice', 'paper', 'area']) $('mp-' + id).hidden = tool !== id;
+      for (const id of ['add', 'measure', 'track', 'saved', 'rules', 'ai', 'route', 'blood', 'bearing', 'approach', 'scout', 'profile', 'chain', 'ready', 'food', 'voice', 'paper', 'area', 'scouts']) $('mp-' + id).hidden = tool !== id;
+      if (tool === 'scouts') fillScouts();
       if (tool === 'chain') drawChain(); if (tool === 'ready') fillReady();
       if (tool === 'approach') fillApproach(); if (tool === 'scout') fillScout(); if (tool === 'food') { fillFood(); startGPS(false); } if (tool === 'bearing' && compass.heading() != null && !$('brgDeg').value) $('brgDeg').value = Math.round(compass.heading()) % 360;
       if (tool === 'blood') { renderBlood(); if (curBT()) { startGPS(false); keepAwake(true); } }
@@ -10528,6 +10558,185 @@ button:active:not(:disabled) *, a.tile:active *, .btn:active * { color: #fff !im
       btn.disabled = false;
       $('mpOffText').textContent = bad ? `Saved ${done - bad} map pictures; ${bad} failed (check your signal and try again).` : `Done: ${done} map pictures saved for zoom levels ${z0}–${z1}: your base map, satellite, the layers you have on, and the 3D terrain will show here without signal.`;
     });
+
+    // ---------- saved scouting: keep a map region with everything worked out there, and open it again later ----------
+    // Saved as plain data: map points become [lat, lon], times become numbers. Kept with the pins in the safety copy,
+    // so app updates never lose them.
+    let SC = store.get('maps.scouts', []), scCur = null;
+    const r6 = v => Math.round(v * 1e6) / 1e6;
+    function scPack(o) {
+      return JSON.parse(JSON.stringify(o, function (k, v) {
+        const raw = this[k];
+        if (raw instanceof L.LatLng) return { _ll: [r6(raw.lat), r6(raw.lng)] };
+        if (raw instanceof Date) return { _d: raw.getTime() };
+        if (raw instanceof Set || raw instanceof Map || typeof raw === 'function' || (raw && raw._leaflet_id)) return undefined;
+        if (k === 'cells' || k === 'grid') return undefined;
+        return v;
+      }));
+    }
+    function scUnpack(o) {
+      if (Array.isArray(o)) return o.map(scUnpack);
+      if (o && typeof o === 'object') {
+        if (o._ll) return L.latLng(o._ll[0], o._ll[1]);
+        if (o._d != null) return new Date(o._d);
+        const out = {}; for (const k of Object.keys(o)) out[k] = scUnpack(o[k]); return out;
+      }
+      return o;
+    }
+    function scWrite() {
+      try { localStorage.setItem('deereyes.maps.scouts', JSON.stringify(SC)); }
+      catch (e) { safe.put('maps.scouts', SC); return false; }
+      safe.put('maps.scouts', SC); return true;
+    }
+    const scSize = x => { try { return JSON.stringify(x).length; } catch (e) { return 0; } };
+    const scWhen = t => new Date(t).toLocaleString([], { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' });
+    function scPinsIn(S) {
+      if (!S.box) return { m: 0, t: 0 };
+      const b = L.latLngBounds(S.box);
+      return { m: DB.markers.filter(m => b.contains([m.lat, m.lon])).length, t: DB.tracks.filter(t => t.pts && t.pts.some(p => b.contains([p[0], p[1]]))).length };
+    }
+    function scParts(S) {
+      const p = scPinsIn(S), bits = [];
+      if (S.plan) bits.push('area plan');
+      if (S.spots && S.spots.length) bits.push(`${S.spots.length} AI spot${S.spots.length > 1 ? 's' : ''}`);
+      const fr = (S.moves || []).length; if (fr) bits.push(`${fr} deer route${fr > 1 ? 's' : ''}`);
+      if (S.pinch && S.pinch.length) bits.push(`${S.pinch.length} pinch point${S.pinch.length > 1 ? 's' : ''}`);
+      if (p.m) bits.push(`${p.m} pin${p.m > 1 ? 's' : ''}`);
+      if (p.t) bits.push(`${p.t} track${p.t > 1 ? 's' : ''}`);
+      return bits;
+    }
+    // what would be saved right now
+    function scSnapshot() {
+      const c = map.getCenter(), b = map.getBounds();
+      return {
+        view: [r6(c.lat), r6(c.lng), map.getZoom()],
+        box: [[r6(b.getSouth()), r6(b.getWest())], [r6(b.getNorth()), r6(b.getEast())]],
+        base: baseKey, over: Object.keys(OVERS).filter(k => overOn[k]), area: DB.cur,
+        plan: arLast ? scPack(arLast) : null,
+        spots: scPack(spots), moves: scPack(moves), pinch: scPack(movePinch), sun: moveSun ? scPack(moveSun) : null,
+        rut: moves.rutNow || '', rutSeason: !!moves.rutSeason, spotCenter: spotCenter ? scPack(spotCenter) : null,
+      };
+    }
+    function scWhatNow() {
+      const S = scSnapshot(), bits = scParts(S);
+      $('scWhat').innerHTML = `Will save: <b>the map region you see now</b> (${esc((BASES[S.base] || [''])[0])}${S.over.length ? ` + ${S.over.length} layer${S.over.length > 1 ? 's' : ''}` : ''})${bits.length ? ', ' + bits.map(esc).join(', ') : ''}.`
+        + (!spots.length && !arLast ? ' Tip: run <b>Plan area</b> or <b>AI spots</b> first to save the stand spots and deer routes too.' : '');
+    }
+    function fillScouts() {
+      scWhatNow();
+      if (!$('scName').value) $('scName').value = (arLast && arLast.name) || (DB.cur !== 'all' ? DB.cur : '');
+      const q = ($('scQ').value || '').trim().toLowerCase(), host = $('scList');
+      const list = SC.filter(S => !q || `${S.name} ${S.note || ''}`.toLowerCase().includes(q)).sort((a, b) => (b.u || b.t) - (a.u || a.t));
+      if (!list.length) { host.innerHTML = `<div class="caption">${q ? 'No scouting saves match.' : 'Nothing saved yet. Move the map to the region you scouted and tap "Save this scouting".'}</div>`; return; }
+      host.innerHTML = list.map(S => {
+        const kb = Math.max(1, Math.round(scSize(S) / 1024));
+        return `<div class="sc-item${S.id === scCur ? ' cur' : ''}" data-id="${S.id}"><div><b>${esc(S.name)}</b><div class="sc-meta">${scWhen(S.u || S.t)}${S.u && S.u !== S.t ? ' (updated)' : ''} · ${esc(scParts(S).join(', ') || 'map region')}${S.off ? ' · map kept offline' : ''} · ${kb} KB</div></div>`
+          + (S.note ? `<div class="sc-note">${esc(S.note)}</div>` : '')
+          + `<div class="sc-acts"><button type="button" data-a="open">Open</button><button type="button" data-a="upd">Update</button><button type="button" data-a="note">Edit note</button><button type="button" data-a="share">Share</button><button type="button" data-a="del">Delete</button></div></div>`;
+      }).join('');
+    }
+    function openScoutSave(name) {
+      if (tool !== 'scouts') setTool('scouts');
+      if (name) $('scName').value = name;
+      scWhatNow(); $('mp-scouts').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    async function scOffline(S) {
+      if (!('caches' in window) || !navigator.serviceWorker || !navigator.serviceWorker.controller) return 'Map not kept offline: open Deer Eyes from your website or installed app first.';
+      if (!navigator.onLine) return 'Map not kept offline: no signal right now. Tap Update later when you have signal.';
+      const b = L.latLngBounds(S.box), z = S.view[2];
+      let z1 = Math.min(18, z + 2), urls = offlineUrls([b], Math.max(10, z - 1), z1);
+      while (urls.length > 5000 && z1 > z) urls = offlineUrls([b], Math.max(10, z - 1), --z1);
+      if (urls.length > 5000) return 'Map not kept offline: the region is too big. Zoom in closer and tap Update.';
+      $('scBarW').hidden = false; $('scBar').style.width = '0';
+      const r = await fetchOffline(urls, (d, t) => { $('scBar').style.width = (100 * d / t) + '%'; $('scMsg').textContent = `Keeping the map offline: ${d} of ${t} map pictures…`; });
+      $('scBarW').hidden = true; S.off = r.done - r.bad > 0;
+      return r.bad ? `Map kept offline (${r.done - r.bad} pictures; ${r.bad} failed, tap Update with better signal).` : `Map kept offline (${r.done} pictures).`;
+    }
+    async function scSave(existing) {
+      if (is3d) set3d(false);
+      const name = ($('scName').value || '').trim() || (existing && existing.name) || (arLast && arLast.name) || `Scouting ${new Date().toLocaleDateString()}`;
+      const snap = scSnapshot(), now = Date.now();
+      let S;
+      if (existing) { S = Object.assign(existing, snap, { u: now }); if (($('scName').value || '').trim()) S.name = name; if ($('svNote').value.trim()) S.note = $('svNote').value.trim(); }
+      else {
+        const same = SC.find(x => x.name.toLowerCase() === name.toLowerCase());
+        if (same && !confirm(`You already have a scouting save called "${same.name}". Replace it with this one?`)) return;
+        if (same) SC = SC.filter(x => x !== same);
+        S = Object.assign({ id: uid(), name, t: now, note: $('svNote').value.trim() }, snap);
+        SC.push(S);
+      }
+      scCur = S.id;
+      const ok = scWrite();
+      $('scMsg').textContent = ok ? `Saved "${S.name}".` : `Saved "${S.name}" in the backup copy, but the phone's main storage is full: delete an old scouting save or old tracks soon.`;
+      toast(`Scouting saved: ${S.name}`);
+      $('svNote').value = ''; fillScouts();
+      if ($('scOff').checked) { const m = await scOffline(S); scWrite(); $('scMsg').textContent += ' ' + m; fillScouts(); }
+    }
+    function scOpen(S) {
+      if (is3d) set3d(false);
+      if (S.base && BASES[S.base] && S.base !== baseKey) setBase(S.base);
+      if (Array.isArray(S.over)) {
+        for (const k of Object.keys(OVERS)) { const on = S.over.includes(k); if (!!overOn[k] !== on) setOver(k, on); }
+        document.querySelectorAll('#mpOver input[type=checkbox]').forEach(i => { i.checked = !!overOn[i.value]; });
+      }
+      if (S.area && (S.area === 'all' || DB.areas.includes(S.area)) && S.area !== DB.cur) { DB.cur = S.area; saveDB(); fillAreas(); }
+      drawSaved(); drawBlood();
+      // AI spots and deer routes as they were worked out; route times move to today's clock
+      if (moveLayer) { map.removeLayer(moveLayer); moveLayer = null; }
+      if (spotLayer) { map.removeLayer(spotLayer); spotLayer = null; }
+      spots = scUnpack(S.spots || []); spotGrid = null; spotCenter = S.spotCenter ? scUnpack(S.spotCenter) : L.latLng(S.view[0], S.view[1]);
+      const today = new Date(); today.setHours(0, 0, 0, 0);
+      const toToday = d => d instanceof Date ? new Date(today.getTime() + (d.getHours() * 60 + d.getMinutes()) * 6e4) : d;
+      moves = scUnpack(S.moves || []).map(m => { for (const k of ['ev1', 'ev2', 'am1', 'am2', 'ru1', 'ru2']) if (m[k]) m[k] = toToday(m[k]); return m; });
+      moves.rutNow = S.rut || ''; moves.rutSeason = !!S.rutSeason;
+      movePinch = scUnpack(S.pinch || []); moveSun = S.sun ? scUnpack(S.sun) : null;
+      if (spots.length) drawSpots(); else $('aiList').innerHTML = '';
+      $('aiStatus').textContent = spots.length ? `Showing your saved scouting "${S.name}" from ${scWhen(S.u || S.t)}. Stand sides follow today's wind.` : $('aiStatus').textContent;
+      if (moves.length) {
+        const v = new Date().getHours() * 60 + new Date().getMinutes(); $('aiMoveT').value = Math.max(240, Math.min(1260, Math.round(v / 10) * 10));
+        drawMoves(); $('aiMoveBox').hidden = false; $('aiMove').setAttribute('aria-pressed', true);
+        $('aiMoveSum').textContent = `From your saved scouting "${S.name}".`;
+      } else { $('aiMoveBox').hidden = true; $('aiMove').setAttribute('aria-pressed', false); }
+      arLast = S.plan ? scUnpack(S.plan) : null;
+      if (arLast) arRender(arLast); else $('arOut').innerHTML = '';
+      map.setView([S.view[0], S.view[1]], S.view[2]);
+      scCur = S.id; fillScouts();
+      $('map').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      toast(`Opened "${S.name}"${S.plan ? ': the area report is under Plan area' : ''}`);
+    }
+    function scShareText(S) {
+      const L1 = [`Deer Eyes scouting: ${S.name}`, `Saved ${scWhen(S.u || S.t)}`, `Map: https://maps.google.com/?q=${S.view[0].toFixed(6)},${S.view[1].toFixed(6)}`];
+      if (S.note) L1.push('', S.note);
+      const sp = scUnpack(S.spots || []);
+      if (sp.length) { L1.push('', 'AI spots:'); sp.slice(0, 8).forEach((s, k) => L1.push(`${k + 1}. ${(SPOT[s.t] || [s.t])[0]} · https://maps.google.com/?q=${s.ll.lat.toFixed(6)},${s.ll.lng.toFixed(6)}`)); }
+      const pc = scUnpack(S.pinch || []);
+      if (pc.length) { L1.push('', 'Pinch points:'); pc.forEach((p, k) => L1.push(`★${k + 1} · https://maps.google.com/?q=${p.ll.lat.toFixed(6)},${p.ll.lng.toFixed(6)}`)); }
+      return L1.join('\n');
+    }
+    $('scSave').addEventListener('click', async () => { const b = $('scSave'); b.disabled = true; try { await scSave(null); } finally { b.disabled = false; } });
+    $('scQ').addEventListener('input', fillScouts);
+    $('aiScoutSave').addEventListener('click', () => openScoutSave(''));
+    $('scList').addEventListener('click', async e => {
+      const btn = e.target.closest('[data-a]'), it = e.target.closest('[data-id]'); if (!btn || !it) return;
+      const S = SC.find(x => x.id === it.dataset.id); if (!S) return;
+      const a = btn.dataset.a;
+      if (a === 'open') scOpen(S);
+      if (a === 'upd') {
+        if (!btn.dataset.sure) { btn.dataset.sure = 1; btn.textContent = 'Tap again: save what is on the map now'; setTimeout(() => { delete btn.dataset.sure; btn.textContent = 'Update'; }, 5000); return; }
+        btn.disabled = true; await scSave(S);
+      }
+      if (a === 'note') {
+        const n = prompt(`Notes for "${S.name}"`, S.note || ''); if (n == null) return;
+        S.note = n.trim().slice(0, 2000); const nm = prompt('Name', S.name); if (nm && nm.trim()) S.name = nm.trim().slice(0, 60);
+        scWrite(); fillScouts(); toast('Saved');
+      }
+      if (a === 'share') shareText(`Deer Eyes scouting: ${S.name}`, scShareText(S));
+      if (a === 'del') {
+        if (!btn.dataset.sure) { btn.dataset.sure = 1; btn.textContent = 'Tap again to delete'; setTimeout(() => { delete btn.dataset.sure; btn.textContent = 'Delete'; }, 5000); return; }
+        SC = SC.filter(x => x !== S); if (scCur === S.id) scCur = null; scWrite(); fillScouts(); toast(`Deleted "${S.name}" (your pins are kept)`);
+      }
+    });
+
 
     // ---------- create the map ----------
     function init() {

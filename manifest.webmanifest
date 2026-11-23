@@ -1,6 +1,6 @@
 {
-  "name": "Deer Eyes 2",
-  "short_name": "Deer Eyes 2",
+  "name": "Deer Eyes",
+  "short_name": "Deer Eyes",
   "description": "Whitetail field kit: deer vision, blood trail, track finder, wind, compass and more.",
   "start_url": "./",
   "scope": "./",
@@ -69,6 +69,5 @@
         }
       ]
     }
-  ],
-  "id": "./"
+  ]
 }
